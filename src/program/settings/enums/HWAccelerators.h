@@ -14,30 +14,37 @@
 
 #include "StringEnumDataHolder.h"
 
-/**
- * @brief Class for HWAccelerators enum and map.
- *
- */
-class HWAccelerators {
- public:
-  static const StringEnumDataHolder<HWAccelerators> NONE;
-  static const StringEnumDataHolder<HWAccelerators> AMD;
-  static const StringEnumDataHolder<HWAccelerators> NVIDIA;
-  static const StringEnumDataHolder<HWAccelerators> INTEL;
-  static const StringEnumDataHolder<HWAccelerators> VULKAN;
+ /**
+  * @brief Class for HWAccelerators enum and map.
+  *
+  */
+enum class HWAccelerators {
+  INVALID = 0,
 
-  static const std::vector<const StringEnumDataHolder<HWAccelerators>*> _all() {
-    return {&NONE, &AMD, &NVIDIA, &INTEL, &VULKAN};
-  }
+  AMD,
+  NVIDIA,
+  INTEL,
+  VULKAN
 
-  static const StringEnumDataHolder<HWAccelerators> getKey(std::string value) {
-    for (auto& item : _all()) {
-      if (item->getName() == value) {
-        return *item;
-      }
-    }
-    return NONE;
-  }
+  /*public:
+   static const StringEnumDataHolder<HWAccelerators> NONE;
+   static const StringEnumDataHolder<HWAccelerators> AMD;
+   static const StringEnumDataHolder<HWAccelerators> NVIDIA;
+   static const StringEnumDataHolder<HWAccelerators> INTEL;
+   static const StringEnumDataHolder<HWAccelerators> VULKAN;
+
+   static const std::vector<const StringEnumDataHolder<HWAccelerators>*> _all() {
+     return {&NONE, &AMD, &NVIDIA, &INTEL, &VULKAN};
+   }
+
+   static const StringEnumDataHolder<HWAccelerators> getKey(std::string value) {
+     for (auto& item : _all()) {
+       if (item->getName() == value) {
+         return *item;
+       }
+     }
+     return NONE;
+   }*/
 };
 
 #endif  // HWACCELERATORS

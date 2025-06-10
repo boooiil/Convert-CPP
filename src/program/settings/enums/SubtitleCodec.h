@@ -6,31 +6,41 @@
 
 #include "StringEnumDataHolder.h"
 
-class SubtitleCodec {
- public:
-  static const StringEnumDataHolder<SubtitleCodec> NONE;      // default
-  static const StringEnumDataHolder<SubtitleCodec> ASS;       // mkv default
-  static const StringEnumDataHolder<SubtitleCodec> SRT;       // mkv
-  static const StringEnumDataHolder<SubtitleCodec> SSA;       // mkv
-  static const StringEnumDataHolder<SubtitleCodec> SUBRIP;    // ??
-  static const StringEnumDataHolder<SubtitleCodec> DVB_SUB;   // ??
-  static const StringEnumDataHolder<SubtitleCodec> WEBVTT;    // ??
-  static const StringEnumDataHolder<SubtitleCodec> MOV_TEXT;  // mp4, mov
+enum class SubtitleCodec {
+  INVALID = 0,
 
-  static const std::vector<const StringEnumDataHolder<SubtitleCodec>*> _all() {
-    return {
-        &NONE, &ASS, &SRT, &SSA, &SUBRIP, &DVB_SUB, &WEBVTT, &MOV_TEXT,
-    };
-  };
+  NONE,
+  ASS,
+  SRT,
+  SSA,
+  SUBRIP,
+  DVB_SUB,
+  WEBVTT,
+  MOV_TEXT
+  // public:
+  //  static const SubtitleCodec NONE;      // default
+  //  static const SubtitleCodec ASS;       // mkv default
+  //  static const SubtitleCodec SRT;       // mkv
+  //  static const SubtitleCodec SSA;       // mkv
+  //  static const SubtitleCodec SUBRIP;    // ??
+  //  static const SubtitleCodec DVB_SUB;   // ??
+  //  static const SubtitleCodec WEBVTT;    // ??
+  //  static const SubtitleCodec MOV_TEXT;  // mp4, mov
 
-  static const StringEnumDataHolder<SubtitleCodec> getKey(std::string value) {
-    for (auto& item : _all()) {
-      if (item->getName() == value) {
-        return *item;
-      }
-    }
-    return NONE;
-  }
+  // static const std::vector<const SubtitleCodec*> _all() {
+  //   return {
+  //       &NONE, &ASS, &SRT, &SSA, &SUBRIP, &DVB_SUB, &WEBVTT, &MOV_TEXT,
+  //   };
+  // };
+
+  // static const SubtitleCodec getKey(std::string value) {
+  //   for (auto& item : _all()) {
+  //     if (item->getName() == value) {
+  //       return *item;
+  //     }
+  //   }
+  //   return NONE;
+  // }
 };
 
 #endif  // SUBTITLE_CODEC_H
