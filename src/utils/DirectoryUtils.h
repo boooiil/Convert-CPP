@@ -8,6 +8,12 @@
 class DirectoryUtils {
 public:
   static std::vector<std::filesystem::directory_entry> getFilesInCWD(void);
+
+  static std::vector<std::filesystem::directory_entry> getFilesInDirectory(std::string path);
+  static std::vector<std::filesystem::directory_entry> getFilesInDirectory(
+    std::string path, std::string ext);
+  static std::vector<std::filesystem::directory_entry> getFilesInDirectory(
+    std::string path, std::vector<const char*> exts);
   static std::vector<std::filesystem::directory_entry> getFilesInCWDWithExt(
     std::string);
   static std::vector<std::filesystem::directory_entry> getFilesInCWDWithExt(
