@@ -1,5 +1,5 @@
 CXX = g++
-CCFLAGS = -std=c++17
+CCFLAGS = -std=c++20
 
 BASEDIR = src
 OBJ_DIR = obj
