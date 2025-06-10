@@ -1,11 +1,12 @@
 #include "StringUtils.h"
 
-#include <math.h>
-
+#include <cmath>
 #include <regex>
+#include <sstream>
 #include <string>
 
-std::string StringUtils::truncateString(std::string str, int length = 25) {
+auto StringUtils::truncateString(std::string str, int length = 25)
+    -> std::string {
   const int MAX_LENGTH = length;
   if (str.length() <= MAX_LENGTH) {
     return str;
@@ -24,8 +25,8 @@ std::string StringUtils::truncateString(std::string str, int length = 25) {
   return leftHalf + ellipsis + rightHalf;
 }
 
-std::string StringUtils::replaceAll(std::string str, std::string from,
-                                    std::string to) {
+auto StringUtils::replaceAll(std::string str, const std::string& from,
+                             const std::string& to) -> std::string {
   size_t start_pos = 0;
   while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
     str.replace(start_pos, from.length(), to);
@@ -36,43 +37,42 @@ std::string StringUtils::replaceAll(std::string str, std::string from,
   return str;
 }
 
-std::string StringUtils::replaceAll(std::string str, std::regex from,
-                                    std::string to) {
+auto StringUtils::replaceAll(const std::string& str, const std::regex& from,
+                             const std::string& to) -> std::string {
   return std::regex_replace(str, from, to);
 }
 
-std::string StringUtils::toLowerCase(std::string str) {
+auto StringUtils::toLowerCase(std::string str) -> std::string {
+  // amount to convert from lower <-> upper
   const int x = 32;
 
-  std::string result;
-
-  for (char c : str) {
+  for (char& c : str) {
     if (c >= 65 && c <= 90) {
-      result += static_cast<char>(c + x);
+      c = static_cast<char>(c + x);
     } else {
-      result += c;
+      c = c;
     };
   }
 
-  return result;
+  return str;
 }
 
-std::string StringUtils::toUpperCase(std::string str) {
+auto StringUtils::toUpperCase(std::string str) -> std::string {
+  // amount to convert from lower <-> upper
   const int x = 32;
 
-  std::string result;
-
-  for (char c : str) {
-    if (c >= 97 && c <= 122) {
-      result += static_cast<char>(c - x);
+  for (char& c : str) {
+    if (c >= 65 && c <= 90) {
+      c = static_cast<char>(c - x);
     } else {
-      result += c;
+      c = c;
     };
   }
 
-  return result;
+  return str;
 }
 
-bool StringUtils::contains(std::string str, std::string pattern) {
+auto StringUtils::contains(const std::string& str, const std::string& pattern)
+    -> bool {
   return str.find(pattern) != std::string::npos;
 }

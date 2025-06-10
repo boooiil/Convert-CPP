@@ -36,8 +36,8 @@ class StringUtils {
    * @param[in] to    -  The sequence of characters to replace with.
    * @return The modified string.
    */
-  static std::string replaceAll(std::string str, std::string from,
-                                std::string to);
+  static std::string replaceAll(std::string str, const std::string& from,
+                                const std::string& to);
 
   /**
    * @brief Replace all occurances of a regex pattern with a provided sequence
@@ -48,8 +48,8 @@ class StringUtils {
    * @param[in] to    - The sequence of characters to replace with.
    * @return The modified string.
    */
-  static std::string replaceAll(std::string str, std::regex from,
-                                std::string to);
+  static std::string replaceAll(const std::string& str, const std::regex& from,
+                                const std::string& to);
 
   /**
    * @brief Turn all characters to lower case.
@@ -75,7 +75,7 @@ class StringUtils {
    * @return true
    * @return false
    */
-  static bool contains(std::string str, std::string pattern);
+  static bool contains(const std::string& str, const std::string& pattern);
 };
 
 #endif  // !STRING_UTILS
