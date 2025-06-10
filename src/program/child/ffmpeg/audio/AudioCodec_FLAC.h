@@ -7,11 +7,9 @@
 
 class AudioCodec_FLAC : public BaseAudioCodec {
  public:
-  StringEnumDataHolder<AudioCodec> getType() override {
-    return AudioCodec::FLAC;
-  };
+  auto getType() -> AudioCodec override { return AudioCodec::FLAC; };
 
-  std::vector<int> supportedChannels() override {
+  auto supportedChannels() -> std::vector<int> override {
     return {
         1,  // mono
         2,  // l, r
@@ -25,16 +23,18 @@ class AudioCodec_FLAC : public BaseAudioCodec {
         10  // fl, fc, fr, rl, rr, lfe, sl, sr, rc, tl, tr
     };
   };
-  int fallbackChannel() override { return 2; };
+  auto fallbackChannel() -> int override { return 2; };
 
-  std::vector<int> supportedSampleRates() override {
+  auto supportedSampleRates() -> std::vector<int> override {
     return {8000,  11025, 12000, 16000, 22050,  24000,  32000, 44100,
             48000, 64000, 88200, 96000, 176400, 192000, 384000};
   };
-  int fallbackSampleRate() override { return 96000; };
+  auto fallbackSampleRate() -> int override { return 96000; };
 
-  std::vector<int> supportedBitDepths() override { return {8, 16, 24, 32}; };
-  int fallbackBitDepth() override { return 24; };
+  auto supportedBitDepths() -> std::vector<int> override {
+    return {8, 16, 24, 32};
+  };
+  auto fallbackBitDepth() -> int override { return 24; };
 };
 
 #endif  // AUDIO_CODEC_FLAC_H

@@ -7,11 +7,9 @@
 
 class AudioCodec_OPUS : public BaseAudioCodec {
  public:
-  StringEnumDataHolder<AudioCodec> getType() override {
-    return AudioCodec::OPUS;
-  };
+  auto getType() -> AudioCodec override { return AudioCodec::OPUS; };
 
-  std::vector<int> supportedChannels() override {
+  auto supportedChannels() -> std::vector<int> override {
     return {
         1,  // mono
         2,  // l, r
@@ -23,15 +21,15 @@ class AudioCodec_OPUS : public BaseAudioCodec {
         8   // fl, fc, fr, rl, rr, lfe, sl, sr
     };
   };
-  int fallbackChannel() override { return 2; };
+  auto fallbackChannel() -> int override { return 2; };
 
-  std::vector<int> supportedSampleRates() override {
+  auto supportedSampleRates() -> std::vector<int> override {
     return {8000, 12000, 16000, 24000, 48000};
   };
-  int fallbackSampleRate() override { return 48000; };
+  auto fallbackSampleRate() -> int override { return 48000; };
 
-  std::vector<int> supportedBitDepths() override { return {16}; };
-  int fallbackBitDepth() override { return 16; };
+  auto supportedBitDepths() -> std::vector<int> override { return {16}; };
+  auto fallbackBitDepth() -> int override { return 16; };
 };
 
 #endif  // AUDIO_CODEC_OPUS_H

@@ -7,8 +7,8 @@
 #include "../../../settings/enums/SubtitleCodec.h"
 
 class BaseSubtitleCodec {
- public:
-  virtual StringEnumDataHolder<SubtitleCodec> getType() {
+public:
+  virtual auto getType() -> SubtitleCodec {
     return SubtitleCodec::NONE;
   };
 };

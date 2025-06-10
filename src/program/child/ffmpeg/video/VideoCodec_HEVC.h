@@ -5,9 +5,7 @@
 
 class VideoCodec_HEVC : public BaseVideoCodec {
  public:
-  auto getType() -> StringEnumDataHolder<Encoders> override {
-    return Encoders::HEVC;
-  }
+  auto getType() -> Encoders override { return Encoders::HEVC; }
 
   auto controlRateFlag() -> std::string override { return "-crf"; }
 
@@ -57,16 +55,14 @@ class VideoCodec_HEVC : public BaseVideoCodec {
 
   auto fallbackPreset() -> std::string override { return "slow"; }
 
-  auto supportedTunes() -> std::vector<StringEnumDataHolder<Tunes>> override {
+  auto supportedTunes() -> std::vector<Tunes> override {
     return {Tunes::PSNR,  // Optimizes for Peak Signal-to-Noise Ratio (PSNR)
             Tunes::SSIM,  // Optimizes for Structural Similarity Index (SSIM)
             Tunes::ZERO_LATENCY,  // Optimized for low latency
             Tunes::GRAIN};
   }
 
-  auto fallbackTune() -> StringEnumDataHolder<Tunes> override {
-    return Tunes::DEFAULT;
-  }
+  auto fallbackTune() -> Tunes override { return Tunes::DEFAULT; }
 };
 
 #endif  // VIDEO_CODEC_HEVC_H

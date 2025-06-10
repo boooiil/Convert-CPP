@@ -7,9 +7,7 @@
 
 class SubtitleCodec_WEBVTT : public BaseSubtitleCodec {
  public:
-  StringEnumDataHolder<SubtitleCodec> getType() {
-    return SubtitleCodec::WEBVTT;
-  };
+  SubtitleCodec getType() { return SubtitleCodec::WEBVTT; };
 };
 
 #endif  // SUBTITLE_CODEC_WEBVTT_H

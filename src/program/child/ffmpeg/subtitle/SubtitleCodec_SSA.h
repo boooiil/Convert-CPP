@@ -7,7 +7,7 @@
 
 class SubtitleCodec_SSA : public BaseSubtitleCodec {
  public:
-  StringEnumDataHolder<SubtitleCodec> getType() { return SubtitleCodec::SSA; };
+  SubtitleCodec getType() { return SubtitleCodec::SSA; };
 };
 
 #endif  // SUBTITLE_CODEC_SSA_H

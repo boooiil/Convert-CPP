@@ -7,9 +7,7 @@
 
 class SubtitleCodec_SUBRIP : public BaseSubtitleCodec {
  public:
-  StringEnumDataHolder<SubtitleCodec> getType() {
-    return SubtitleCodec::SUBRIP;
-  };
+  SubtitleCodec getType() { return SubtitleCodec::SUBRIP; };
 };
 
 #endif  // SUBTITLE_CODEC_SUBRIP_H

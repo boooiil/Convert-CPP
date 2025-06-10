@@ -7,7 +7,7 @@
 
 class SubtitleCodec_SRT : public BaseSubtitleCodec {
  public:
-  StringEnumDataHolder<SubtitleCodec> getType() { return SubtitleCodec::SRT; };
+  SubtitleCodec getType() { return SubtitleCodec::SRT; };
 };
 
 #endif  // SUBTITLE_CODEC_SRT_H

@@ -7,9 +7,7 @@
 
 class SubtitleCodec_DVB_SUB : public BaseSubtitleCodec {
  public:
-  StringEnumDataHolder<SubtitleCodec> getType() {
-    return SubtitleCodec::DVB_SUB;
-  };
+  SubtitleCodec getType() { return SubtitleCodec::DVB_SUB; };
 };
 
 #endif  // SUBTITLE_CODEC_DVB_SUB_H

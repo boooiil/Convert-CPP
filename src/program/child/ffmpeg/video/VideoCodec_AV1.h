@@ -5,9 +5,7 @@
 
 class VideoCodec_AV1 : public BaseVideoCodec {
  public:
-  auto getType() -> StringEnumDataHolder<Encoders> override {
-    return Encoders::AV1;
-  }
+  auto getType() -> Encoders override { return Encoders::AV1; }
 
   auto controlRateFlag() -> std::string override { return "-crf"; }
 
@@ -39,16 +37,14 @@ class VideoCodec_AV1 : public BaseVideoCodec {
 
   auto fallbackPreset() -> std::string override { return "2"; }
 
-  auto supportedTunes() -> std::vector<StringEnumDataHolder<Tunes>> override {
+  auto supportedTunes() -> std::vector<Tunes> override {
     return {
         Tunes::PSNR,  // Optimizes for Peak Signal-to-Noise Ratio (PSNR)
         Tunes::SSIM,  // Optimizes for Structural Similarity Index (SSIM)
     };
   }
 
-  auto fallbackTune() -> StringEnumDataHolder<Tunes> override {
-    return Tunes::DEFAULT;
-  }
+  auto fallbackTune() -> Tunes override { return Tunes::DEFAULT; }
 };
 
 #endif  // VIDEO_CODEC_AV1_H

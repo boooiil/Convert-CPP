@@ -5,9 +5,7 @@
 
 class VideoCodec_HEVC_NVENC : public BaseVideoCodec {
  public:
-  auto getType() -> StringEnumDataHolder<Encoders> override {
-    return Encoders::HEVC_NVENC;
-  }
+  auto getType() -> Encoders override { return Encoders::HEVC_NVENC; }
 
   auto controlRateFlag() -> std::string override { return "-crf"; }
 
@@ -54,14 +52,12 @@ class VideoCodec_HEVC_NVENC : public BaseVideoCodec {
 
   auto fallbackPreset() -> std::string override { return "high_quality"; }
 
-  auto supportedTunes() -> std::vector<StringEnumDataHolder<Tunes>> override {
+  auto supportedTunes() -> std::vector<Tunes> override {
     return {Tunes::ZERO_LATENCY,  // Optimized for low latency
             Tunes::GRAIN};
   }
 
-  auto fallbackTune() -> StringEnumDataHolder<Tunes> override {
-    return Tunes::DEFAULT;
-  }
+  auto fallbackTune() -> Tunes override { return Tunes::DEFAULT; }
 };
 
 #endif  // VIDEO_CODEC_HEVC_NVENC_H

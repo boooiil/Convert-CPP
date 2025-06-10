@@ -7,11 +7,9 @@
 
 class AudioCodec_EAC3 : public BaseAudioCodec {
  public:
-  StringEnumDataHolder<AudioCodec> getType() override {
-    return AudioCodec::EAC3;
-  };
+  auto getType() -> AudioCodec override { return AudioCodec::EAC3; };
 
-  std::vector<int> supportedChannels() override {
+  auto supportedChannels() -> std::vector<int> override {
     return {
         1,  // mono
         2,  // l, r
@@ -23,9 +21,9 @@ class AudioCodec_EAC3 : public BaseAudioCodec {
         8   // fl, fc, fr, rl, rr, lfe, sl, sr
     };
   };
-  int fallbackChannel() override { return 2; };
+  auto fallbackChannel() -> int override { return 2; };
 
-  std::vector<int> supportedSampleRates() override {
+  auto supportedSampleRates() -> std::vector<int> override {
     return {
         32000,  // 32 kHz
         44100,  // 44.1 kHz
@@ -35,10 +33,10 @@ class AudioCodec_EAC3 : public BaseAudioCodec {
         128000  // 128 kHz
     };
   };
-  int fallbackSampleRate() override { return 48000; };
+  auto fallbackSampleRate() -> int override { return 48000; };
 
-  std::vector<int> supportedBitDepths() override { return {16, 24}; };
-  int fallbackBitDepth() override { return 16; };
+  auto supportedBitDepths() -> std::vector<int> override { return {16, 24}; };
+  auto fallbackBitDepth() -> int override { return 16; };
 };
 
 #endif  // AUDIO_CODEC_EAC3_H

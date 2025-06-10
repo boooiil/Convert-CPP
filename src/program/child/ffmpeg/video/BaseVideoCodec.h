@@ -24,48 +24,63 @@ class BaseVideoCodec {
   /**
    * @brief Get the type of video codec used by this encoder
    *
-   * @return StringEnumDataHolder<Encoders>
+   * @return Encoders
    */
-  virtual StringEnumDataHolder<Encoders> getType() {
-    return Encoders::INVALID;
-  };
+  virtual auto getType() -> Encoders { return Encoders::INVALID; };
 
   /**
    * @brief The control rate flag used by this codec.
    *
    * @return std::string
    */
-  virtual std::string controlRateFlag() = 0;
+  virtual auto controlRateFlag() -> std::string = 0;
 
   // what is a preset ?
-  virtual std::vector<std::string> supportedPresets() = 0;
-  virtual std::string fallbackPreset() = 0;
+  virtual auto supportedPresets() -> std::vector<std::string> = 0;
+  virtual auto fallbackPreset() -> std::string = 0;
 
-  const std::string getPreset(std::string preset) {
+  auto getPreset(std::string& preset) -> const std::string {
     return getParam(preset, &BaseVideoCodec::supportedPresets,
                     &BaseVideoCodec::fallbackPreset);
   }
 
-  virtual std::vector<std::string> supportedLevels() = 0;
-  virtual std::string fallbackLevel() = 0;
+  virtual auto supportedLevels() -> std::vector<std::string> = 0;
+  virtual auto fallbackLevel() -> std::string = 0;
 
-  const std::string getLevel(std::string level) {
+  auto getLevel(std::string& level) -> const std::string {
     return getParam(level, &BaseVideoCodec::supportedLevels,
                     &BaseVideoCodec::fallbackLevel);
   }
 
-  virtual std::vector<StringEnumDataHolder<Tunes>> supportedTunes() = 0;
-  virtual StringEnumDataHolder<Tunes> fallbackTune() = 0;
+  virtual auto supportedTunes() -> std::vector<Tunes> = 0;
+  virtual auto fallbackTune() -> Tunes = 0;
 
-  const StringEnumDataHolder<Tunes> getTune(StringEnumDataHolder<Tunes> tune) {
+  auto getTune(Tunes& tune) -> const Tunes {
     return getParam(tune, &BaseVideoCodec::supportedTunes,
                     &BaseVideoCodec::fallbackTune);
   }
 
+  virtual auto getRunningPreset() -> const std::string& {
+    return this->runningPreset;
+  }
+  virtual auto setRunningPreset(std::string& preset) -> void {
+    this->runningPreset = preset;
+  }
+
+  virtual auto getRunningLevel() -> const std::string& {
+    return this->runningLevel;
+  }
+  virtual auto setRunningLevel(std::string& level) -> const std::string& {
+    this->runningLevel = level;
+  }
+
+  virtual auto getRunningTune() -> const Tunes& { return *this->runningTune; }
+  virtual auto setRunningTune(Tunes* tune) -> void { this->runningTune = tune; }
+
  private:
   template <typename T, typename C>
-  const T getParam(T search, std::vector<T> (C::*provider)(),
-                   T (C::*fallback)()) {
+  auto getParam(T& search, std::vector<T> (C::*provider)(), T (C::*fallback)())
+      -> const T {
     auto params = (this->*provider)();
 
     for (auto& p : params) {
@@ -78,7 +93,7 @@ class BaseVideoCodec {
 
   std::string runningPreset;
   std::string runningLevel;
-  StringEnumDataHolder<Tunes>* runningTune;
+  Tunes* runningTune;
 };
 
 #endif  // BASE_VIDEO_CODEC_H

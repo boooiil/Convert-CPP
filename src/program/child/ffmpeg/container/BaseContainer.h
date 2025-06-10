@@ -32,35 +32,35 @@
 
 class BaseContainer {
  public:
-  BaseContainer(BaseAudioCodec* _audio_codec,
-                BaseSubtitleCodec* _subtitle_codec,
-                BaseVideoCodec* _video_codec)
-      : audio_codec(_audio_codec),
-        subtitle_codec(_subtitle_codec),
-        video_codec(_video_codec) {}
+  // BaseContainer(BaseAudioCodec* _audio_codec,
+  //               BaseSubtitleCodec* _subtitle_codec,
+  //               BaseVideoCodec* _video_codec)
+  //     : audio_codec(_audio_codec),
+  //       subtitle_codec(_subtitle_codec),
+  //       video_codec(_video_codec) {}
 
   virtual ~BaseContainer() {
-    LOG_DEBUG("Deconstructing...");
-    if (audio_codec != nullptr) {
-      LOG_DEBUG("Deleting Audio Codec.");
-      delete audio_codec;
-    }
-    if (subtitle_codec != nullptr) {
-      LOG_DEBUG("Deleting Subtitle Codec.");
-      delete subtitle_codec;
-    }
-    if (video_codec != nullptr) {
-      LOG_DEBUG("Deleting Video Codec.");
-      delete video_codec;
-    }
+    // LOG_DEBUG("Deconstructing...");
+    // if (audio_codec != nullptr) {
+    //   LOG_DEBUG("Deleting Audio Codec.");
+    //   delete audio_codec;
+    // }
+    // if (subtitle_codec != nullptr) {
+    //   LOG_DEBUG("Deleting Subtitle Codec.");
+    //   delete subtitle_codec;
+    // }
+    // if (video_codec != nullptr) {
+    //   LOG_DEBUG("Deleting Video Codec.");
+    //   delete video_codec;
+    // }
   };
 
-  virtual StringEnumDataHolder<Container> getType() = 0;
+  virtual Container getType() = 0;
 
-  virtual std::vector<BaseVideoCodec*> supportedVideoCodecs() = 0;
-  virtual BaseVideoCodec* fallbackVideoCodec() = 0;
+  virtual std::vector<Encoders> supportedVideoCodecs() = 0;
+  virtual Encoders fallbackVideoCodec() = 0;
 
-  virtual const BaseVideoCodec* getVideoCodec(BaseVideoCodec* encoder) {
+  virtual const Encoders getVideoCodec(Encoders encoder) {
     return getParam(encoder, &BaseContainer::supportedVideoCodecs,
                     &BaseContainer::fallbackVideoCodec);
   }
@@ -68,18 +68,18 @@ class BaseContainer {
   /**
    * @brief List of supported audio codecs supported by this video codec.
    *
-   * @return std::vector<StringEnumDataHolder<Encoders>>
+   * @return std::vector<Encoders>
    */
-  virtual std::vector<BaseAudioCodec*> supportedAudioCodecs() = 0;
+  virtual std::vector<AudioCodec> supportedAudioCodecs() = 0;
 
   /**
    * @brief The fallback audio codec to use if the primary one is not available.
    *
-   * @return StringEnumDataHolder<Encoders>
+   * @return Encoders
    */
-  virtual BaseAudioCodec* fallbackAudioCodec() = 0;
+  virtual AudioCodec fallbackAudioCodec() = 0;
 
-  virtual const BaseAudioCodec* getAudioCodec(BaseAudioCodec* _audio_codec) {
+  virtual const AudioCodec getAudioCodec(AudioCodec _audio_codec) {
     return getParam(_audio_codec, &BaseContainer::supportedAudioCodecs,
                     &BaseContainer::fallbackAudioCodec);
   }
@@ -87,20 +87,19 @@ class BaseContainer {
   /**
    * @brief List of supported subtitle codecs supported by this video codec.
    *
-   * @return std::vector<StringEnumDataHolder<Encoders>>
+   * @return std::vector<Encoders>
    */
-  virtual std::vector<BaseSubtitleCodec*> supportedSubtitleCodecs() = 0;
+  virtual std::vector<SubtitleCodec> supportedSubtitleCodecs() = 0;
 
   /**
    * @brief The fallback subtitle codec to use if the primary one is not
    * available.
    *
-   * @return StringEnumDataHolder<Encoders>
+   * @return Encoders
    */
-  virtual BaseSubtitleCodec* fallbackSubtitleCodec() = 0;
+  virtual SubtitleCodec fallbackSubtitleCodec() = 0;
 
-  virtual const BaseSubtitleCodec* getSubtitleCodec(
-      BaseSubtitleCodec* _subtitle_codec) {
+  virtual const SubtitleCodec getSubtitleCodec(SubtitleCodec _subtitle_codec) {
     return getParam(_subtitle_codec, &BaseContainer::supportedSubtitleCodecs,
                     &BaseContainer::fallbackSubtitleCodec);
   }
@@ -119,9 +118,9 @@ class BaseContainer {
     return (this->*fallback)();
   }
 
-  BaseAudioCodec* audio_codec = nullptr;
-  BaseVideoCodec* video_codec = nullptr;
-  BaseSubtitleCodec* subtitle_codec = nullptr;
+  // BaseAudioCodec* audio_codec = nullptr;
+  // BaseVideoCodec* video_codec = nullptr;
+  // BaseSubtitleCodec* subtitle_codec = nullptr;
 };
 
 #endif  // BASE_CONTAINER_H

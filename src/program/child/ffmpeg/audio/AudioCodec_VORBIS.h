@@ -7,11 +7,9 @@
 
 class AudioCodec_VORBIS : public BaseAudioCodec {
  public:
-  StringEnumDataHolder<AudioCodec> getType() override {
-    return AudioCodec::VORBIS;
-  };
+  auto getType() -> AudioCodec override { return AudioCodec::VORBIS; };
 
-  std::vector<int> supportedChannels() override {
+  auto supportedChannels() -> std::vector<int> override {
     return {
         1,  // mono
         2,  // l, r
@@ -23,16 +21,16 @@ class AudioCodec_VORBIS : public BaseAudioCodec {
         8   // fl, fc, fr, rl, rr, lfe, sl, sr
     };
   };
-  int fallbackChannel() override { return 2; };
+  auto fallbackChannel() -> int override { return 2; };
 
-  std::vector<int> supportedSampleRates() override {
+  auto supportedSampleRates() -> std::vector<int> override {
     return {8000,  11025, 12000, 16000, 22050, 24000,
             32000, 44100, 48000, 64000, 88200, 96000};
   };
-  int fallbackSampleRate() override { return 48000; };
+  auto fallbackSampleRate() -> int override { return 48000; };
 
-  std::vector<int> supportedBitDepths() override { return {16}; };
-  int fallbackBitDepth() override { return 16; };
+  auto supportedBitDepths() -> std::vector<int> override { return {16}; };
+  auto fallbackBitDepth() -> int override { return 16; };
 };
 
 #endif  // AUDIO_CODEC_VORBIS_H

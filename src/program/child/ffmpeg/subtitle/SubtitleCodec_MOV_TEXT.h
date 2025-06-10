@@ -7,9 +7,7 @@
 
 class SubtitleCodec_MOV_TEXT : public BaseSubtitleCodec {
  public:
-  StringEnumDataHolder<SubtitleCodec> getType() {
-    return SubtitleCodec::MOV_TEXT;
-  };
+  SubtitleCodec getType() { return SubtitleCodec::MOV_TEXT; };
 };
 
 #endif  // SUBTITLE_CODEC_MOV_TEXT_H
