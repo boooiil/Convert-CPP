@@ -1,5 +1,5 @@
 # root/meson.build
-project('Convert-CPP', 'cpp', default_options: ['cpp_std=c++17'])
+project('Convert-CPP', 'cpp', default_options: ['cpp_std=c++20'])
 
 # Include directories (like nlohmann)
 external_dir = include_directories('external')

@@ -3,5 +3,5 @@
 subdir('arguments')
 subdir('enums')
 src_files += files('Help.cpp')
-src_files += files('ProgramSettings.cpp')
+subdir('options')
 src_files += files('Settings.cpp')
