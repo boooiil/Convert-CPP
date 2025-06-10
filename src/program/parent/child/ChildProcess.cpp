@@ -39,9 +39,7 @@ ChildProcess::~ChildProcess(void) {}
  *
  */
 
-StringEnumDataHolder<Activity> ChildProcess::getActivity() {
-  return this->activity;
-}
+Activity ChildProcess::getActivity() { return this->activity; }
 
 void ChildProcess::getArgs(void) {
   std::cout << this->path << " arguments: ";
@@ -57,7 +55,8 @@ const bool ChildProcess::isProcessing() {
 }
 
 const bool ChildProcess::hasFailed() {
-  return StringUtils::contains(ChildProcess::activity.getName(), "failed");
+  return StringUtils::contains(
+      EnumToStringFactory::get(ChildProcess::activity).getName(), "failed");
 }
 
 const bool ChildProcess::hasFinished() {
@@ -93,7 +92,7 @@ void ChildProcess::fromJSON(nlohmann::json childProcess) {
   }
 }
 
-const nlohmann::json ChildProcess::toJSON(void) const {
+nlohmann::json ChildProcess::toJSON(void) {
   nlohmann::json childProcess;
 
   childProcess["path"] = this->path;

@@ -32,7 +32,7 @@ class ChildProcess : public Media {
    *
    * @return Activity::ActivityType - Activity type.
    */
-  StringEnumDataHolder<Activity> getActivity(void);
+  Activity getActivity(void);
 
   /**
    * @brief Check if the current media is processing.
@@ -71,17 +71,17 @@ class ChildProcess : public Media {
    */
   const bool isWaitingToConvert(void);
 
-  void fromJSON(nlohmann::json childProcess) override;
+  void fromJSON(nlohmann::json json) override;
 
   /**
    * @brief Returns the process as a JSON object.
    *
    * @return nlohmann::json
    */
-  const nlohmann::json toJSON(void) const override;
+  nlohmann::json toJSON(void) override;
 
  private:
-  StringEnumDataHolder<Activity> activity;
+  Activity activity;
   bool endable;
 };
 
