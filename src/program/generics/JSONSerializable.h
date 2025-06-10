@@ -4,11 +4,11 @@
 #include "nlohmann/json_fwd.hpp"
 
 class JSONSerializable {
- public:
+public:
   virtual ~JSONSerializable() = default;
 
   virtual void fromJSON(const nlohmann::json) = 0;
-  virtual const nlohmann::json toJSON() const = 0;
+  virtual nlohmann::json toJSON() = 0;
 };
 
 #endif  // !JSON_SERIALIZABLE_H
