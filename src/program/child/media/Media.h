@@ -10,6 +10,7 @@
 #define MEDIA
 
 #include <nlohmann/json_fwd.hpp>
+#include <stduuid/uuid.h>
 #include <string>
 #include <vector>
 
@@ -21,18 +22,20 @@
 #include "MediaVideoProperties.h"
 #include "MediaWorkingProperties.h"
 
-/**
- * @brief Media class.
- *
- * Trrr
- *
- */
+ /**
+  * @brief Media class.
+  *
+  * Trrr
+  *
+  */
 class Media : public JSONSerializable {
- public:
+public:
+  uuids::uuid id;  /// @brief unique identifier
   /// @brief vector of arguments to be passed to ffmpeg
   std::vector<std::string> ffmpegArguments;
   long started;  /// @brief start time
   long ended;    /// @brief end time
+
 
   ProbeResult* probeResult;         /// @brief ProbeResult object
   MediaFile* file;                  /// @brief MediaFile object
@@ -51,7 +54,7 @@ class Media : public JSONSerializable {
    * @param[in] name - Name of the file.
    * @param[in] path - Path to the file (generally CWD).
    */
-  Media(std::string name, std::string path);
+  Media(uuids::uuid id, std::string name, std::string path);
   ~Media(void);
 
   /**
@@ -59,28 +62,28 @@ class Media : public JSONSerializable {
    *
    * @param[in] activity - Activity type.
    */
-  void setActivity(StringEnumDataHolder<Activity> activity);
+  void setActivity(Activity activity);
 
   /**
    * @brief Do the statistics process.
    *
    * @param[out] container - Ptr to the Container object.
    */
-  void doStatistics(void);
+  void doStatistics();
 
   /**
    * @brief Do the conversion process.
    *
    * @param[out] container - Ptr to the Container object.
    */
-  void doConversion(void);
+  void doConversion();
 
   /**
    * @brief Do the validation process.
    *
    * @param[out] container - Ptr to the Container object.
    */
-  void doValidation(void);
+  void doValidation();
 
   /**
    * @brief Build arguments required to process FFmpeg media with given
@@ -95,7 +98,7 @@ class Media : public JSONSerializable {
    *
    * @return Activity::ActivityType - Activity type.
    */
-  StringEnumDataHolder<Activity> getActivity(void);
+  Activity getActivity(void);
 
   /**
    * @brief Check if the current media is processing.
@@ -150,11 +153,11 @@ class Media : public JSONSerializable {
 
   void fromJSON(nlohmann::json) override;
 
-  const nlohmann::json toJSON(void) const override;
+  nlohmann::json toJSON(void) override;
 
- private:
+private:
   /// @brief activity type
-  StringEnumDataHolder<Activity> activity;
+  Activity activity;
 };
 
 #endif  // !MEDIA
