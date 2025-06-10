@@ -3,13 +3,16 @@
 
 #include <string>
 
-template <typename Binder>
 class StringEnumDataHolder {
- public:
-  StringEnumDataHolder(std::string _name, std::string _description)
-      : name(_name), description(_description) {}
+public:
+  StringEnumDataHolder() = default;
+
+  StringEnumDataHolder(std::string _name, std::string _long_name, std::string _description)
+    : name(_name), description(_description) {
+  }
 
   std::string getName() const { return name; }
+  std::string getDescription() const { return description; }
 
   // Overload the equality operator for comparison
   bool operator==(const StringEnumDataHolder& other) const {
@@ -22,9 +25,10 @@ class StringEnumDataHolder {
 
   std::string operator+(const std::string& other) const { return name + other; }
 
-  operator std::string const(void) { return name; }
+  operator std::string() const { return name; }
 
- private:
+
+private:
   std::string name;
   std::string description;
 };
