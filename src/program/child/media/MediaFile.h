@@ -11,11 +11,11 @@
 
 #include <string>
 
-/**
- * @brief Hold information about a media file.
- */
+ /**
+  * @brief Hold information about a media file.
+  */
 class MediaFile {
- public:
+public:
   /**
    * @brief Construct a new Media File object.
    *
@@ -64,9 +64,9 @@ class MediaFile {
    *
    * @param[out] container - Ptr to the Container object.
    */
-  void rename(void);
+  void rename();
 
- private:
+private:
   /**
    * @brief Compile the full path of the original file.
    *
@@ -80,8 +80,11 @@ class MediaFile {
    * @param[in] episode     - Episode number.
    * @param[in] quality     - Chosen quality.
    */
-  void resolveConversionPaths(std::string provided_series, int provided_season,
-                              std::string provided_episode, std::string path);
+  void resolveConversionPaths(
+    std::string provided_series,
+    int provided_season,
+    std::string provided_episode,
+    std::string path);
 
   /**
    * @brief Compile the extension.

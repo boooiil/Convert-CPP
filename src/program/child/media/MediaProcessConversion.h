@@ -14,11 +14,11 @@
 #include "Media.h"
 #include "MediaProcess.h"
 
-/**
- * @brief Media process extension for converting media files.
- */
+ /**
+  * @brief Media process extension for converting media files.
+  */
 class MediaProcessConversion : public MediaProcess<Media> {
- public:
+public:
   /**
    * @brief Construct a new Media Process Conversion object
    *

@@ -9,17 +9,16 @@
 #ifndef MEDIA_PROCESS_STATISTICS
 #define MEDIA_PROCESS_STATISTICS
 
-#include <string>
-
 #include "Media.h"
 #include "MediaProcess.h"
+#include <string>
 
-/**
- * @brief Media process extension for obtaining statistics for the current media
- * file.
- */
+ /**
+  * @brief Media process extension for obtaining statistics for the current media
+  * file.
+  */
 class MediaProcessStatistics : public MediaProcess<Media> {
- public:
+public:
   /**
    * @brief Construct a new Media Process Statistics object.
    *

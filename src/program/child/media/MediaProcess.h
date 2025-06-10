@@ -23,18 +23,20 @@
 #include <cstdio>
 #endif
 #include "../../../utils/logging/Logger.h"
+#include "../../settings/Settings.h"
 
-/**
- * @brief Handle execution of commands on the system and track their status.
- */
+ /**
+  * @brief Handle execution of commands on the system and track their status.
+  */
 template <typename T>
 class MediaProcess {
- public:
+public:
   /**
    * @brief Construct a new Media Process object.
    */
   MediaProcess(T* _object)
-      : object(_object), status(MediaProcess::Status::WAIT), stop_req(false) {}
+    : object(_object), status(MediaProcess::Status::WAIT), stop_req(false) {
+  }
 
   ~MediaProcess() { LOG_DEBUG("DESTRUCTOR CALLED"); }
 
@@ -59,7 +61,7 @@ class MediaProcess {
 
     // Open pipe to file
     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.c_str(), "r"),
-                                                  pclose);
+      pclose);
     if (!pipe) {
       throw std::runtime_error("popen() failed!");
     }
@@ -156,11 +158,11 @@ class MediaProcess {
    */
   Status getStatus(void) const { return this->status; }
 
- protected:
+protected:
   T* object;
   Status status;  /// @brief Status of the process.
 
- private:
+private:
   bool stop_req;  /// @brief Stop request.
 };
 

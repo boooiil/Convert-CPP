@@ -14,11 +14,11 @@
 #include "Media.h"
 #include "MediaProcess.h"
 
-/**
- * @brief Media process extension for validating media files.
- */
+ /**
+  * @brief Media process extension for validating media files.
+  */
 class MediaProcessValidate : public MediaProcess<Media> {
- public:
+public:
   /**
    * @brief Construct a new Media Process Validate object.
    *
