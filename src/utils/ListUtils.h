@@ -31,6 +31,20 @@ class ListUtils {
   static std::string join(std::vector<std::string> list,
                           std::string delim = "");
 
+  static std::vector<std::string> toStrVector(char* arr[]);
+  static std::vector<char*> toCharVector(char* arr[]);
+  static std::vector<char> toCharVector(char arr[]);
+
+  /**
+   * @brief Convert a list of strings to a char array.
+   *
+   * Note: The caller is responsible for freeing the memory.
+   *
+   * @param[in] list - The list of strings.
+   * @return char** - The char array.
+   */
+  static char** toCharArray(std::vector<std::string> list);
+
   /**
    * @brief Split a string into a vector of strings.
    *
@@ -40,8 +54,14 @@ class ListUtils {
    */
   static std::vector<std::string> splitv(std::string str,
                                          std::string delim = "");
-
-  static std::vector<std::string> splitv(std::string str, std::regex);
+  /**
+   * @brief Split a string into a vector of strings.
+   *
+   * @param[in] str   - The string to split.
+   * @param[in] delim - The delimiter to split the string with.
+   * @return A list of strings.
+   */
+  static std::vector<std::string> splitv(std::string str, std::regex delim);
 
   template <typename T>
   static bool contains(std::vector<T> list, T item) {
@@ -56,6 +76,15 @@ class ListUtils {
       }
     }
     return false;
+  }
+
+  template <typename T>
+  static std::vector<T> toVector(T* array, int size) {
+    std::vector<T> result;
+    for (int i = 0; i < size; i++) {
+      result.push_back(array[i]);
+    }
+    return result;
   }
 };
 

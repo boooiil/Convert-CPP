@@ -1,6 +1,9 @@
 #include "ListUtils.h"
 
+#include <cstring>
+#include <regex>
 #include <string>
+#include <vector>
 
 std::string ListUtils::join(std::vector<std::string> list, std::string delim) {
   std::string result = "";
@@ -10,6 +13,40 @@ std::string ListUtils::join(std::vector<std::string> list, std::string delim) {
       result += delim;
     }
   }
+  return result;
+}
+
+std::vector<std::string> ListUtils::toStrVector(char* arr[]) {
+  std::vector<std::string> result;
+  for (int i = 0; arr[i] != nullptr; i++) {
+    result.push_back(arr[i]);
+  }
+  return result;
+}
+
+std::vector<char*> ListUtils::toCharVector(char* arr[]) {
+  std::vector<char*> result;
+  for (int i = 0; arr[i] != nullptr; i++) {
+    result.push_back(arr[i]);
+  }
+  return result;
+}
+
+std::vector<char> ListUtils::toCharVector(char arr[]) {
+  std::vector<char> result;
+  for (int i = 0; arr[i] != '\0'; i++) {
+    result.push_back(arr[i]);
+  }
+  return result;
+}
+
+char** ListUtils::toCharArray(std::vector<std::string> list) {
+  char** result = new char* [list.size() + 1];
+  for (int i = 0; i < list.size(); i++) {
+    result[i] = new char[list[i].size() + 1];
+    strcpy(result[i], list[i].c_str());
+  }
+  result[list.size()] = nullptr;
   return result;
 }
 
