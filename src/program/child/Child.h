@@ -3,32 +3,38 @@
 
 #include <nlohmann/json_fwd.hpp>
 #include <queue>
+#include <stduuid/uuid.h>
+#include <string>
+#include <vector>
 
 #include "../generics/JSONSerializableRunner.h"
+#include "../settings/Settings.h"
 #include "./media/Media.h"
 
 class Child : public JSONSerializableRunner {
- public:
+public:
+
+  uuids::uuid id;
   /// @brief Holds current media files being converted.
   std::queue<Media*> converting;
   /// @brief Holds media files that are waiting to be converted.
   std::queue<Media*> pending;
 
   /// @brief Prepares the child for conversion.
-  void prepare(void);
+  void prepare(std::vector<std::string>& args) override;
   ///  @brief Runs the child's conversion process.
-  void run(void);
+  void run(void) override;
   /// @brief Ends the child's conversion process.
-  void end(void);
+  void end(void) override;
 
-  void setEndable(bool);
-  bool isEndable(void);
+  void setEndable(bool) override;
+  bool isEndable(void) override;
 
-  void fromJSON(nlohmann::json);
+  void fromJSON(nlohmann::json) override;
 
-  nlohmann::json toJSON(void);
+  nlohmann::json toJSON(void) override;
 
- private:
+private:
   bool endable;
 };
 

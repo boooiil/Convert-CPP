@@ -5,14 +5,17 @@
 
 #include "../generics/GenericDisplay.h"
 #include "../generics/JSONSerializableRunner.h"
+#include <string>
+#include <vector>
 
 class NTicker : public JSONSerializableRunner {
- public:
+public:
   JSONSerializableRunner* runner;
 
   NTicker(void);
-  void determineNextAction(void);
-  void prepare(void);
+  void determineNextAction(std::vector<std::string>& args);
+  void prepare(std::vector<std::string>& args);
+  //void prepare(ArgumentParser* arguments);
   void run(void);
   void end(void);
 
@@ -22,7 +25,7 @@ class NTicker : public JSONSerializableRunner {
   void fromJSON(nlohmann::json);
   nlohmann::json toJSON(void);
 
- private:
+private:
   bool endable;
   GenericDisplay* display;
   void writeDebug(void);

@@ -1,23 +1,25 @@
 #ifndef PARENT_H
 #define PARENT_H
 
+#include <filesystem>
 #include <nlohmann/json_fwd.hpp>
 #include <queue>
+#include <vector>
 
+#include "../child/Child.h"
 #include "../generics/JSONSerializableRunner.h"
-#include "child/ChildProcess.h"
 
 class Parent : public JSONSerializableRunner {
- public:
+public:
   ~Parent(void);
 
   /// @brief Current converting child processes.
-  std::queue<ChildProcess*> converting;
+  std::queue<Child*> converting;
   /// @brief Pending child processes.
-  std::queue<ChildProcess*> pending;
-
+  std::queue<Child*> pending;
+  //void prepare(ArgumentParser* arguments);
   /// @brief Run preparation tasks for parent.
-  void prepare(void);
+  void prepare(std::vector<std::string>& args);
   ///  @brief Run parent process.
   void run(void);
   ///  @brief End parent process.
@@ -35,7 +37,9 @@ class Parent : public JSONSerializableRunner {
    */
   nlohmann::json toJSON(void);
 
- private:
+  std::vector<std::string> getArgs(std::filesystem::directory_entry file);
+
+private:
   bool endable;
 };
 

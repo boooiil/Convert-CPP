@@ -6,13 +6,14 @@
 #include <nlohmann/json.hpp>
 #include <string>
 #include <thread>
+#include <vector>
 
+#include "../utils/ListUtils.h"
 #include "../utils/logging/LogColor.h"
 #include "../utils/logging/Logger.h"
 #include "generics/GenericRunner.h"
 #include "generics/JSONSerializableRunner.h"
 #include "settings/Settings.h"
-#include "settings/enums/LoggingOptions.h"
 #include "ticker/NTicker.h"
 
 JSONSerializableRunner* Program::ticker = nullptr;
@@ -26,16 +27,21 @@ Program::~Program(void) {
   // this->end();
 }
 
-void Program::prepare() {}
-
-void Program::prepare(int argc, char* argv[]) {
+void Program::prepare(std::vector<std::string>& args) {
   // Program::log = new Log();
-  Program::ticker = new NTicker();
+  EnumToStringFactory::init();
 
   Program::settings = new Settings();
-  Program::settings->init(argc, argv);
+  Program::settings->programOptions->gatherSystemDetails();
 
-  if (!stopFlag) Program::ticker->prepare();
+  Program::ticker = new NTicker();
+  if (!stopFlag) Program::ticker->prepare(args);
+}
+
+void Program::prepare(int argc, char* argv[]) {
+  std::vector<std::string> args = ListUtils::toStrVector(argv);
+
+  Program::prepare(args);
 }
 
 void Program::run() {
@@ -48,8 +54,7 @@ void Program::end(void) {
 
   Program::stopFlag = true;
 
-  if (LoggingOptions::isDebug(
-          Program::settings->argumentParser->loggingFormat.get())) {
+  if (Logger::debug_flag) {
     LOG_DEBUG("Saving debug file.");
 
     std::ofstream oFile("container_debug.json");
@@ -86,7 +91,7 @@ void Program::end(void) {
 
 void Program::setEndable(bool flag) {
   LOG_DEBUG("Program has been set as endable:",
-            Program::stopFlag ? "True" : "False");
+    Program::stopFlag ? "True" : "False");
   Program::stopFlag = flag;
 }
 

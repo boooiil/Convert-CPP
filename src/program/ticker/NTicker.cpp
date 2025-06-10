@@ -2,40 +2,43 @@
 
 #include <chrono>
 #include <thread>
+#include <vector>
 
 #include "../../utils/logging/Logger.h"
-#include "../Program.h"
 #include "../child/Child.h"
 #include "../child/display/ChildDisplay.h"
-#include "../parent/Parent.h"
 #include "../parent/display/ParentDisplay.h"
-#include "../settings/Help.h"
+#include "../parent/Parent.h"
+#include "../Program.h"
 #include "../settings/arguments/ArgumentRegistry.h"
+#include "../settings/arguments/EnumArgument.h"
 #include "../settings/arguments/FlagArgument.h"
 #include "../settings/arguments/IntegerArgument.h"
 #include "../settings/enums/LoggingOptions.h"
+#include "../settings/Help.h"
 #include "nlohmann/json.hpp"
-
-template <typename T>
-typename ArgumentRegistry::getTFn<T> get_t = ArgumentRegistry::get_t<T>;
 
 NTicker::NTicker(void) : endable(true) {
   this->display = nullptr;
   this->runner = nullptr;
 }
 
-void NTicker::determineNextAction(void) {
-  if (get_t<FlagArgument>("-h")->get()) {
+
+void NTicker::determineNextAction(std::vector<std::string>& args) {
+
+  if (Program::settings->programOptions->argumentRegistry->get_t<FlagArgument>("-h")->get()) {
     Help::printHelp();
     Program::stopFlag = true;
-  } else if (get_t<FlagArgument>("-i")->get()) {
+  }
+  else if (Program::settings->programOptions->argumentRegistry->get_t<FlagArgument>("-i")->get()) {
     // print information
-    this->runner->prepare();
+    this->runner->prepare(args);
     this->display->printInformation();
     Program::stopFlag = true;
-  } else {
+  }
+  else {
     // prepare runner
-    this->runner->prepare();
+    this->runner->prepare(args);
   }
   // if (print help) display help
   // if (print information) print information
@@ -45,23 +48,45 @@ void NTicker::determineNextAction(void) {
   // end ticker
 }
 
-void NTicker::prepare(void) {
+//void NTicker::prepare(ArgumentParser* arguments) {
+//  // use parent display
+//  if (arguments->argumentRegistry.get_t<FlagArgument>("-parent")->get()) {
+//    LOG_DEBUG("Running as parent.");
+//    this->display = new ParentDisplay();
+//    this->runner = new Parent();
+//  }
+//  else {
+//    LOG_DEBUG("Running as child.");
+//    this->display = new ChildDisplay();
+//    this->runner = new Child();
+//  }
+//
+//  this->determineNextAction(arguments->args);
+//}
+
+
+void NTicker::prepare(std::vector<std::string>& args) {
   // use parent display
-  if (get_t<FlagArgument>("-parent")->get()) {
+  ArgumentRegistry* program_arg_reg = Program::settings->programOptions->argumentRegistry.get();
+
+  if (program_arg_reg->get_t<FlagArgument>(Command::PARENT)->get()) {
     LOG_DEBUG("Running as parent.");
     this->display = new ParentDisplay();
     this->runner = new Parent();
-  } else {
+  }
+  else {
     LOG_DEBUG("Running as child.");
     this->display = new ChildDisplay();
     this->runner = new Child();
   }
 
-  this->determineNextAction();
+  this->determineNextAction(args);
 }
 
 void NTicker::run(void) {
-  if (get_t<FlagArgument>("-i")->get()) {
+  ArgumentRegistry* program_arg_reg = Program::settings->programOptions->argumentRegistry.get();
+
+  if (program_arg_reg->get_t<FlagArgument>(Command::INFO)->get()) {
     this->display->printInformation();
     return;
   }
@@ -69,18 +94,23 @@ void NTicker::run(void) {
   while (!Program::stopFlag) {
     this->runner->run();
 
-    if (LoggingOptions::isDebug(
-            Program::settings->argumentParser->loggingFormat.get())) {
+    LoggingOptions log_option = program_arg_reg->get_t<EnumArgument<LoggingOptions>>(Command::LOGGINGOPTIONS)->get();
+
+    switch (log_option) {
+    case LoggingOptions::DEBUG:
+    case LoggingOptions::JSON_DEBUG:
       this->display->printDebug();
-    } else if (LoggingOptions::isJSON(
-                   Program::settings->argumentParser->loggingFormat.get())) {
+      break;
+    case LoggingOptions::JSON:
       this->display->printJSON();
-    } else {
+      break;
+    default:
       this->display->print();
+      break;
     }
 
     std::this_thread::sleep_for(
-        std::chrono::milliseconds((int)*get_t<IntegerArgument>("-dr").get()));
+      std::chrono::milliseconds((int)*program_arg_reg->get_t<IntegerArgument>(Command::DISPLAYREFRESH).get()));
   }
   // if (Program::settings->argumentParser->isParent) {
   //   // parent display
@@ -117,7 +147,7 @@ void NTicker::end(void) {
 
 void NTicker::setEndable(bool flag) {
   LOG_DEBUG("Parent has been set as endable:",
-            this->endable ? "True" : "False");
+    this->endable ? "True" : "False");
   this->endable = flag;
 }
 
@@ -134,7 +164,8 @@ nlohmann::json NTicker::toJSON(void) {
 
   if (this->runner == nullptr) {
     program["Runner"] = {};
-  } else {
+  }
+  else {
     program["Runner"] = this->runner->toJSON();
   }
 

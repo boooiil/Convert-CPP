@@ -2,13 +2,16 @@
 #define PROGRAM_H
 
 #include <nlohmann/json.hpp>
+#include <string>
+#include <vector>
 
 #include "../utils/logging/Logger.h"
+#include "generics/JSONSerializable.h"
 #include "generics/JSONSerializableRunner.h"
 #include "settings/Settings.h"
 
-class Program : public JSONSerializableRunner {
- public:
+class Program : public JSONSerializable {
+public:
   static Settings* settings;
   // static Log* log;
   static JSONSerializableRunner* ticker;
@@ -17,7 +20,7 @@ class Program : public JSONSerializableRunner {
   Program(void);
   ~Program(void);
 
-  void prepare(void);
+  void prepare(std::vector<std::string>& args);
   void prepare(int argc, char* argv[]);
   void run(void);
   void end(void);
@@ -28,7 +31,7 @@ class Program : public JSONSerializableRunner {
   void fromJSON(nlohmann::json);
   nlohmann::json toJSON(void);
 
- private:
+private:
   bool endable;
 };
 

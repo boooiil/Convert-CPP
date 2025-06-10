@@ -8,35 +8,65 @@
 #include <vector>
 
 #include "../../utils/DirectoryUtils.h"
-#include "../../utils/TimeUtils.h"
 #include "../../utils/logging/LogColor.h"
 #include "../../utils/logging/Logger.h"
+#include "../../utils/TimeUtils.h"
 #include "../Program.h"
 #include "../settings/arguments/ArgumentRegistry.h"
 #include "../settings/arguments/FlagArgument.h"
 #include "../settings/arguments/IntegerArgument.h"
 #include "../settings/enums/Activity.h"
 #include "../settings/enums/LoggingOptions.h"
+#include "../settings/Settings.h"
 #include "media/Media.h"
 
 std::vector<std::thread> workerThreads;
 
-template <typename T>
-typename ArgumentRegistry::getTFn<T> get_t = ArgumentRegistry::get_t<T>;
+//template <typename T>
+//typename ArgumentRegistry::getTFn<T> get_t = Child::settings->argumentRegistry.get<T>;
 
-void Child::prepare(void) {
+void Child::prepare(std::vector<std::string>& args) {
+  // initialize settings
+
+  std::random_device rd; // Seed for random number generator
+  std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
+  uuids::uuid_random_generator generator(gen); // Pass the generator to uuid_random_generator
+  this->id = generator();
+
+  Program::settings->childOptionsMap[this->id] = new ChildOptions();
+  ChildOptions& childOptions = *Program::settings->childOptionsMap[this->id];
+
+  childOptions.prepare();
+  childOptions.parse(args);
+  childOptions.validate();
+
+  switch (Program::settings->programOptions->argumentRegistry->get_t<BaseArgument<LoggingOptions>>(Command::LOGGINGOPTIONS)->get()) {
+  case LoggingOptions::DEBUG:
+  case LoggingOptions::JSON_DEBUG:
+    Logger::debug_flag = true;
+    break;
+  case LoggingOptions::VERBOSE:
+  case LoggingOptions::JSON_VERBOSE:
+    Logger::debug_flag = true;
+    // set verbose
+    break;
+  default:
+    Logger::debug_flag = false;
+    break;
+  };
+
   std::vector<std::filesystem::directory_entry> files =
-      DirectoryUtils::getFilesInCWDWithExt(std::vector{".mkv", ".avi"});
+    DirectoryUtils::getFilesInDirectory(args[0], std::vector{ ".mkv", ".avi" });
 
   for (std::filesystem::directory_entry file : files) {
     std::string cwd = file.path().parent_path().string();
     std::string filename = file.path().filename().string();
 
-    Media* media = new Media(filename, cwd);
+    Media* media = new Media(this->id, filename, cwd);
     media->file->rename();
 
     if (!std::filesystem::exists(media->file->conversionFolderPath) &&
-        !get_t<FlagArgument>("-i")->get()) {
+      !childOptions.argumentRegistry->get_t<FlagArgument>("-i")->get()) {
       LOG_DEBUG("Creating directory: ", media->file->conversionFolderPath);
       std::filesystem::create_directory(media->file->conversionFolderPath);
     }
@@ -45,11 +75,38 @@ void Child::prepare(void) {
   }
 }
 
+//void Child::prepare(ProcessSettings* settings) {
+//  this->processSettings = settings;
+//
+//  std::vector<std::filesystem::directory_entry> files =
+//    DirectoryUtils::getFilesInDirectory(this->processSettings->cwd, std::vector{ ".mkv", ".avi" });
+//
+//  for (std::filesystem::directory_entry file : files) {
+//    std::string cwd = file.path().parent_path().string();
+//    std::string filename = file.path().filename().string();
+//
+//    Media* media = new Media(filename, cwd);
+//    media->file->rename(this->processSettings);
+//
+//    if (!std::filesystem::exists(media->file->conversionFolderPath) &&
+//      !this->processSettings->argumentParser->argumentRegistry.get_t<FlagArgument>("-i")->get()) {
+//      LOG_DEBUG("Creating directory: ", media->file->conversionFolderPath);
+//      std::filesystem::create_directory(media->file->conversionFolderPath);
+//    }
+//
+//    this->pending.push(media);
+//  }
+//}
+
 void Child::run(void) {
   // once every second
   this->setEndable(false);
   int currentAmount = static_cast<int>(this->converting.size());
-  IntegerArgument* setAmount = get_t<IntegerArgument>("-a").get();
+
+  Program::settings->childOptionsMap[this->id] = new ChildOptions();
+  ChildOptions& childOptions = *Program::settings->childOptionsMap[this->id];
+
+  IntegerArgument* setAmount = childOptions.argumentRegistry->get_t<IntegerArgument>(Command::AMOUNT).get();
 
   LOG_DEBUG(std::to_string(currentAmount), setAmount->toString());
 
@@ -61,14 +118,15 @@ void Child::run(void) {
     // then exit the program
     if (!media->isWaiting()) {
       LOG_DEBUG("Media is not waiting:", media->file->originalFileNameExt,
-                media->getActivity().getName());
+        EnumToStringFactory::get(media->getActivity()).getName());
       if (currentAmount == 0) {
         this->setEndable(true);
         Program::stopFlag = true;
       }
-    } else {
+    }
+    else {
       LOG_DEBUG("Queued media for encoding:", media->file->originalFileNameExt,
-                media->getActivity().getName());
+        EnumToStringFactory::get(media->getActivity()).getName());
       media->setActivity(Activity::WAITING_STATISTICS);
 
       media->started = TimeUtils::getEpoch();
@@ -83,7 +141,7 @@ void Child::run(void) {
   // error if there are more converting than allowed
   if (currentAmount > (int)*setAmount) {
     LOG(LogColor::fgRed(
-        "CURRENT TRANSCODES ARE GREATER THAN THE ALLOWED AMOUNT."));
+      "CURRENT TRANSCODES ARE GREATER THAN THE ALLOWED AMOUNT."));
 
     LOG(LogColor::fgRed("CURRENT ALLOWED AMOUNT: " + setAmount->toString()));
 
@@ -106,19 +164,21 @@ void Child::run(void) {
   while (!this->converting.empty()) {
     Media* media = this->converting.front();
 
-    LOG_DEBUG(media->file->originalFileNameExt, media->getActivity().getName());
+    LOG_DEBUG(media->file->originalFileNameExt, EnumToStringFactory::get(media->getActivity()).getName());
 
     if (!media->isProcessing()) {
+
       LOG_DEBUG("Media is not processing:", media->file->originalFileNameExt,
-                media->getActivity().getName());
-      if (media->isWaitingToStatistics())
+        EnumToStringFactory::get(media->getActivity()).getName());
+
+      if (media->isWaitingToStatistics()) {
         media->doStatistics();
+      }
       else if (media->isWaitingToConvert()) {
         media->buildFFmpegArguments(false);
-
         workerThreads.emplace_back([media]() { media->doConversion(); });
-
-      } else if (media->isWaitingToValidate()) {
+      }
+      else if (media->isWaitingToValidate()) {
         workerThreads.emplace_back([media]() { media->doValidation(); });
       }
     }
@@ -130,8 +190,9 @@ void Child::run(void) {
       LOG_DEBUG("Media ended:", media->file->conversionName);
       this->pending.push(media);
       LOG_DEBUG("pending size after finish:",
-                std::to_string(this->pending.size()));
-    } else {
+        std::to_string(this->pending.size()));
+    }
+    else {
       t_queue.push(media);
     }
     this->converting.pop();
@@ -140,23 +201,25 @@ void Child::run(void) {
   LOG_DEBUG("t_queue size:", std::to_string(t_queue.size()));
   this->converting = t_queue;
 
-  if (Program::settings->argumentParser->loggingFormat.get() ==
-      LoggingOptions::DEBUG) {
-    // Ticker::display->printDebug();
-    // should not need to print in this class
-  } else if (LoggingOptions::isJSON(
-                 Program::settings->argumentParser->loggingFormat)) {
-    // Ticker::display->printJSON();
-    // should not need to print in this class
-  } else {
-    // Ticker::display->print();
-    // should not need to print in this class
-  }
+  //if (this->processSettings->argumentParser->loggingFormat.get() ==
+  //  LoggingOptions::DEBUG) {
+  //  // Ticker::display->printDebug();
+  //  // should not need to print in this class
+  //}
+  //else if (LoggingOptions::isJSON(
+  //  this->processSettings->argumentParser->loggingFormat)) {
+  //  // Ticker::display->printJSON();
+  //  // should not need to print in this class
+  //}
+  //else {
+  //  // Ticker::display->print();
+  //  // should not need to print in this class
+  //}
 }
 
 void Child::end(void) {
   LOG_DEBUG("Ending child runner.");
-  LOG_DEBUG("Expected to delete { pending[], converting[] }.");
+  LOG_DEBUG("Expected to delete { pending[], converting[], settings }.");
   // iterate over running threads and join
   for (auto& t : workerThreads) {
     if (t.joinable()) {
@@ -186,6 +249,11 @@ void Child::end(void) {
 
     delete media;
   }
+
+  /*if (this->processSettings != nullptr) {
+    LOG_DEBUG("Deleting settings.");
+    delete this->processSettings;
+  }*/
 }
 
 void Child::setEndable(bool flag) {
@@ -216,7 +284,7 @@ nlohmann::json Child::toJSON() {
     nlohmann::json mediaVideoDebug;
     nlohmann::json mediaWorkingDebug;
 
-    mediaDebug["activity"] = media->getActivity().getName();
+    mediaDebug["activity"] = EnumToStringFactory::get(media->getActivity()).getName();
     mediaDebug["started"] = media->started;
     mediaDebug["ended"] = media->ended;
     // this might not work
@@ -274,7 +342,7 @@ nlohmann::json Child::toJSON() {
     nlohmann::json mediaVideoDebug;
     nlohmann::json mediaWorkingDebug;
 
-    mediaDebug["activity"] = media->getActivity().getName();
+    mediaDebug["activity"] = EnumToStringFactory::get(media->getActivity()).getName();
     mediaDebug["started"] = media->started;
     mediaDebug["ended"] = media->ended;
     mediaDebug["ffmpegArguments"] = media->ffmpegArguments;
