@@ -43,7 +43,7 @@ void MediaProcessConversion::parse(std::string data) {
       std::regex::icase)) {
     // if the user wants to use hardware encoding (nvenc, amf, qsv)
 
-    FlagArgument& hweFlag = *ArgumentRegistry::get_t<FlagArgument>("-hwe");
+    FlagArgument& hweFlag = *Program::settings->childOptionsMap[this->object->id]->argumentRegistry->get_t<FlagArgument>(Command::HARDWAREENCODE);
 
 
     if (hweFlag) {
