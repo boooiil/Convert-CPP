@@ -4,15 +4,16 @@
 #include <string>
 #include <type_traits>
 
+#include "../../../utils/logging/Logger.h"
 #include "../enums/EnumToStringFactory.h"
 #include "BaseArgument.h"
 
 template <EnumType T>
-class EnumArgument : public BaseArgument <T> {
-public:
+class EnumArgument : public BaseArgument<T> {
+ public:
   EnumArgument(std::string _helpMessage, std::string _flag,
-    std::string _longFlag, T data) :
-    BaseArgument<T>(_helpMessage, _flag, _longFlag, data) {};
+               std::string _longFlag, T data)
+      : BaseArgument<T>(_helpMessage, _flag, _longFlag, data) {};
 
   ~EnumArgument(void) {};
 
@@ -35,4 +36,4 @@ public:
     return static_cast<int>(this->value) != 0;
   };
 };
-#endif // !ENUM_ARGUMENT_H
+#endif  // !ENUM_ARGUMENT_H

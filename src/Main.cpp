@@ -1,8 +1,9 @@
 #ifdef _WIN32
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
-#include <stdlib.h>
 #include <windows.h>
+
+#include <cstdlib>
 
 #include "./utils/signals/WindowsSignalHandler.h"
 
@@ -23,6 +24,14 @@ using SignalHandler = UnixSignalHandler;
 /**
  * WALK AWAY NOTES:
  *
+ * We are creating a lot of memory by allocating for each new
+ * supported codec (BaseContainer). We should probably make a registry of
+ * supported video, audio, and subtitle codecs that we can pull from instead of
+ * creating new instances.
+ *
+ * this also lets us use equality using pointer addresses when validating, which
+ * can be fun
+ *
  * add option for modifying audio codec
  * add option for modifying audio channels
  *
@@ -33,6 +42,23 @@ using SignalHandler = UnixSignalHandler;
  * Determine how to handle a parent class and how we
  * will be storing the data
  *
+ */
+
+/**
+ * Why are we looking for an external while when using convert?
+ *
+ * Why not just use a subdir flag or something such that -subdir 1 or equivalent
+ * recursively searches? This would let us not use a parent/child method for
+ * handling the processes.
+ *
+ * Pros:
+ *  - Do not need to create a separate definition to handle the parent objects.
+ *  - Media rename already handles adjusting paths for directories so there is
+ * no additional consideration.
+ *  - Do not need to create a threaded process for each parent-child process.
+ * (we would have 1*amount threads for convert and 1*amount threads for parent)
+ * Cons:
+ *  - ??
  */
 
 /**
@@ -50,7 +76,7 @@ using SignalHandler = UnixSignalHandler;
  * @param argv Argument values
  * @return int
  */
-int main(int argc, char* argv[]) {
+auto main(int argc, char* argv[]) -> int {
 #ifdef _DEBUG
 #define new new (_NORMAL_BLOCK, __FILE__, __LINE__)
 

@@ -4,18 +4,21 @@
 #include <cassert>
 #include <string>
 
+#include "../../../utils/logging/Logger.h"
 #include "GenericArgument.h"
 
 template <typename T>
 class BaseArgument : public GenericArgument {
- public:
-  BaseArgument(std::string _flag, std::string _longFlag,
-               std::string _helpMessage, T data)
-      : GenericArgument(),
-        helpMessage(_helpMessage),
-        flag(_flag),
-        longFlag(_longFlag),
-        value(data) {
+public:
+  BaseArgument(std::string _helpMessage, std::string _flag,
+    std::string _longFlag, T data)
+    : GenericArgument(),
+    helpMessage(_helpMessage),
+    flag(_flag),
+    longFlag(_longFlag),
+    value(data) {
+    LOG("Creating BaseArgument with flag: " + _flag +
+      ", longFlag: " + _longFlag + ", helpMessage: " + _helpMessage);
     assert(_flag[0] == '-');
     assert(_longFlag[0] == '-');
   }
@@ -41,7 +44,7 @@ class BaseArgument : public GenericArgument {
 
   virtual operator T(void) const { return value; };
 
- protected:
+protected:
   /// @brief Help message for the argument.
   std::string helpMessage;
   std::string flag;

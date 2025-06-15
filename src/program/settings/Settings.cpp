@@ -150,8 +150,8 @@ void Settings::init(std::vector<std::string>& args) {
   //this->subtitleCodecRegistry->add(SubtitleCodec::WEBVTT, "webvtt", "WebVTT", "WebVTT subtitle codec");
   //this->subtitleCodecRegistry->add(SubtitleCodec::MOV_TEXT, "mov", "QuickTime (MOV)");
 
-  LOG_DEBUG("Init settings in CWD:", args[0]);
   this->cwd = args[0];
+  LOG_DEBUG("Init settings in CWD:", this->cwd);
 
   LOG_DEBUG("Creating program options object.");
   this->programOptions->prepare();

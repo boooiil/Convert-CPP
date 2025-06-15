@@ -1,6 +1,10 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+#include <stduuid/uuid.h>
+
+#include <nlohmann/json_fwd.hpp>
+
 #include "enums/Activity.h"
 #include "enums/EnumToStringFactory.h"
 #include "enums/EnumToStringRegistry.h"
@@ -8,11 +12,9 @@
 #include "options/ChildOptions.h"
 #include "options/ParentOptions.h"
 #include "options/ProgramOptions.h"
-#include <nlohmann/json_fwd.hpp>
-#include <stduuid/uuid.h>
 
 class Settings : public JSONSerializable {
-public:
+ public:
   Settings(void);
   ~Settings(void);
 
@@ -26,7 +28,8 @@ public:
   EnumToStringRegistry<LoggingOptions>* loggingFormatRegistry;
   EnumToStringRegistry<SubtitleCodec>* subtitleCodecRegistry;*/
 
-  // logging, parent, refresh, hwa, hwd, hwe, platform, supported enc, supported hwacc
+  // logging, parent, refresh, hwa, hwd, hwe, platform, supported enc, supported
+  // hwacc
   ProgramOptions* programOptions;
   // amount
   ParentOptions* parentOptions;
