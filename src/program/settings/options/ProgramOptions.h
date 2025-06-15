@@ -17,11 +17,13 @@
 #include "../enums/StringEnumDataHolder.h"
 
 class ProgramOptions : public JSONSerializable {
-public:
+ public:
   ProgramOptions(void);
   ~ProgramOptions(void);
 
-  std::unique_ptr<ArgumentRegistry> argumentRegistry;
+  // TODO dtor deletion
+  ArgumentRegistry* argumentRegistry;
+  std::vector<std::string> i_args;
 
   /// @brief The current operating system of the user's machine
   Platform platform;
@@ -45,6 +47,7 @@ public:
   void prepare(void);
   void parse(std::vector<std::string> args);
   void validate(void);
+  void invalidArgument(std::string arg);
   void gatherSystemDetails(void);
 
   void fromJSON(nlohmann::json) override;

@@ -11,15 +11,15 @@
 #include "nlohmann/json_fwd.hpp"
 
 class ChildOptions : public JSONSerializable {
-
-public:
+ public:
   ChildOptions(void);
   ~ChildOptions(void);
 
   Encoders runningEncoder;
   HWAccelerators runningHWAccel;
 
-  std::unique_ptr<ArgumentRegistry> argumentRegistry;
+  // TODO dtor deletion
+  ArgumentRegistry* argumentRegistry;
   std::vector<std::string> i_args;
   std::string CWD;
 
@@ -30,7 +30,6 @@ public:
 
   void fromJSON(const nlohmann::json json) override;
   nlohmann::json toJSON(void) override;
-
 };
 
-#endif // !CHILD_OPTIONS_H
+#endif  // !CHILD_OPTIONS_H

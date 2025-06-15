@@ -24,31 +24,36 @@
 #include <thread>
 #include <vector>
 
-#include "ProgramOptions.h"
 #include "../../../utils/ListUtils.h"
 #include "../../../utils/RegexUtils.h"
+#include "../../../utils/StringUtils.h"
+#include "../../../utils/logging/LogColor.h"
 #include "../../../utils/logging/Logger.h"
 #include "../../Program.h"
+#include "../arguments/EnumArgument.h"
+#include "../arguments/FlagArgument.h"
+#include "../arguments/IntegerArgument.h"
 #include "../enums/Encoders.h"
 #include "../enums/GPUProviders.h"
 #include "../enums/HWAccelerators.h"
 #include "../enums/Platform.h"
 #include "../enums/StringEnumDataHolder.h"
 #include "../enums/Tunes.h"
+#include "ProgramOptions.h"
 
 // TODO: fill this out, rm ApplicationEncodingDecision
 
 ProgramOptions::ProgramOptions()
   : GPU_Providers({}),
+  argumentRegistry(new ArgumentRegistry()),
   preferredGPUProvider(GPUProviders::INVALID),
   platform(Platform::INVALID) {
-
   ProgramOptions::tuneRegex = { std::regex(R"(film)", std::regex::icase),
-                                std::regex(R"(anim)", std::regex::icase),
-                                std::regex(R"(grain)", std::regex::icase) };
+                               std::regex(R"(anim)", std::regex::icase),
+                               std::regex(R"(grain)", std::regex::icase) };
 
   ProgramOptions::tuneAssociations = { Tunes::FILM, Tunes::ANIMATION,
-                                       Tunes::GRAIN };
+                                      Tunes::GRAIN };
 };
 
 ProgramOptions::~ProgramOptions(void) {};
@@ -147,7 +152,8 @@ void ProgramOptions::gatherSystemDetails(void) {
 
   LOG_DEBUG("Platform:", EnumToStringFactory::get(this->platform).getName());
 
-  LOG_DEBUG("Preferred GPU Provider:", EnumToStringFactory::get(this->preferredGPUProvider).getName());
+  LOG_DEBUG("Preferred GPU Provider:",
+    EnumToStringFactory::get(this->preferredGPUProvider).getName());
 
   if (ListUtils::contains(this->GPU_Providers, GPUProviders::NVIDIA)) {
     // set encoders
@@ -188,11 +194,13 @@ void ProgramOptions::gatherSystemDetails(void) {
   supportedEncoders.push_back(Encoders::HEVC);
 
   for (Encoders encoder : supportedEncoders) {
-    LOG_DEBUG("Supported Encoder:", EnumToStringFactory::get(encoder).getName());
+    LOG_DEBUG("Supported Encoder:",
+      EnumToStringFactory::get(encoder).getName());
   }
 
   for (HWAccelerators hwAccel : supportedHWAccel) {
-    LOG_DEBUG("Supported HW Accel:", EnumToStringFactory::get(hwAccel).getName());
+    LOG_DEBUG("Supported HW Accel:",
+      EnumToStringFactory::get(hwAccel).getName());
   }
 
   // for (Decoders::Codec decoder : supportedDecoders) {
@@ -201,25 +209,131 @@ void ProgramOptions::gatherSystemDetails(void) {
   // }
 }
 
-void ProgramOptions::prepare(void) {}
+void ProgramOptions::prepare(void) {
+  /**
+   * [x] logging
+   * [x] parent
+   * [x] refresh
+   * [x] hwa
+   * [x] hwd
+   * [x] platform
+   * [x] supported enc
+   * [x] supported hwacc
+   *
+   */
+   // logging, parent, refresh, hwa, hwd, hwe, platform, supported enc, supported
+   // hwacc
 
-void ProgramOptions::parse(std::vector<std::string> args) {}
+  argumentRegistry->add(Command::DISPLAYREFRESH,
+    new IntegerArgument("Display refresh rate in ms", "-dr",
+      "--displayrefresh", 1000));
+  argumentRegistry->add(
+    Command::HARDWAREACCEL,
+    new EnumArgument<HWAccelerators>("Hardware accelerator to use", "-hwa",
+      "--hwaccel", HWAccelerators::INVALID));
+  argumentRegistry->add(Command::HARDWAREDECODE,
+    new FlagArgument("Use hardware decoding if available",
+      "-hwd", "--hardwaredecode", true));
+  argumentRegistry->add(Command::HARDWAREENCODE,
+    new FlagArgument("Use hardware encoding if available",
+      "-hwe", "--hardwareencode", false));
+  argumentRegistry->add(
+    Command::HELP,
+    new FlagArgument("Print the help message", "-h", "--help", false));
+  argumentRegistry->add(
+    Command::INFO, new FlagArgument("Print information about the input file",
+      "-i", "--info", false));
+  argumentRegistry->add(Command::LOGGINGOPTIONS,
+    new EnumArgument<LoggingOptions>(
+      "Logging format to use", "-lf", "--loggingformat",
+      LoggingOptions::DEFAULT));
+
+  argumentRegistry->add(
+    Command::PARENT,
+    new FlagArgument("Run as parent process", "-parent", "--parent", false));
+}
+
+void ProgramOptions::parse(std::vector<std::string> args) {
+  this->i_args = args;
+
+  if (args.size() < 2) {
+    LOG_DEBUG("No arguments supplied to the parent options.");
+  }
+
+  LOG_DEBUG("Parsing supplied arguments: " + ListUtils::join(args, ", "));
+
+  // skip the first argument (the program name)
+  for (int i = 1; i < args.size(); i++) {
+    LOG_DEBUG("Parsing argument:", args[i]);
+
+    // get the lowercase version of the argument
+    std::string option = StringUtils::toLowerCase(args[i]);
+
+    if (!this->argumentRegistry->has(option)) {
+      LOG_DEBUG("Tried to parse an argument that was not registered: " + option);
+      continue;
+    }
+
+    // check if the argument has been registered
+    GenericArgument* argument = this->argumentRegistry->get(option);
+
+    // if the argument is not registered, print an error and continue
+    if (argument == nullptr) {
+      invalidArgument(args[i] + " was not registered.");
+      continue;
+    }
+
+    // parse argument as a flag argument
+    FlagArgument* flagArgument = dynamic_cast<FlagArgument*>(argument);
+
+    // if the argument is a flag argument, parse it as such
+    // we do this since we do not need to check the next argument
+    // for a parameter, we just set it to true
+    if (flagArgument != nullptr) {
+      flagArgument->parse("true");
+      continue;
+    }
+    // if the argument is not a flag argument, it must be a complex argument
+    else {
+      // check if the next argument is a parameter
+      argument->parse(args[++i]);
+
+      // if the supplied parameter is not valid, print an error
+      if (argument->isErrored()) {
+        invalidArgument(std::string(args[i - 1]) +
+          " was provided invalid parameter " +
+          std::string(args[i]));
+        LOG(argument->getHelpMessage());
+        continue;
+      }
+    }
+  }
+}
 
 void ProgramOptions::validate(void) {}
 
-void ProgramOptions::fromJSON(nlohmann::json json) {
-  void;
+void ProgramOptions::invalidArgument(std::string arg) {
+  LOG(LogColor::fgRed("Invalid argument " + arg));
+  // Program::stopFlag = true;
 }
+
+void ProgramOptions::fromJSON(nlohmann::json json) { void; }
 
 nlohmann::json ProgramOptions::toJSON() {
   nlohmann::json programSettings;
+
+  programSettings["arguments"] = this->argumentRegistry->toJSON();
+
+  programSettings["i_args"] = this->i_args;
 
   programSettings["supported_encoders"] = nlohmann::json::array();
   programSettings["supported_decoders"] = nlohmann::json::array();
   programSettings["supported_hw_accel"] = nlohmann::json::array();
 
-  programSettings["platform"] = EnumToStringFactory::get(this->platform).getName();
-  programSettings["gpu_provider"] = EnumToStringFactory::get(this->preferredGPUProvider).getName();
+  programSettings["platform"] =
+    EnumToStringFactory::get(this->platform).getName();
+  programSettings["gpu_provider"] =
+    EnumToStringFactory::get(this->preferredGPUProvider).getName();
 
   for (auto encoder : this->supportedEncoders) {
     std::string enc_name = EnumToStringFactory::get(encoder).getName();
