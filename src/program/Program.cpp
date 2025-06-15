@@ -14,6 +14,7 @@
 #include "generics/GenericRunner.h"
 #include "generics/JSONSerializableRunner.h"
 #include "settings/Settings.h"
+#include "settings/arguments/BaseArgument.h"
 #include "ticker/NTicker.h"
 
 JSONSerializableRunner* Program::ticker = nullptr;
@@ -32,7 +33,28 @@ void Program::prepare(std::vector<std::string>& args) {
   EnumToStringFactory::init();
 
   Program::settings = new Settings();
+  Program::settings->programOptions->prepare();
+  Program::settings->programOptions->parse(args);
+
+  switch (Program::settings->programOptions->argumentRegistry
+              ->get_t<BaseArgument<LoggingOptions>>(Command::LOGGINGOPTIONS)
+              ->get()) {
+    case LoggingOptions::DEBUG:
+    case LoggingOptions::JSON_DEBUG:
+      Logger::debug_flag = true;
+      break;
+    case LoggingOptions::VERBOSE:
+    case LoggingOptions::JSON_VERBOSE:
+      Logger::debug_flag = true;
+      // set verbose
+      break;
+    default:
+      Logger::debug_flag = false;
+      break;
+  };
+
   Program::settings->programOptions->gatherSystemDetails();
+  Program::settings->programOptions->validate();
 
   Program::ticker = new NTicker();
   if (!stopFlag) Program::ticker->prepare(args);
@@ -40,6 +62,9 @@ void Program::prepare(std::vector<std::string>& args) {
 
 void Program::prepare(int argc, char* argv[]) {
   std::vector<std::string> args = ListUtils::toStrVector(argv);
+
+  args.erase(args.begin());
+  args.insert(args.begin(), std::filesystem::current_path().string());
 
   Program::prepare(args);
 }
@@ -91,7 +116,7 @@ void Program::end(void) {
 
 void Program::setEndable(bool flag) {
   LOG_DEBUG("Program has been set as endable:",
-    Program::stopFlag ? "True" : "False");
+            Program::stopFlag ? "True" : "False");
   Program::stopFlag = flag;
 }
 
