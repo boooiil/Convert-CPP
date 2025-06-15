@@ -75,7 +75,7 @@ void Program::run() {
 
 void Program::end(void) {
   LOG_DEBUG("Ending program.");
-  LOG_DEBUG("Expected to delete { log, ticker, settings }.");
+  LOG_DEBUG("Expected to delete { log, ticker, settings, enum registry }.");
 
   Program::stopFlag = true;
 
@@ -110,6 +110,7 @@ void Program::end(void) {
     delete Program::settings;
   }
 
+  EnumToStringFactory::end();
   // TODO: end needs to exit program
   // add ticker
 }
