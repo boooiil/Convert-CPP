@@ -13,49 +13,59 @@
 // {};
 
 std::unordered_map<std::string, Command> ArgumentRegistry::flag_to_command_map =
-{ {"-a", Command::AMOUNT},
- {"--amount", Command::AMOUNT},
- {"-ac", Command::AUDIOCHANNELS},
- {"--audiochannels", Command::AUDIOCHANNELS},
- {"-aco", Command::AUDIOCODEC},
- {"--audiocodec", Command::AUDIOCODEC},
- {"-as", Command::AUDIOSTREAMS},
- {"--audiostreams", Command::AUDIOSTREAMS},
- {"-b", Command::BITRATE},
- {"--bitrate", Command::BITRATE},
- {"-c", Command::CROP},
- {"--crop", Command::CROP},
- {"-co", Command::CONSTRAIN},
- {"--constrain", Command::CONSTRAIN},
- {"-crf", Command::CRF},
- {"--crf", Command::CRF},
- {"-dr", Command::DISPLAYREFRESH},
- {"--displayrefresh", Command::DISPLAYREFRESH},
- {"-e", Command::ENCODER},
- {"--encoder", Command::ENCODER},
- {"-h", Command::HELP},
- {"--help", Command::HELP},
- {"-hwd", Command::HARDWAREDECODE},
- {"--hardwaredecode", Command::HARDWAREDECODE},
- {"-hwe", Command::HARDWAREENCODE},
- {"--hardwareencode", Command::HARDWAREENCODE},
- {"-i", Command::INFO},
- {"--info", Command::INFO},
- {"-lf", Command::LOGGINGOPTIONS},
- {"--loggingoptions", Command::LOGGINGOPTIONS},
- {"-o", Command::OVERWRITE},
- {"--overwrite", Command::OVERWRITE},
- {"-p", Command::PARENT},
- {"--parent", Command::PARENT},
- {"-ss", Command::START},
- {"--start", Command::START},
- {"-tr", Command::TRIM},
- {"--trim", Command::TRIM} };
+    {{"-a", Command::AMOUNT},
+     {"--amount", Command::AMOUNT},
+     {"-ac", Command::AUDIOCHANNELS},
+     {"--audiochannels", Command::AUDIOCHANNELS},
+     {"-aco", Command::AUDIOCODEC},
+     {"--audiocodec", Command::AUDIOCODEC},
+     {"-as", Command::AUDIOSTREAMS},
+     {"--audiostreams", Command::AUDIOSTREAMS},
+     {"-b", Command::BITRATE},
+     {"--bitrate", Command::BITRATE},
+     {"-c", Command::CROP},
+     {"--crop", Command::CROP},
+     {"-co", Command::CONSTRAIN},
+     {"--constrain", Command::CONSTRAIN},
+     {"-crf", Command::CRF},
+     {"--crf", Command::CRF},
+     {"-dr", Command::DISPLAYREFRESH},
+     {"--displayrefresh", Command::DISPLAYREFRESH},
+     {"-e", Command::ENCODER},
+     {"--encoder", Command::ENCODER},
+     {"-h", Command::HELP},
+     {"--help", Command::HELP},
+     {"-hwd", Command::HARDWAREDECODE},
+     {"--hardwaredecode", Command::HARDWAREDECODE},
+     {"-hwe", Command::HARDWAREENCODE},
+     {"--hardwareencode", Command::HARDWAREENCODE},
+     {"-i", Command::INFO},
+     {"--info", Command::INFO},
+     {"-lf", Command::LOGGINGOPTIONS},
+     {"--loggingoptions", Command::LOGGINGOPTIONS},
+     {"-o", Command::OVERWRITE},
+     {"--overwrite", Command::OVERWRITE},
+     {"-p", Command::PARENT},
+     {"--parent", Command::PARENT},
+     {"-ss", Command::START},
+     {"--start", Command::START},
+     {"-tr", Command::TRIM},
+     {"--trim", Command::TRIM}};
+
+ArgumentRegistry::~ArgumentRegistry(void) {
+  LOG("Destroying ArgumentRegistry...");
+  LOG("Expecting to destroy { GenericArgument }");
+  for (auto& [command, argument] : this->arguments) {
+    if (argument != nullptr) {
+      delete argument;
+    }
+  }
+}
 
 void ArgumentRegistry::add(std::string flag, GenericArgument* argument) {
   if (flag_to_command_map.find(flag) == flag_to_command_map.end()) {
     throw std::invalid_argument("Tried to add flag: '" + flag +
-      "'that does not exist.");
+                                "'that does not exist.");
     return;
   }
 
@@ -69,7 +79,7 @@ void ArgumentRegistry::add(Command flag, GenericArgument* argument) {
 void ArgumentRegistry::remove(std::string flag) {
   if (flag_to_command_map.find(flag) == flag_to_command_map.end()) {
     throw std::invalid_argument("Tried to remove flag: '" + flag +
-      "'that does not exist.");
+                                "'that does not exist.");
     return;
   }
 
@@ -81,7 +91,7 @@ void ArgumentRegistry::remove(Command flag) { arguments.erase(flag); }
 void ArgumentRegistry::update(std::string flag, GenericArgument* argument) {
   if (flag_to_command_map.find(flag) == flag_to_command_map.end()) {
     throw std::invalid_argument("Tried to update flag: '" + flag +
-      "'that does not exist.");
+                                "'that does not exist.");
     return;
   }
 
@@ -128,7 +138,6 @@ bool ArgumentRegistry::has(std::string flag) const {
   Command command = flag_to_command_map.at(flag);
 
   return arguments.contains(command);
-
 }
 
 bool ArgumentRegistry::has(Command flag) const {

@@ -12,7 +12,8 @@
 #include "GenericArgument.h"
 
 class ArgumentRegistry : public JSONSerializable {
-public:
+ public:
+  ~ArgumentRegistry(void);
   void add(std::string flag, GenericArgument* argument);
   void add(Command, GenericArgument* argument);
   void remove(std::string flag);
@@ -25,13 +26,13 @@ public:
   const std::unordered_map<Command, GenericArgument*> get_all();
 
   const std::unordered_map<std::string, Command> get_flag_to_command_map()
-    const;
+      const;
 
   template <typename T>
   T* get_t(std::string flag) {
     if (flag_to_command_map.find(flag) == flag_to_command_map.end()) {
       throw std::invalid_argument("Tried to get flag: '" + flag +
-        "'that does not exist.");
+                                  "'that does not exist.");
       return nullptr;
     }
 
@@ -69,7 +70,7 @@ public:
   void fromJSON(const nlohmann::json json) override;
   nlohmann::json toJSON(void);
 
-private:
+ private:
   std::unordered_map<Command, GenericArgument*> arguments;
   static std::unordered_map<std::string, Command> flag_to_command_map;
 };

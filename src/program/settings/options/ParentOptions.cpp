@@ -1,8 +1,8 @@
 #include "ParentOptions.h"
 
+#include "../../../utils/StringUtils.h"
 #include "../../../utils/logging/LogColor.h"
 #include "../../../utils/logging/Logger.h"
-#include "../../../utils/StringUtils.h"
 #include "../../Program.h"
 #include "../arguments/FlagArgument.h"
 #include "../arguments/IntegerArgument.h"
@@ -10,6 +10,11 @@
 ParentOptions::ParentOptions(void) : argumentRegistry(new ArgumentRegistry()) {}
 
 ParentOptions::~ParentOptions(void) {
+  LOG("Destroying ParentOptions...");
+  LOG("Expecting to destroy { ArgumentRegistry }");
+  if (this->argumentRegistry != nullptr) {
+    delete this->argumentRegistry;
+  }
   // Destructor
 }
 
@@ -18,8 +23,8 @@ void ParentOptions::prepare(void) {
   // amount
 
   argumentRegistry->add(
-    Command::AMOUNT,
-    new IntegerArgument("Amount of media to process", "-a", "--amount", 1));
+      Command::AMOUNT,
+      new IntegerArgument("Amount of media to process", "-a", "--amount", 1));
 }
 
 void ParentOptions::parse(std::vector<std::string>& args) {
@@ -61,8 +66,8 @@ void ParentOptions::parse(std::vector<std::string>& args) {
       // if the supplied parameter is not valid, print an error
       if (argument->isErrored()) {
         invalidArgument(std::string(args[i - 1]) +
-          " was provided invalid parameter " +
-          std::string(args[i]));
+                        " was provided invalid parameter " +
+                        std::string(args[i]));
         LOG(argument->getHelpMessage());
         continue;
       }

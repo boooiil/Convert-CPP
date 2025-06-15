@@ -44,19 +44,25 @@
 // TODO: fill this out, rm ApplicationEncodingDecision
 
 ProgramOptions::ProgramOptions()
-  : GPU_Providers({}),
-  argumentRegistry(new ArgumentRegistry()),
-  preferredGPUProvider(GPUProviders::INVALID),
-  platform(Platform::INVALID) {
-  ProgramOptions::tuneRegex = { std::regex(R"(film)", std::regex::icase),
+    : GPU_Providers({}),
+      argumentRegistry(new ArgumentRegistry()),
+      preferredGPUProvider(GPUProviders::INVALID),
+      platform(Platform::INVALID) {
+  ProgramOptions::tuneRegex = {std::regex(R"(film)", std::regex::icase),
                                std::regex(R"(anim)", std::regex::icase),
-                               std::regex(R"(grain)", std::regex::icase) };
+                               std::regex(R"(grain)", std::regex::icase)};
 
-  ProgramOptions::tuneAssociations = { Tunes::FILM, Tunes::ANIMATION,
-                                      Tunes::GRAIN };
+  ProgramOptions::tuneAssociations = {Tunes::FILM, Tunes::ANIMATION,
+                                      Tunes::GRAIN};
 };
 
-ProgramOptions::~ProgramOptions(void) {};
+ProgramOptions::~ProgramOptions(void) {
+  LOG("Destroying ProgramOptions...");
+  LOG("Expecting to destroy { ArgumentRegistry }");
+  if (this->argumentRegistry != nullptr) {
+    delete this->argumentRegistry;
+  }
+};
 
 void ProgramOptions::gatherSystemDetails(void) {
 #ifdef _WIN32
@@ -67,14 +73,14 @@ void ProgramOptions::gatherSystemDetails(void) {
 
   // Open pipe to file
   std::unique_ptr<FILE, decltype(&pclose)> pipe(
-    popen("wmic path win32_VideoController get name", "r"), pclose);
+      popen("wmic path win32_VideoController get name", "r"), pclose);
   if (!pipe) {
     throw std::runtime_error("popen() failed!");
   }
 
   // Read from pipe
   while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) !=
-    nullptr) {
+         nullptr) {
     result += buffer.data();
   }
 
@@ -104,7 +110,7 @@ void ProgramOptions::gatherSystemDetails(void) {
 
   // Open pipe to file
   std::unique_ptr<FILE, decltype(&pclose)> pipe(popen("lspci | grep VGA", "r"),
-    pclose);
+                                                pclose);
   if (!pipe) {
     throw std::runtime_error("popen() failed!");
   }
@@ -139,21 +145,18 @@ void ProgramOptions::gatherSystemDetails(void) {
 
   if (ListUtils::contains(this->GPU_Providers, GPUProviders::NVIDIA)) {
     this->preferredGPUProvider = GPUProviders::NVIDIA;
-  }
-  else if (ListUtils::contains(this->GPU_Providers, GPUProviders::INTEL)) {
+  } else if (ListUtils::contains(this->GPU_Providers, GPUProviders::INTEL)) {
     this->preferredGPUProvider = GPUProviders::INTEL;
-  }
-  else if (ListUtils::contains(this->GPU_Providers, GPUProviders::AMD)) {
+  } else if (ListUtils::contains(this->GPU_Providers, GPUProviders::AMD)) {
     this->preferredGPUProvider = GPUProviders::AMD;
-  }
-  else {
+  } else {
     this->preferredGPUProvider = GPUProviders::INVALID;
   }
 
   LOG_DEBUG("Platform:", EnumToStringFactory::get(this->platform).getName());
 
   LOG_DEBUG("Preferred GPU Provider:",
-    EnumToStringFactory::get(this->preferredGPUProvider).getName());
+            EnumToStringFactory::get(this->preferredGPUProvider).getName());
 
   if (ListUtils::contains(this->GPU_Providers, GPUProviders::NVIDIA)) {
     // set encoders
@@ -195,12 +198,12 @@ void ProgramOptions::gatherSystemDetails(void) {
 
   for (Encoders encoder : supportedEncoders) {
     LOG_DEBUG("Supported Encoder:",
-      EnumToStringFactory::get(encoder).getName());
+              EnumToStringFactory::get(encoder).getName());
   }
 
   for (HWAccelerators hwAccel : supportedHWAccel) {
     LOG_DEBUG("Supported HW Accel:",
-      EnumToStringFactory::get(hwAccel).getName());
+              EnumToStringFactory::get(hwAccel).getName());
   }
 
   // for (Decoders::Codec decoder : supportedDecoders) {
@@ -221,43 +224,43 @@ void ProgramOptions::prepare(void) {
    * [x] supported hwacc
    *
    */
-   // logging, parent, refresh, hwa, hwd, hwe, platform, supported enc, supported
-   // hwacc
+  // logging, parent, refresh, hwa, hwd, hwe, platform, supported enc, supported
+  // hwacc
 
   argumentRegistry->add(Command::DISPLAYREFRESH,
-    new IntegerArgument("Display refresh rate in ms", "-dr",
-      "--displayrefresh", 1000));
+                        new IntegerArgument("Display refresh rate in ms", "-dr",
+                                            "--displayrefresh", 1000));
   argumentRegistry->add(
-    Command::HARDWAREACCEL,
-    new EnumArgument<HWAccelerators>("Hardware accelerator to use", "-hwa",
-      "--hwaccel", HWAccelerators::INVALID));
+      Command::HARDWAREACCEL,
+      new EnumArgument<HWAccelerators>("Hardware accelerator to use", "-hwa",
+                                       "--hwaccel", HWAccelerators::INVALID));
   argumentRegistry->add(Command::HARDWAREDECODE,
-    new FlagArgument("Use hardware decoding if available",
-      "-hwd", "--hardwaredecode", true));
+                        new FlagArgument("Use hardware decoding if available",
+                                         "-hwd", "--hardwaredecode", true));
   argumentRegistry->add(Command::HARDWAREENCODE,
-    new FlagArgument("Use hardware encoding if available",
-      "-hwe", "--hardwareencode", false));
+                        new FlagArgument("Use hardware encoding if available",
+                                         "-hwe", "--hardwareencode", false));
   argumentRegistry->add(
-    Command::HELP,
-    new FlagArgument("Print the help message", "-h", "--help", false));
+      Command::HELP,
+      new FlagArgument("Print the help message", "-h", "--help", false));
   argumentRegistry->add(
-    Command::INFO, new FlagArgument("Print information about the input file",
-      "-i", "--info", false));
+      Command::INFO, new FlagArgument("Print information about the input file",
+                                      "-i", "--info", false));
   argumentRegistry->add(Command::LOGGINGOPTIONS,
-    new EnumArgument<LoggingOptions>(
-      "Logging format to use", "-lf", "--loggingformat",
-      LoggingOptions::DEFAULT));
+                        new EnumArgument<LoggingOptions>(
+                            "Logging format to use", "-lf", "--loggingformat",
+                            LoggingOptions::DEFAULT));
 
   argumentRegistry->add(
-    Command::PARENT,
-    new FlagArgument("Run as parent process", "-parent", "--parent", false));
+      Command::PARENT,
+      new FlagArgument("Run as parent process", "-parent", "--parent", false));
 }
 
 void ProgramOptions::parse(std::vector<std::string> args) {
   this->i_args = args;
 
   if (args.size() < 2) {
-    LOG_DEBUG("No arguments supplied to the parent options.");
+    LOG_DEBUG("No arguments supplied to the program options.");
   }
 
   LOG_DEBUG("Parsing supplied arguments: " + ListUtils::join(args, ", "));
@@ -270,18 +273,13 @@ void ProgramOptions::parse(std::vector<std::string> args) {
     std::string option = StringUtils::toLowerCase(args[i]);
 
     if (!this->argumentRegistry->has(option)) {
-      LOG_DEBUG("Tried to parse an argument that was not registered: " + option);
+      LOG_DEBUG("Tried to parse an argument that was not registered: " +
+                option);
       continue;
     }
 
     // check if the argument has been registered
     GenericArgument* argument = this->argumentRegistry->get(option);
-
-    // if the argument is not registered, print an error and continue
-    if (argument == nullptr) {
-      invalidArgument(args[i] + " was not registered.");
-      continue;
-    }
 
     // parse argument as a flag argument
     FlagArgument* flagArgument = dynamic_cast<FlagArgument*>(argument);
@@ -301,8 +299,8 @@ void ProgramOptions::parse(std::vector<std::string> args) {
       // if the supplied parameter is not valid, print an error
       if (argument->isErrored()) {
         invalidArgument(std::string(args[i - 1]) +
-          " was provided invalid parameter " +
-          std::string(args[i]));
+                        " was provided invalid parameter " +
+                        std::string(args[i]));
         LOG(argument->getHelpMessage());
         continue;
       }
@@ -331,9 +329,9 @@ nlohmann::json ProgramOptions::toJSON() {
   programSettings["supported_hw_accel"] = nlohmann::json::array();
 
   programSettings["platform"] =
-    EnumToStringFactory::get(this->platform).getName();
+      EnumToStringFactory::get(this->platform).getName();
   programSettings["gpu_provider"] =
-    EnumToStringFactory::get(this->preferredGPUProvider).getName();
+      EnumToStringFactory::get(this->preferredGPUProvider).getName();
 
   for (auto encoder : this->supportedEncoders) {
     std::string enc_name = EnumToStringFactory::get(encoder).getName();
