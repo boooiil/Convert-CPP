@@ -12,7 +12,7 @@ ChildProcessConversion::ChildProcessConversion(ChildProcess* childProcess)
     : MediaProcess(childProcess) {}
 
 void ChildProcessConversion::parse(std::string data) {
-  LOG("Parsing data.", data);
+  LOG_DEBUG("Parsing data.", data);
 
   data.erase(std::remove(data.begin(), data.end(), '\f'), data.end());
 

@@ -57,8 +57,8 @@ ProgramOptions::ProgramOptions()
 };
 
 ProgramOptions::~ProgramOptions(void) {
-  LOG("Destroying ProgramOptions...");
-  LOG("Expecting to destroy { ArgumentRegistry }");
+  LOG_DEBUG("Destroying ProgramOptions...");
+  LOG_DEBUG("Expecting to destroy { ArgumentRegistry }");
   if (this->argumentRegistry != nullptr) {
     delete this->argumentRegistry;
   }

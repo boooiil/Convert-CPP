@@ -362,8 +362,8 @@ class EnumToStringFactory {
   }
 
   static void end(void) {
-    LOG("Destroying EnumToStringFactory...");
-    LOG("Expecting to destroy { EnumToStringRegistry }");
+    LOG_DEBUG("Destroying EnumToStringFactory...");
+    LOG_DEBUG("Expecting to destroy { EnumToStringRegistry }");
     for (auto& [key, val] : registries) {
       delete val;
     }

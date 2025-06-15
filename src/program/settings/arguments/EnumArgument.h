@@ -19,7 +19,7 @@ class EnumArgument : public BaseArgument<T> {
 
   void parse(std::string argument) override {
     if (argument.empty()) {
-      LOG("argument was empty");
+      LOG_DEBUG("argument was empty");
       this->setErrored(true);
       return;
     }

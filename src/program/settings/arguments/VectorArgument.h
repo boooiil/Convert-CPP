@@ -22,7 +22,7 @@ class VectorArgument : public BaseArgument<std::vector<T>> {
 
   void parse(std::string argument) override {
     if (argument.empty()) {
-      LOG("argument was empty");
+      LOG_DEBUG("argument was empty");
       this->setErrored(true);
       return;
     }
@@ -37,8 +37,8 @@ class VectorArgument : public BaseArgument<std::vector<T>> {
         }
       }
     } catch (const std::exception& e) {
-      LOG("Failed to parse vector argument: ", argument, "\n", "of type",
-          typeid(T).name(), e.what());
+      LOG_DEBUG("Failed to parse vector argument: ", argument, "\n", "of type",
+                typeid(T).name(), e.what());
       this->setErrored(true);
       return;
     }

@@ -10,8 +10,8 @@
 #include "../../utils/DirectoryUtils.h"
 #include "../../utils/ListUtils.h"
 #include "../../utils/logging/Logger.h"
-#include "../child/Child.h"
 #include "../Program.h"
+#include "../child/Child.h"
 
 /**
  * Parent - Gather all files and queue into  ChildProcess.
@@ -22,14 +22,14 @@
  *
  */
 
- /**
-  * ALT:
-  * Parent - Gather all directories and search for required file types.
-  *  - If found, create a child at the given path.
-  *  - Add the child to the converting queue.
-  *  - Continue for other children.
-  *
-  */
+/**
+ * ALT:
+ * Parent - Gather all directories and search for required file types.
+ *  - If found, create a child at the given path.
+ *  - Add the child to the converting queue.
+ *  - Continue for other children.
+ *
+ */
 
 Parent::~Parent(void) {
   LOG_DEBUG("Deconstructing parent.");
@@ -37,7 +37,8 @@ Parent::~Parent(void) {
     Child* child = this->pending.front();
     this->pending.pop();
 
-    LOG_DEBUG("Deleting child process in:", Program::settings->childOptionsMap[child->id]->CWD);
+    LOG_DEBUG("Deleting child process in:",
+              Program::settings->childOptionsMap[child->id]->CWD);
 
     delete child;
   }
@@ -45,44 +46,44 @@ Parent::~Parent(void) {
     Child* child = this->converting.front();
     this->converting.pop();
 
-    LOG_DEBUG("Deleting child process in:", Program::settings->childOptionsMap[child->id]->CWD);
+    LOG_DEBUG("Deleting child process in:",
+              Program::settings->childOptionsMap[child->id]->CWD);
 
     delete child;
   }
-
 }
 
-//void Parent::prepare(ArgumentParser* arguments) {
-//  this->arguments = arguments;
+// void Parent::prepare(ArgumentParser* arguments) {
+//   this->arguments = arguments;
 //
-//  std::vector<std::filesystem::directory_entry> files;
+//   std::vector<std::filesystem::directory_entry> files;
 //
-//#ifdef _WIN32
-//  files = DirectoryUtils::findFileInSubdir({ "convert.exe" });
-//#else
-//  files = DirectoryUtils::findFileInSubdir({ "convert" });
-//#endif
+// #ifdef _WIN32
+//   files = DirectoryUtils::findFileInSubdir({ "convert.exe" });
+// #else
+//   files = DirectoryUtils::findFileInSubdir({ "convert" });
+// #endif
 //
-//  for (std::filesystem::directory_entry file : files) {
-//    std::string path = file.path().string();
-//    std::string filename = file.path().filename().string();
+//   for (std::filesystem::directory_entry file : files) {
+//     std::string path = file.path().string();
+//     std::string filename = file.path().filename().string();
 //
-//    Child* child = new Child();
+//     Child* child = new Child();
 //
-//    std::vector<std::string> args = this->getArgs(file);
+//     std::vector<std::string> args = this->getArgs(file);
 //
-//    child->prepare(args);
-//    this->converting.push(child);
-//  }
-//}
+//     child->prepare(args);
+//     this->converting.push(child);
+//   }
+// }
 
 void Parent::prepare(std::vector<std::string>& args) {
   std::vector<std::filesystem::directory_entry> files;
 
 #ifdef _WIN32
-  files = DirectoryUtils::findFileInSubdir({ "convert.exe" });
+  files = DirectoryUtils::findFileInSubdir({"convert.exe"});
 #else
-  files = DirectoryUtils::findFileInSubdir({ "convert" });
+  files = DirectoryUtils::findFileInSubdir({"convert"});
 #endif
 
   for (std::filesystem::directory_entry file : files) {
@@ -114,14 +115,14 @@ void Parent::end(void) {
 
 void Parent::setEndable(bool flag) {
   LOG_DEBUG("Parent has been set as endable:",
-    this->endable ? "True" : "False");
+            this->endable ? "True" : "False");
   this->endable = flag;
 }
 
 bool Parent::isEndable(void) { return this->endable; }
 
 std::vector<std::string> Parent::getArgs(
-  std::filesystem::directory_entry file) {
+    std::filesystem::directory_entry file) {
   std::cout << file.path() << " arguments: ";
   std::string input = "";
 
@@ -148,7 +149,8 @@ nlohmann::json Parent::toJSON(void) {
     Child* child = this->pending.front();
     this->pending.pop();
 
-    LOG("parent json: ", Program::settings->childOptionsMap[child->id]->CWD);
+    LOG_DEBUG("parent json: ",
+              Program::settings->childOptionsMap[child->id]->CWD);
 
     converting_json.push_back(child->toJSON());
 
@@ -163,7 +165,8 @@ nlohmann::json Parent::toJSON(void) {
     Child* child = this->converting.front();
     this->converting.pop();
 
-    LOG("parent json: ", Program::settings->childOptionsMap[child->id]->CWD);
+    LOG_DEBUG("parent json: ",
+              Program::settings->childOptionsMap[child->id]->CWD);
 
     pending_json.push_back(child->toJSON());
 

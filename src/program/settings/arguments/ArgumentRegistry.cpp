@@ -53,8 +53,8 @@ std::unordered_map<std::string, Command> ArgumentRegistry::flag_to_command_map =
      {"--trim", Command::TRIM}};
 
 ArgumentRegistry::~ArgumentRegistry(void) {
-  LOG("Destroying ArgumentRegistry...");
-  LOG("Expecting to destroy { GenericArgument }");
+  LOG_DEBUG("Destroying ArgumentRegistry...");
+  LOG_DEBUG("Expecting to destroy { GenericArgument }");
   for (auto& [command, argument] : this->arguments) {
     if (argument != nullptr) {
       delete argument;
@@ -107,7 +107,7 @@ GenericArgument* ArgumentRegistry::get(std::string flag) {
   // argument that matches the flag
 
   if (flag_to_command_map.find(flag) == flag_to_command_map.end()) {
-    LOG("Tried to get flag: '" + flag + "' that does not exist.");
+    LOG_DEBUG("Tried to get flag: '" + flag + "' that does not exist.");
     // std::invalid_argument("Tried to get flag: '" + flag + "'that does not
     // exist.");
     return nullptr;

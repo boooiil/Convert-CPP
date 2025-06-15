@@ -24,8 +24,8 @@ ChildOptions::ChildOptions(void)
 
 ChildOptions::~ChildOptions(void) {
   if (this->argumentRegistry != nullptr) {
-    LOG("Destroying ChildOptions...");
-    LOG("Expecting to destroy { ArgumentRegistry }");
+    LOG_DEBUG("Destroying ChildOptions...");
+    LOG_DEBUG("Expecting to destroy { ArgumentRegistry }");
     if (this->argumentRegistry != nullptr) {
       delete this->argumentRegistry;
     }

@@ -10,8 +10,8 @@
 ParentOptions::ParentOptions(void) : argumentRegistry(new ArgumentRegistry()) {}
 
 ParentOptions::~ParentOptions(void) {
-  LOG("Destroying ParentOptions...");
-  LOG("Expecting to destroy { ArgumentRegistry }");
+  LOG_DEBUG("Destroying ParentOptions...");
+  LOG_DEBUG("Expecting to destroy { ArgumentRegistry }");
   if (this->argumentRegistry != nullptr) {
     delete this->argumentRegistry;
   }
@@ -36,7 +36,7 @@ void ParentOptions::parse(std::vector<std::string>& args) {
 
   // skip the first argument (the program name)
   for (int i = 1; i < args.size(); i++) {
-    LOG("Parsing argument: ", args[i]);
+    LOG_DEBUG("Parsing argument: ", args[i]);
 
     // get the lowercase version of the argument
     std::string option = StringUtils::toLowerCase(args[i]);
