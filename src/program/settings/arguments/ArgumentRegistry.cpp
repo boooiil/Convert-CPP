@@ -6,7 +6,10 @@
 #include <string>
 #include <unordered_map>
 
+#include "../../../utils/ListUtils.h"
+#include "../../../utils/StringUtils.h"
 #include "../../../utils/logging/Logger.h"
+#include "FlagArgument.h"
 #include "GenericArgument.h"
 
 // std::unordered_map<Command, GenericArgument*> ArgumentRegistry::arguments =
@@ -100,6 +103,60 @@ void ArgumentRegistry::update(std::string flag, GenericArgument* argument) {
 
 void ArgumentRegistry::update(Command flag, GenericArgument* argument) {
   arguments[flag] = argument;
+}
+
+void ArgumentRegistry::parse(std::vector<std::string> args) {
+  if (args.size() < 2) {
+    LOG_DEBUG("No arguments supplied to the program options.");
+  }
+
+  LOG_DEBUG("Parsing supplied arguments: " + ListUtils::join(args, ", "));
+
+  // skip the first argument (the program name)
+  for (int i = 1; i < args.size(); i++) {
+    LOG_DEBUG("Parsing argument:", args[i]);
+
+    // get the lowercase version of the argument
+    std::string option = StringUtils::toLowerCase(args[i]);
+
+    if (!this->has(option)) {
+      LOG_DEBUG("Tried to parse an argument that was not registered: " +
+                option);
+      continue;
+    }
+
+    // check if the argument has been registered
+    GenericArgument* argument = this->get(option);
+
+    // parse argument as a flag argument
+    FlagArgument* flagArgument = dynamic_cast<FlagArgument*>(argument);
+
+    // if the argument is a flag argument, parse it as such
+    // we do this since we do not need to check the next argument
+    // for a parameter, we just set it to true
+    if (flagArgument != nullptr) {
+      flagArgument->parse("true");
+      continue;
+    }
+    // if the argument is not a flag argument, it must be a complex argument
+    else {
+      // check if the next argument is a parameter
+      argument->parse(args[++i]);
+
+      // if the supplied parameter is not valid, print an error
+      if (argument->isErrored()) {
+        invalidArgument(std::string(args[i - 1]) +
+                        " was provided invalid parameter " +
+                        std::string(args[i]));
+        LOG(argument->getHelpMessage());
+        continue;
+      }
+    }
+  }
+}
+
+void ArgumentRegistry::invalidArgument(std::string arg) {
+  LOG_DEBUG("Invalid argument:", arg);
 }
 
 GenericArgument* ArgumentRegistry::get(std::string flag) {

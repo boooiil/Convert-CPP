@@ -20,6 +20,8 @@ class ArgumentRegistry : public JSONSerializable {
   void remove(Command flag);
   void update(std::string flag, GenericArgument* argument);
   void update(Command flag, GenericArgument* argument);
+  void parse(std::vector<std::string> args);
+  void invalidArgument(std::string arg);
   GenericArgument* get(std::string flag);
   GenericArgument* get(Command flag);
 
