@@ -97,7 +97,10 @@ void ChildOptions::prepare(void) {
       new EnumArgument<Tunes>("Tune to use", "-t", "--tune", Tunes::DEFAULT));
 }
 
-void ChildOptions::parse(std::vector<std::string>& args) {}
+void ChildOptions::parse(std::vector<std::string>& args) {
+  this->i_args = args;
+  this->argumentRegistry->parse(args);
+}
 
 void ChildOptions::validate(void) {
   if (this->argumentRegistry->get_t<EnumArgument<Encoders>>(Command::ENCODER)
@@ -156,11 +159,6 @@ void ChildOptions::validate(void) {
                                      ->get_t<EnumArgument<Tunes>>(Command::TUNE)
                                      ->get())
                                  .getName());
-}
-
-void ChildOptions::invalidArgument(std::string arg) {
-  LOG(LogColor::fgRed(arg));
-  Program::stopFlag = true;
 }
 
 void ChildOptions::fromJSON(const nlohmann::json json) {};

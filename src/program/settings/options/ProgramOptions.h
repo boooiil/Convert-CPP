@@ -47,7 +47,6 @@ class ProgramOptions : public JSONSerializable {
   void prepare(void);
   void parse(std::vector<std::string> args);
   void validate(void);
-  void invalidArgument(std::string arg);
   void gatherSystemDetails(void);
 
   void fromJSON(nlohmann::json) override;

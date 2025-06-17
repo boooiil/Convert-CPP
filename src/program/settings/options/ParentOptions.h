@@ -18,7 +18,6 @@ class ParentOptions : public JSONSerializable {
   void prepare(void);
   void parse(std::vector<std::string>& args);
   void validate(void);
-  void invalidArgument(std::string arg);
 
   void fromJSON(const nlohmann::json json) override;
   nlohmann::json toJSON(void);

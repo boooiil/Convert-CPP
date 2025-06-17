@@ -258,62 +258,10 @@ void ProgramOptions::prepare(void) {
 
 void ProgramOptions::parse(std::vector<std::string> args) {
   this->i_args = args;
-
-  if (args.size() < 2) {
-    LOG_DEBUG("No arguments supplied to the program options.");
-  }
-
-  LOG_DEBUG("Parsing supplied arguments: " + ListUtils::join(args, ", "));
-
-  // skip the first argument (the program name)
-  for (int i = 1; i < args.size(); i++) {
-    LOG_DEBUG("Parsing argument:", args[i]);
-
-    // get the lowercase version of the argument
-    std::string option = StringUtils::toLowerCase(args[i]);
-
-    if (!this->argumentRegistry->has(option)) {
-      LOG_DEBUG("Tried to parse an argument that was not registered: " +
-                option);
-      continue;
-    }
-
-    // check if the argument has been registered
-    GenericArgument* argument = this->argumentRegistry->get(option);
-
-    // parse argument as a flag argument
-    FlagArgument* flagArgument = dynamic_cast<FlagArgument*>(argument);
-
-    // if the argument is a flag argument, parse it as such
-    // we do this since we do not need to check the next argument
-    // for a parameter, we just set it to true
-    if (flagArgument != nullptr) {
-      flagArgument->parse("true");
-      continue;
-    }
-    // if the argument is not a flag argument, it must be a complex argument
-    else {
-      // check if the next argument is a parameter
-      argument->parse(args[++i]);
-
-      // if the supplied parameter is not valid, print an error
-      if (argument->isErrored()) {
-        invalidArgument(std::string(args[i - 1]) +
-                        " was provided invalid parameter " +
-                        std::string(args[i]));
-        LOG(argument->getHelpMessage());
-        continue;
-      }
-    }
-  }
+  this->argumentRegistry->parse(args);
 }
 
 void ProgramOptions::validate(void) {}
-
-void ProgramOptions::invalidArgument(std::string arg) {
-  LOG(LogColor::fgRed("Invalid argument " + arg));
-  // Program::stopFlag = true;
-}
 
 void ProgramOptions::fromJSON(nlohmann::json json) { void; }
 
