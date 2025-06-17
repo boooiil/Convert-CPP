@@ -165,13 +165,13 @@ class EnumToStringFactory {
         ->add(static_cast<int>(HWAccelerators::INVALID), "invalid", "Invalid",
               "Invalid hardware accelerator");
     registries.at(typeid(HWAccelerators))
-        ->add(static_cast<int>(HWAccelerators::AMD), "amd", "AMD",
+        ->add(static_cast<int>(HWAccelerators::AMD), "amf", "AMF",
               "AMD hardware accelerator");
     registries.at(typeid(HWAccelerators))
-        ->add(static_cast<int>(HWAccelerators::NVIDIA), "nvidia", "NVIDIA",
+        ->add(static_cast<int>(HWAccelerators::NVIDIA), "cuda", "CUDA",
               "NVIDIA hardware accelerator");
     registries.at(typeid(HWAccelerators))
-        ->add(static_cast<int>(HWAccelerators::INTEL), "intel", "Intel",
+        ->add(static_cast<int>(HWAccelerators::INTEL), "qsv", "QSV",
               "Intel hardware accelerator");
     registries.at(typeid(HWAccelerators))
         ->add(static_cast<int>(HWAccelerators::VULKAN), "vulkan", "Vulkan",
