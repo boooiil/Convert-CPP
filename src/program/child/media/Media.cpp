@@ -56,7 +56,7 @@ Media::Media(uuids::uuid id, std::string name, std::string path)
       started(0),
       ended(0),
       activity(Activity::WAITING),
-      file(new MediaFile(name, path)),
+      file(new MediaFile(id, name, path)),
       probeResult(nullptr),
       video(new MediaVideoProperties()),
       working(new MediaWorkingProperties()) {}
@@ -187,7 +187,7 @@ void Media::buildFFmpegArguments(bool isValidate) {
 
   this->ffmpegArguments.push_back("-v error -stats");
 
-  if (argumentRegistry.get_t<FlagArgument>("-hwd")->get()) {
+  if (argumentRegistry.get_t<FlagArgument>(Command::HARDWAREDECODE)->get()) {
     if (childOptions.runningHWAccel != HWAccelerators::INVALID) {
       this->ffmpegArguments.push_back(
           "-hwaccel " +
@@ -380,7 +380,7 @@ void Media::buildFFmpegArguments(bool isValidate) {
 
   this->ffmpegArguments.push_back("-level 4.1");
 
-  if (argumentRegistry.get_t<FlagArgument>("-b")->get()) {
+  if (argumentRegistry.get_t<FlagArgument>(Command::BITRATE)->get()) {
     this->ffmpegArguments.push_back("-b:v " + std::to_string(format.bitrate) +
                                     "M");
     this->ffmpegArguments.push_back("-bufsize " +
@@ -389,7 +389,7 @@ void Media::buildFFmpegArguments(bool isValidate) {
                                     std::to_string(format.max * 2) + "M");
     this->ffmpegArguments.push_back("-minrate " +
                                     std::to_string(format.min * 2) + "M");
-  } else if (argumentRegistry.get_t<FlagArgument>("-co")->get()) {
+  } else if (argumentRegistry.get_t<FlagArgument>(Command::CONSTRAIN)->get()) {
     this->ffmpegArguments.push_back("-crf " + std::to_string(format.crf));
     this->ffmpegArguments.push_back("-bufsize " +
                                     std::to_string(format.bitrate * 2) + "M");
@@ -399,7 +399,7 @@ void Media::buildFFmpegArguments(bool isValidate) {
     this->ffmpegArguments.push_back("-crf " + std::to_string(format.crf));
   }
 
-  if (argumentRegistry.get_t<FlagArgument>("-c")->get()) {
+  if (argumentRegistry.get_t<FlagArgument>(Command::CROP)->get()) {
     this->ffmpegArguments.push_back(
         "-vf scale=" + this->video->convertedResolution +
         ":flags=lanczos,crop=" + format.crop);
@@ -447,7 +447,8 @@ void Media::buildFFmpegArguments(bool isValidate) {
 
   this->ffmpegArguments.push_back("\"" + this->file->conversionFilePath + "\"");
 
-  if (isValidate || argumentRegistry.get_t<FlagArgument>("-o")->get())
+  if (isValidate ||
+      argumentRegistry.get_t<FlagArgument>(Command::OVERWRITE)->get())
     this->ffmpegArguments.push_back("-y");
   else {
     this->ffmpegArguments.push_back("-n");

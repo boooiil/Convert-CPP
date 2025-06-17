@@ -15,6 +15,7 @@
 #include "../../generics/GenericRunner.h"
 #include "../../settings/Settings.h"
 #include "../../settings/arguments/ArgumentRegistry.h"
+#include "../../settings/arguments/EnumArgument.h"
 #include "../../settings/arguments/FlagArgument.h"
 #include "../../settings/arguments/IntegerArgument.h"
 #include "../../settings/arguments/video/Quality.h"
@@ -88,17 +89,17 @@ void ChildDisplay::print() {
                        runningDecoder + " " + resolution + " " + tune + " " +
                        amount;
 
-  if (argumentRegistry.get_t<FlagArgument>("-co")->get()) {
+  if (argumentRegistry.get_t<FlagArgument>(Command::CONSTRAIN)->get()) {
     header += " " + constrain;
   }
 
-  if (argumentRegistry
-          .get_t<BaseArgument<LoggingOptions>>(Command::LOGGINGOPTIONS)
+  if (Program::settings->programOptions->argumentRegistry
+          ->get_t<EnumArgument<LoggingOptions>>(Command::LOGGINGOPTIONS)
           ->get() == LoggingOptions::DEBUG) {
     header += " " + debug;
   }
 
-  if (argumentRegistry.get_t<FlagArgument>("-c")->get()) {
+  if (argumentRegistry.get_t<FlagArgument>(Command::CROP)->get()) {
     header += " " + crop;
   }
 

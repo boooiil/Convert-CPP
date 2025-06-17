@@ -43,7 +43,8 @@ void Child::prepare(std::vector<std::string>& args) {
   childOptions.validate();
 
   std::vector<std::filesystem::directory_entry> files =
-      DirectoryUtils::getFilesInDirectory(args[0], std::vector{".mkv", ".avi"});
+      DirectoryUtils::getFilesInDirectory(args[0],
+                                          std::vector{".mp4", ".mkv", ".avi"});
 
   for (std::filesystem::directory_entry file : files) {
     std::string cwd = file.path().parent_path().string();
@@ -53,7 +54,8 @@ void Child::prepare(std::vector<std::string>& args) {
     media->file->rename();
 
     if (!std::filesystem::exists(media->file->conversionFolderPath) &&
-        !childOptions.argumentRegistry->get_t<FlagArgument>("-i")->get()) {
+        !childOptions.argumentRegistry->get_t<FlagArgument>(Command::INFO)
+             ->get()) {
       LOG_DEBUG("Creating directory: ", media->file->conversionFolderPath);
       std::filesystem::create_directory(media->file->conversionFolderPath);
     }
@@ -91,7 +93,6 @@ void Child::run(void) {
   this->setEndable(false);
   int currentAmount = static_cast<int>(this->converting.size());
 
-  Program::settings->childOptionsMap[this->id] = new ChildOptions();
   ChildOptions& childOptions = *Program::settings->childOptionsMap[this->id];
 
   IntegerArgument* setAmount =

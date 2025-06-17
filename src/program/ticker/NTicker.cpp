@@ -24,14 +24,13 @@ NTicker::NTicker(void) : endable(true) {
 }
 
 void NTicker::determineNextAction(std::vector<std::string>& args) {
-  if (Program::settings->programOptions->argumentRegistry
-          ->get_t<FlagArgument>("-h")
-          ->get()) {
+  ArgumentRegistry* program_arg_reg =
+      Program::settings->programOptions->argumentRegistry;
+
+  if (program_arg_reg->get_t<FlagArgument>(Command::HELP)->get()) {
     Help::printHelp();
     Program::stopFlag = true;
-  } else if (Program::settings->programOptions->argumentRegistry
-                 ->get_t<FlagArgument>("-i")
-                 ->get()) {
+  } else if (program_arg_reg->get_t<FlagArgument>(Command::INFO)->get()) {
     // print information
     this->runner->prepare(args);
     this->display->printInformation();
