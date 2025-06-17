@@ -9,13 +9,15 @@
 #ifndef MEDIA_FILE
 #define MEDIA_FILE
 
+#include <stduuid/uuid.h>
+
 #include <string>
 
- /**
-  * @brief Hold information about a media file.
-  */
+/**
+ * @brief Hold information about a media file.
+ */
 class MediaFile {
-public:
+ public:
   /**
    * @brief Construct a new Media File object.
    *
@@ -25,13 +27,16 @@ public:
   /**
    * @brief Construct a new Media File object.
    *
+   * @param[in] id - Unique identifier for the media file.
    * @param[in] name - Name of the file.
    * @param[in] path - Path to the file (generally CWD).
    */
-  MediaFile(std::string name, std::string path);
+  MediaFile(uuids::uuid media_id, std::string name, std::string path);
 
   ~MediaFile(void);
 
+  /// @brief Unique identifier for the media file.
+  uuids::uuid media_id;
   /// @brief CWD
   std::string cwd;
   /// @brief Original filename with extension
@@ -66,7 +71,7 @@ public:
    */
   void rename();
 
-private:
+ private:
   /**
    * @brief Compile the full path of the original file.
    *
@@ -80,11 +85,8 @@ private:
    * @param[in] episode     - Episode number.
    * @param[in] quality     - Chosen quality.
    */
-  void resolveConversionPaths(
-    std::string provided_series,
-    int provided_season,
-    std::string provided_episode,
-    std::string path);
+  void resolveConversionPaths(std::string provided_series, int provided_season,
+                              std::string provided_episode, std::string path);
 
   /**
    * @brief Compile the extension.
