@@ -78,6 +78,12 @@ Parent::~Parent(void) {
 // }
 
 void Parent::prepare(std::vector<std::string>& args) {
+  ParentOptions& parentOptions = *Program::settings->parentOptions;
+
+  parentOptions.prepare();
+  parentOptions.parse(args);
+  parentOptions.validate();
+
   std::vector<std::filesystem::directory_entry> files;
 
 #ifdef _WIN32
@@ -123,12 +129,12 @@ bool Parent::isEndable(void) { return this->endable; }
 
 std::vector<std::string> Parent::getArgs(
     std::filesystem::directory_entry file) {
-  std::cout << file.path() << " arguments: ";
+  std::cout << file.path().parent_path() << " arguments: ";
   std::string input = "";
 
   std::getline(std::cin, input);
 
-  input.append(file.path().string() + " ");
+  input.append(file.path().parent_path().string() + " ");
   input.append("-lf json ");
 
   return ListUtils::splitv(input, " ");
