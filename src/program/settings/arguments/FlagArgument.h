@@ -29,7 +29,13 @@ class FlagArgument : public BaseArgument<bool> {
   virtual const std::string toString(void) const override {
     return value ? "true" : "false";
   }
+
   virtual const bool hasData(void) const override { return value; }
+
+  explicit operator bool(void) const {
+    std::cout << "operator bool() called, value: " << value << std::endl;
+    return value;
+  }
 };
 
 #endif  // FLAG_ARGUMENT_H
