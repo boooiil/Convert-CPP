@@ -264,7 +264,7 @@ class EnumToStringFactory {
         ->add(static_cast<int>(Platform::INVALID), "invalid", "Invalid",
               "Invalid platform");
     registries.at(typeid(Platform))
-        ->add(static_cast<int>(Platform::LINUX), "linux", "Linux",
+        ->add(static_cast<int>(Platform::_LINUX), "linux", "Linux",
               "Linux platform");
     registries.at(typeid(Platform))
         ->add(static_cast<int>(Platform::WINDOWS), "windows", "Windows",

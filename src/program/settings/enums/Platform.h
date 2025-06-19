@@ -18,12 +18,12 @@ enum class Platform {
   INVALID = 0,
 
   WINDOWS,
-  LINUX,
+  _LINUX,
   LINUX_LIKE,
   MACOS
 
-  //public:
-  // static const StringEnumDataHolder<Platform> UNKNOWN;
+  // public:
+  //  static const StringEnumDataHolder<Platform> UNKNOWN;
 
   // static const StringEnumDataHolder<Platform> WINDOWS;
   // static const StringEnumDataHolder<Platform> _LINUX;
