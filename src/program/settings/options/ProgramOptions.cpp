@@ -135,7 +135,7 @@ void ProgramOptions::gatherSystemDetails(void) {
     this->GPU_Providers.push_back(GPUProviders::AMD);
   }
   // unknown
-  if (this->GPU_Provider.empty()) {
+  if (this->GPU_Providers.empty()) {
     this->GPU_Providers.push_back(GPUProviders::INVALID);
   }
 
@@ -263,7 +263,7 @@ void ProgramOptions::parse(std::vector<std::string> args) {
 
 void ProgramOptions::validate(void) {}
 
-void ProgramOptions::fromJSON(nlohmann::json json) { void; }
+void ProgramOptions::fromJSON(nlohmann::json json) {}
 
 nlohmann::json ProgramOptions::toJSON() {
   nlohmann::json programSettings;
