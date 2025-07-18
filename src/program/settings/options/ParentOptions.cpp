@@ -36,7 +36,7 @@ void ParentOptions::validate(void) {
   // Validate the options
 }
 
-void ParentOptions::fromJSON(const nlohmann::json json) {}
+void ParentOptions::fromJSON(const nlohmann::json json) { (void)json; }
 
 nlohmann::json ParentOptions::toJSON(void) {
   nlohmann::json parentOptions;

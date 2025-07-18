@@ -31,6 +31,7 @@ class Logger {
   // Base case: when there are no arguments left
   static void logToStream(std::ostream& stream) {
     // No-op base case for recursion
+      (void)stream;
   }
 
   // Recursive function to log multiple arguments

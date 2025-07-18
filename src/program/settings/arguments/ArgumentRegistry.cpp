@@ -203,6 +203,7 @@ bool ArgumentRegistry::has(Command flag) const {
 
 void ArgumentRegistry::fromJSON(const nlohmann::json json) {
   // Implementation for deserializing from JSON
+    (void)json;
 }
 
 nlohmann::json ArgumentRegistry::toJSON(void) {

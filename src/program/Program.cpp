@@ -61,6 +61,7 @@ void Program::prepare(std::vector<std::string>& args) {
 }
 
 void Program::prepare(int argc, char* argv[]) {
+    (void)argc;
   std::vector<std::string> args = ListUtils::toStrVector(argv);
 
   args.erase(args.begin());
@@ -123,7 +124,7 @@ void Program::setEndable(bool flag) {
 
 bool Program::isEndable() { return Program::stopFlag; }
 
-void Program::fromJSON(nlohmann::json program) {}
+void Program::fromJSON(nlohmann::json program) { (void)program; }
 
 nlohmann::json Program::toJSON() {
   using namespace nlohmann;

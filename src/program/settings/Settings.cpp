@@ -225,7 +225,7 @@ void Settings::init(std::vector<std::string>& args) {
   this->programOptions->validate();
 }
 
-void Settings::fromJSON(nlohmann::json json) {}
+void Settings::fromJSON(nlohmann::json json) { (void)json; }
 
 nlohmann::json Settings::toJSON() {
   using namespace nlohmann;

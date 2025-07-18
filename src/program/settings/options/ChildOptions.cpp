@@ -161,7 +161,7 @@ void ChildOptions::validate(void) {
                                  .getName());
 }
 
-void ChildOptions::fromJSON(const nlohmann::json json) {};
+void ChildOptions::fromJSON(const nlohmann::json json) { (void)json; };
 
 nlohmann::json ChildOptions::toJSON() {
   nlohmann::json ChildOptions;

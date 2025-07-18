@@ -28,7 +28,7 @@ void MediaProcessConversion::parse(std::string data) {
 
   ChildOptions& childOptions =
       *Program::settings->childOptionsMap[this->object->id];
-  ArgumentRegistry& argumentRegistry = *childOptions.argumentRegistry;
+  //ArgumentRegistry& argumentRegistry = *childOptions.argumentRegistry;
 
   // Return fail IF:
   // 1&2. Encode fails to find a device

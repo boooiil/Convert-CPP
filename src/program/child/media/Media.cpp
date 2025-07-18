@@ -178,7 +178,7 @@ void Media::doValidation() {
 }
 
 void Media::buildFFmpegArguments(bool isValidate) {
-  ProgramOptions& programSettings = *Program::settings->programOptions;
+  //ProgramOptions& programSettings = *Program::settings->programOptions;
   ChildOptions& childOptions = *Program::settings->childOptionsMap[id];
   ArgumentRegistry& argumentRegistry = *childOptions.argumentRegistry;
   MediaFormat format = argumentRegistry.get_t<Quality>(Command::QUALITY)->get();

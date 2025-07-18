@@ -98,10 +98,10 @@ void Parent::prepare(std::vector<std::string>& args) {
 
     Child* child = new Child();
 
-    std::vector<std::string> args = this->getArgs(file);
+    std::vector<std::string> n_args = this->getArgs(file);
 
-    child->prepare(args);
-    this->converting.push(child);
+    child->prepare(n_args);
+    this->pending.push(child);
 
     // get args, init settings on child
 
