@@ -18,7 +18,7 @@
 #include "../settings/enums/LoggingOptions.h"
 #include "nlohmann/json.hpp"
 
-NTicker::NTicker(void) : endable(true) {
+NTicker::NTicker() : endable(true) {
   this->display = nullptr;
   this->runner = nullptr;
 }
@@ -33,7 +33,7 @@ void NTicker::determineNextAction(std::vector<std::string>& args) {
   } else if (program_arg_reg->get_t<FlagArgument>(Command::INFO)->get()) {
     // print information
     this->runner->prepare(args);
-    this->display->printInformation();
+    this->display->printInformation(this, this->runner);
     Program::stopFlag = true;
   } else {
     // prepare runner
@@ -81,12 +81,12 @@ void NTicker::prepare(std::vector<std::string>& args) {
   this->determineNextAction(args);
 }
 
-void NTicker::run(void) {
+void NTicker::run() {
   ArgumentRegistry* program_arg_reg =
       Program::settings->programOptions->argumentRegistry;
 
   if (program_arg_reg->get_t<FlagArgument>(Command::INFO)->get()) {
-    this->display->printInformation();
+    this->display->printInformation(this, this->runner);
     return;
   }
 
@@ -124,7 +124,7 @@ void NTicker::run(void) {
   // }
 }
 
-void NTicker::end(void) {
+void NTicker::end() {
   LOG_DEBUG("Ending ticker.");
   LOG_DEBUG("Expected to delete { display, runner }.");
 
@@ -154,13 +154,13 @@ void NTicker::setEndable(bool flag) {
   this->endable = flag;
 }
 
-bool NTicker::isEndable(void) { return this->endable; }
+bool NTicker::isEndable() { return this->endable; }
 
 void NTicker::fromJSON(nlohmann::json) {
   // read json information
 }
 
-nlohmann::json NTicker::toJSON(void) {
+nlohmann::json NTicker::toJSON() {
   using namespace nlohmann;
 
   json program;
@@ -174,6 +174,6 @@ nlohmann::json NTicker::toJSON(void) {
   return program;
 }
 
-void NTicker::writeDebug(void) {
+void NTicker::writeDebug() {
   // write debug information
 }
