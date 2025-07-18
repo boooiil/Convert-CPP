@@ -28,8 +28,8 @@ public:
   void setEndable(bool);
   bool isEndable(void);
 
-  void fromJSON(nlohmann::json);
-  nlohmann::json toJSON(void);
+  void fromJSON(nlohmann::json) override;
+  nlohmann::json toJSON(void) override;
 
 private:
   bool endable;
