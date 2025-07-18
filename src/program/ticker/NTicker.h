@@ -27,7 +27,7 @@ public:
 
 private:
   bool endable;
-  GenericDisplay* display;
+  BaseDisplay* display;
   void writeDebug(void);
 };
 
