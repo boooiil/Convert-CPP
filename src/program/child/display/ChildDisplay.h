@@ -2,12 +2,14 @@
 #define CHILD_DISPLAY_H
 
 #include "../../generics/GenericDisplay.h"
+#include "../../ticker/NTicker.h"
+#include "../Child.h"
 
-class ChildDisplay : public GenericDisplay {
+class ChildDisplay : public GenericDisplay<NTicker, Child> {
  public:
   void print(void);
   void printDebug(void);
-  void printInformation(void);
+  void printInformationTyped(NTicker* ticker, Child* child);
   void printJSON(void);
 };
 
