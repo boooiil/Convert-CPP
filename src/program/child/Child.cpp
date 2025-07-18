@@ -26,6 +26,8 @@ std::vector<std::thread> workerThreads;
 // typename ArgumentRegistry::getTFn<T> get_t =
 // Child::settings->argumentRegistry.get<T>;
 
+Child::Child(void) : endable(false) {}
+
 void Child::prepare(std::vector<std::string>& args) {
   // initialize settings
 

@@ -20,6 +20,8 @@ public:
   /// @brief Holds media files that are waiting to be converted.
   std::queue<Media*> pending;
 
+  Child(void);
+
   /// @brief Prepares the child for conversion.
   void prepare(std::vector<std::string>& args) override;
   ///  @brief Runs the child's conversion process.
