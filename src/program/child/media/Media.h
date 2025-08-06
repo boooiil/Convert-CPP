@@ -9,38 +9,40 @@
 #ifndef MEDIA
 #define MEDIA
 
+#include <uuid.h>
+
 #include <nlohmann/json_fwd.hpp>
-#include <stduuid/uuid.h>
 #include <string>
 #include <vector>
 
 #include "../../generics/JSONSerializable.h"
 #include "../../settings/enums/Activity.h"
 #include "../../settings/enums/StringEnumDataHolder.h"
+#include "../ffmpeg/FFmpegArgumentBuilder.h"
 #include "../ffmpeg/probe/ProbeResult.h"
 #include "MediaFile.h"
 #include "MediaVideoProperties.h"
 #include "MediaWorkingProperties.h"
 
- /**
-  * @brief Media class.
-  *
-  * Trrr
-  *
-  */
+
+/**
+ * @brief Media class.
+ *
+ * Trrr
+ *
+ */
 class Media : public JSONSerializable {
 public:
-  uuids::uuid id;  /// @brief unique identifier
-  /// @brief vector of arguments to be passed to ffmpeg
-  std::vector<std::string> ffmpegArguments;
-  long started;  /// @brief start time
-  long ended;    /// @brief end time
+  uuids::uuid id; /// @brief unique identifier
+  long started;   /// @brief start time
+  long ended;     /// @brief end time
 
-
-  ProbeResult* probeResult;         /// @brief ProbeResult object
-  MediaFile* file;                  /// @brief MediaFile object
-  MediaVideoProperties* video;      /// @brief MediaVideoProperties object
-  MediaWorkingProperties* working;  /// @brief MediaWorkingProperties object
+  ProbeResult *probeResult;        /// @brief ProbeResult object
+  MediaFile *file;                 /// @brief MediaFile object
+  MediaVideoProperties *video;     /// @brief MediaVideoProperties object
+  MediaWorkingProperties *working; /// @brief MediaWorkingProperties object
+  FFmpegArgumentBuilder
+      *ffmpegArguments; /// @brief vector of arguments to be passed to ffmpeg
 
   /**
    * @brief Create a Media object. (unused)
@@ -160,4 +162,4 @@ private:
   Activity activity;
 };
 
-#endif  // !MEDIA
+#endif // !MEDIA
