@@ -3,7 +3,6 @@
 
 #include <stdexcept>
 #include <string>
-#include <type_traits>
 #include <typeindex>
 #include <unordered_map>
 
@@ -22,7 +21,7 @@
 #include "Tunes.h"
 
 class EnumToStringFactory {
- public:
+public:
   static void init(void) {
     registries[typeid(Activity)] = new EnumToStringRegistry<Activity>();
     registries[typeid(Encoders)] = new EnumToStringRegistry<Encoders>();
@@ -335,26 +334,38 @@ class EnumToStringFactory {
     registries.at(typeid(Container))
         ->add(static_cast<int>(Container::INVALID), "invalid", "Invalid",
               "Invalid audio codec");
+    registries.at(typeid(Container))
+        ->add(static_cast<int>(Container::MKV), "mkv", "MKV",
+              "Matroska (MKV) container");
+    registries.at(typeid(Container))
+        ->add(static_cast<int>(Container::MP4), "mp4", "MP4",
+              "MPEG-4 Part 14 (MP4) container");
+    registries.at(typeid(Container))
+        ->add(static_cast<int>(Container::AVI), "avi", "AVI",
+              "Audio Video Interleave (AVI) container");
+    registries.at(typeid(Container))
+        ->add(static_cast<int>(Container::MOV), "mov", "MOV",
+              "QuickTime (MOV) container");
+    registries.at(typeid(Container))
+        ->add(static_cast<int>(Container::MP3), "mp3", "MP3",
+              "MPEG Audio Layer III (MP3) container");
   };
 
-  template <EnumType T>
-  static EnumToStringRegistry<T>* getRegistry() {
+  template <EnumType T> static EnumToStringRegistry<T> *getRegistry() {
     if (!registries.contains(typeid(T))) {
       throw std::logic_error("Registry not initialized for this enum type.");
     }
-    return static_cast<EnumToStringRegistry<T>*>(registries.at(typeid(T)));
+    return static_cast<EnumToStringRegistry<T> *>(registries.at(typeid(T)));
   }
 
-  template <EnumType T>
-  static const StringEnumDataHolder& get(T key) {
+  template <EnumType T> static const StringEnumDataHolder &get(T key) {
     if (!registries.contains(typeid(T))) {
       throw std::logic_error("Registry not initialized for this enum type.");
     }
     return registries.at(typeid(T))->get(static_cast<int>(key));
   }
 
-  template <EnumType T>
-  static T fromName(std::string& e_value) {
+  template <EnumType T> static T fromName(std::string &e_value) {
     if (!registries.contains(typeid(T))) {
       throw std::logic_error("Registry not initialized for this enum type.");
     }
@@ -364,14 +375,14 @@ class EnumToStringFactory {
   static void end(void) {
     LOG_DEBUG("Destroying EnumToStringFactory...");
     LOG_DEBUG("Expecting to destroy { EnumToStringRegistry }");
-    for (auto& [key, val] : registries) {
+    for (auto &[key, val] : registries) {
       delete val;
     }
   }
 
- private:
-  static std::unordered_map<std::type_index, EnumToStringRegistryBase*>
+private:
+  static std::unordered_map<std::type_index, EnumToStringRegistryBase *>
       registries;
 };
 
-#endif  // !ENUM_TO_STRING_FACTORY_H
+#endif // !ENUM_TO_STRING_FACTORY_H

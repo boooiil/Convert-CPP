@@ -9,6 +9,7 @@ enum class Command {
   BITRATE,        // IntegerArgument
   CROP,           // FlagArgument
   CONSTRAIN,      // FlagArgument
+  CONTAINER,      // EnumStringArgument<Container>
   CRF,            // IntegerArgument
   DISPLAYREFRESH, // IntegerArgument
   ENCODER,        // EnumStringArgument<Encoders>
