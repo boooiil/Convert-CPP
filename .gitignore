@@ -21,3 +21,6 @@ container_debug.json
 /docs
 /Doxyfile
 ClassDiagram*
+
+subprojects/*
+!subprojects/*.wrap
