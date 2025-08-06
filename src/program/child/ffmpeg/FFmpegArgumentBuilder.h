@@ -1,17 +1,20 @@
 #ifndef FFMPEG_ARGUMENT_BUILDER_H
 #define FFMPEG_ARGUMENT_BUILDER_H
 
+#include <uuid.h>
+
 #include <string>
 #include <vector>
 
 #include "container/BaseContainer.h"
-#include <stduuid/uuid.h>
 
 /* Builder created -> builder.build() */
 
+class Media;
+
 class FFmpegArgumentBuilder {
 public:
-  FFmpegArgumentBuilder(BaseContainer* _container);
+  FFmpegArgumentBuilder(Media *media);
   ~FFmpegArgumentBuilder();
 
   // if container supports video codec, use
@@ -21,7 +24,8 @@ public:
   std::vector<std::string> build();
 
 private:
-  BaseContainer* container;
+  BaseContainer *container;
+  Media *media;
 };
 
-#endif  // FFMPEG_ARGUMENT_BUILDER_H
+#endif // FFMPEG_ARGUMENT_BUILDER_H
