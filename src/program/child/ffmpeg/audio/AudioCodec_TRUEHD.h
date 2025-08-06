@@ -7,7 +7,12 @@
 
 class AudioCodec_TRUEHD : public BaseAudioCodec {
  public:
+  AudioCodec_TRUEHD(int channel = 2, int sampleRate = 48000, int bitDepth = 16)
+      : BaseAudioCodec(channel, sampleRate, bitDepth) {};
+
   auto getType() -> AudioCodec override { return AudioCodec::TRUEHD; };
+  auto getName() -> std::string override { return "truehd"; };
+  auto getDisplayName() -> std::string override { return "Dolby TrueHD"; };
 
   auto supportedChannels() -> std::vector<int> override {
     return {

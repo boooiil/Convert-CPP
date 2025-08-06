@@ -7,7 +7,12 @@
 
 class AudioCodec_OPUS : public BaseAudioCodec {
  public:
+  AudioCodec_OPUS(int channel = 2, int sampleRate = 48000, int bitDepth = 16)
+      : BaseAudioCodec(channel, sampleRate, bitDepth) {};
+
   auto getType() -> AudioCodec override { return AudioCodec::OPUS; };
+  auto getName() -> std::string override { return "opus"; };
+  auto getDisplayName() -> std::string override { return "Opus"; };
 
   auto supportedChannels() -> std::vector<int> override {
     return {

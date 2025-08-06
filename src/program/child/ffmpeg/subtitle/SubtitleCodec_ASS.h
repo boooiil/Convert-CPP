@@ -7,7 +7,8 @@
 
 class SubtitleCodec_ASS : public BaseSubtitleCodec {
  public:
-  SubtitleCodec getType() { return SubtitleCodec::ASS; };
+  auto getType() -> SubtitleCodec override { return SubtitleCodec::ASS; }
+  auto getName() -> std::string override { return "ass"; }
 };
 
 #endif  // SUBTITLE_CODEC_ASS_H

@@ -5,7 +5,13 @@
 
 class VideoCodec_HEVC_AMF : public BaseVideoCodec {
  public:
+  VideoCodec_HEVC_AMF(std::string runningPreset = "high_quality",
+                      std::string runningLevel = "4.1",
+                      Tunes runningTune = Tunes::DEFAULT)
+      : BaseVideoCodec(runningPreset, runningLevel, runningTune) {};
+
   auto getType() -> Encoders override { return Encoders::HEVC_AMF; }
+  auto getName() -> std::string override { return "hevc_amf"; }
 
   auto controlRateFlag() -> std::string override {
     return "-crf";

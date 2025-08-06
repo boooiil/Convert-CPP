@@ -5,7 +5,13 @@
 
 class VideoCodec_HEVC : public BaseVideoCodec {
  public:
+  VideoCodec_HEVC(std::string runningPreset = "slow",
+                  std::string runningLevel = "4.1",
+                  Tunes runningTune = Tunes::DEFAULT)
+      : BaseVideoCodec(runningPreset, runningLevel, runningTune) {};
+
   auto getType() -> Encoders override { return Encoders::HEVC; }
+  auto getName() -> std::string override { return "hevc"; }
 
   auto controlRateFlag() -> std::string override { return "-crf"; }
 

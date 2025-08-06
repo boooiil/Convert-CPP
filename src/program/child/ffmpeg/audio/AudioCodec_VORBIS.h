@@ -7,7 +7,12 @@
 
 class AudioCodec_VORBIS : public BaseAudioCodec {
  public:
+  AudioCodec_VORBIS(int channel = 2, int sampleRate = 48000, int bitDepth = 16)
+      : BaseAudioCodec(channel, sampleRate, bitDepth) {};
+
   auto getType() -> AudioCodec override { return AudioCodec::VORBIS; };
+  auto getName() -> std::string override { return "vorbis"; };
+  auto getDisplayName() -> std::string override { return "Vorbis"; };
 
   auto supportedChannels() -> std::vector<int> override {
     return {

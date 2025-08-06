@@ -9,9 +9,8 @@
 
 class Container_MKV : public BaseContainer {
  public:
-  auto getType() -> StringEnumDataHolder<Container> override {
-    return Container::MKV;
-  }
+  auto getType() -> Container override { return Container::MKV; }
+  auto getName() -> std::string override { return "mkv"; }
 
   auto supportedAudioCodecs() -> std::vector<AudioCodec> override {
     return {
@@ -24,10 +23,15 @@ class Container_MKV : public BaseContainer {
     };
   }
 
-  auto fallbackAudioCodec() -> AudioCodec override { return AudioCodec::AAC; };
+  auto fallbackAudioCodec() -> AudioCodec override {
+    return AudioCodec::VORBIS;
+  };
 
   auto supportedSubtitleCodecs() -> std::vector<SubtitleCodec> override {
-    return {/* TODO: add these when we finish sub codec */};
+    return {SubtitleCodec::ASS,      SubtitleCodec::DVB_SUB,
+            SubtitleCodec::MOV_TEXT, SubtitleCodec::SRT,
+            SubtitleCodec::SSA,      SubtitleCodec::SUBRIP,
+            SubtitleCodec::WEBVTT};
   }
 
   auto fallbackSubtitleCodec() -> SubtitleCodec override {
@@ -35,7 +39,12 @@ class Container_MKV : public BaseContainer {
   };
 
   auto supportedVideoCodecs() -> std::vector<Encoders> override {
-    return Encoders::_all();
+    return {
+        Encoders::AV1,        Encoders::AV1_AMF,    Encoders::AV1_NVENC,
+        Encoders::AV1_QSV,    Encoders::H264,       Encoders::H264_AMF,
+        Encoders::H264_NVENC, Encoders::H264_QSV,   Encoders::HEVC,
+        Encoders::HEVC_AMF,   Encoders::HEVC_NVENC, Encoders::HEVC_QSV,
+    };
   }
 
   auto fallbackVideoCodec() -> Encoders override { return Encoders::HEVC; };

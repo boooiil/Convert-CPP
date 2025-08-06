@@ -13,13 +13,12 @@
 
 class BaseVideoCodec {
  public:
-  virtual ~BaseVideoCodec() {
-    LOG_DEBUG("Deconstructing...");
-    if (runningTune != nullptr) {
-      LOG_DEBUG("Deleting Running Tune");
-      delete runningTune;
-    }
-  }
+  BaseVideoCodec(std::string runningPreset, std::string runningLevel,
+                 Tunes runningTune)
+      : runningPreset(runningPreset),
+        runningLevel(runningLevel),
+        runningTune(runningTune) {};
+  virtual ~BaseVideoCodec() {}
 
   /**
    * @brief Get the type of video codec used by this encoder
@@ -27,6 +26,7 @@ class BaseVideoCodec {
    * @return Encoders
    */
   virtual auto getType() -> Encoders { return Encoders::INVALID; };
+  virtual auto getName() -> std::string { return "BaseVideoCodec"; };
 
   /**
    * @brief The control rate flag used by this codec.
@@ -63,19 +63,21 @@ class BaseVideoCodec {
   virtual auto getRunningPreset() -> const std::string& {
     return this->runningPreset;
   }
-  virtual auto setRunningPreset(std::string& preset) -> void {
-    this->runningPreset = preset;
+  virtual void setRunningPreset(std::string& preset) {
+    this->runningPreset = getPreset(preset);
   }
 
   virtual auto getRunningLevel() -> const std::string& {
     return this->runningLevel;
   }
-  virtual auto setRunningLevel(std::string& level) -> const std::string& {
-    this->runningLevel = level;
+  virtual void setRunningLevel(std::string& level) {
+    this->runningLevel = getLevel(level);
   }
 
-  virtual auto getRunningTune() -> const Tunes& { return *this->runningTune; }
-  virtual auto setRunningTune(Tunes* tune) -> void { this->runningTune = tune; }
+  virtual auto getRunningTune() -> const Tunes& { return this->runningTune; }
+  virtual void setRunningTune(Tunes tune) {
+    this->runningTune = getTune(tune);
+  };
 
  private:
   template <typename T, typename C>
@@ -93,7 +95,7 @@ class BaseVideoCodec {
 
   std::string runningPreset;
   std::string runningLevel;
-  Tunes* runningTune;
+  Tunes runningTune;
 };
 
 #endif  // BASE_VIDEO_CODEC_H

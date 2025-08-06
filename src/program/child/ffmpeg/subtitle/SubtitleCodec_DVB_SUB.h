@@ -7,7 +7,8 @@
 
 class SubtitleCodec_DVB_SUB : public BaseSubtitleCodec {
  public:
-  SubtitleCodec getType() { return SubtitleCodec::DVB_SUB; };
+  auto getType() -> SubtitleCodec override { return SubtitleCodec::DVB_SUB; }
+  auto getName() -> std::string override { return "dvb_sub"; }
 };
 
 #endif  // SUBTITLE_CODEC_DVB_SUB_H

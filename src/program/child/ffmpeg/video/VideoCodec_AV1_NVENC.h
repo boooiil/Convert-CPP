@@ -5,7 +5,13 @@
 
 class VideoCodec_AV1_NVENC : public BaseVideoCodec {
  public:
+  VideoCodec_AV1_NVENC(std::string runningPreset = "high_quality",
+                       std::string runningLevel = "4.1",
+                       Tunes runningTune = Tunes::DEFAULT)
+      : BaseVideoCodec(runningPreset, runningLevel, runningTune) {};
+
   auto getType() -> Encoders override { return Encoders::AV1_NVENC; }
+  auto getName() -> std::string override { return "av1_nvenc"; }
 
   auto controlRateFlag() -> std::string override { return "-crf"; }
 

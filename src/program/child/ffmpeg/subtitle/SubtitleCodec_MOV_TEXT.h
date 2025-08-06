@@ -7,7 +7,8 @@
 
 class SubtitleCodec_MOV_TEXT : public BaseSubtitleCodec {
  public:
-  SubtitleCodec getType() { return SubtitleCodec::MOV_TEXT; };
+  auto getType() -> SubtitleCodec override { return SubtitleCodec::MOV_TEXT; }
+  auto getName() -> std::string override { return "mov_text"; }
 };
 
 #endif  // SUBTITLE_CODEC_MOV_TEXT_H

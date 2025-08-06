@@ -7,7 +7,8 @@
 
 class SubtitleCodec_WEBVTT : public BaseSubtitleCodec {
  public:
-  SubtitleCodec getType() { return SubtitleCodec::WEBVTT; };
+  auto getType() -> SubtitleCodec override { return SubtitleCodec::WEBVTT; }
+  auto getName() -> std::string override { return "webvtt"; }
 };
 
 #endif  // SUBTITLE_CODEC_WEBVTT_H

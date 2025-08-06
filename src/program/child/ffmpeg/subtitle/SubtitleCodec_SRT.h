@@ -7,7 +7,8 @@
 
 class SubtitleCodec_SRT : public BaseSubtitleCodec {
  public:
-  SubtitleCodec getType() { return SubtitleCodec::SRT; };
+  auto getType() -> SubtitleCodec override { return SubtitleCodec::SRT; }
+  auto getName() -> std::string override { return "srt"; }
 };
 
 #endif  // SUBTITLE_CODEC_SRT_H

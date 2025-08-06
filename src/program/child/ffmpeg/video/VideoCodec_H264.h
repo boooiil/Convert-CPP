@@ -5,7 +5,13 @@
 
 class VideoCodec_H264 : public BaseVideoCodec {
  public:
+  VideoCodec_H264(std::string runningPreset = "slow",
+                  std::string runningLevel = "4.1",
+                  Tunes runningTune = Tunes::DEFAULT)
+      : BaseVideoCodec(runningPreset, runningLevel, runningTune) {};
+
   auto getType() -> Encoders override { return Encoders::H264; }
+  auto getName() -> std::string override { return "h264"; }
 
   auto controlRateFlag() -> std::string override { return "-crf"; }
 

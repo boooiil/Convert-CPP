@@ -6,7 +6,12 @@
 
 class AudioCodec_AAC : public BaseAudioCodec {
  public:
+  AudioCodec_AAC(int channel = 2, int sampleRate = 48000, int bitDepth = 16)
+      : BaseAudioCodec(channel, sampleRate, bitDepth) {};
+
   auto getType() -> AudioCodec override { return AudioCodec::AAC; };
+  auto getName() -> std::string override { return "aac"; };
+  auto getDisplayName() -> std::string override { return "AAC"; };
 
   auto supportedChannels() -> std::vector<int> override {
     return {

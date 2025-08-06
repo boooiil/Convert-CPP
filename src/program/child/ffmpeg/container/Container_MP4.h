@@ -16,6 +16,7 @@
 class Container_MP4 : public BaseContainer {
  public:
   auto getType() -> Container override { return Container::MP4; }
+  auto getName() -> std::string override { return "mp4"; }
 
   auto supportedAudioCodecs() -> std::vector<AudioCodec> override {
     return {

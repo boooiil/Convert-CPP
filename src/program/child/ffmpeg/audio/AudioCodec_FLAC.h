@@ -7,7 +7,12 @@
 
 class AudioCodec_FLAC : public BaseAudioCodec {
  public:
+  AudioCodec_FLAC(int channel = 2, int sampleRate = 96000, int bitDepth = 24)
+      : BaseAudioCodec(channel, sampleRate, bitDepth) {};
+
   auto getType() -> AudioCodec override { return AudioCodec::FLAC; };
+  auto getName() -> std::string override { return "flac"; };
+  auto getDisplayName() -> std::string override { return "FLAC"; };
 
   auto supportedChannels() -> std::vector<int> override {
     return {

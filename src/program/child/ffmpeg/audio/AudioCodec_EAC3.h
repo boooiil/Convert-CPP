@@ -7,7 +7,14 @@
 
 class AudioCodec_EAC3 : public BaseAudioCodec {
  public:
+  AudioCodec_EAC3(int channel = 2, int sampleRate = 48000, int bitDepth = 16)
+      : BaseAudioCodec(channel, sampleRate, bitDepth) {};
+
   auto getType() -> AudioCodec override { return AudioCodec::EAC3; };
+  auto getName() -> std::string override { return "eac3"; };
+  auto getDisplayName() -> std::string override {
+    return "Dolby Digital Plus";
+  };
 
   auto supportedChannels() -> std::vector<int> override {
     return {

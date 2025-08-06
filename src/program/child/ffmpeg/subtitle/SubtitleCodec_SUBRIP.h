@@ -7,7 +7,8 @@
 
 class SubtitleCodec_SUBRIP : public BaseSubtitleCodec {
  public:
-  SubtitleCodec getType() { return SubtitleCodec::SUBRIP; };
+  auto getType() -> SubtitleCodec override { return SubtitleCodec::SUBRIP; }
+  auto getName() -> std::string override { return "subrip"; }
 };
 
 #endif  // SUBTITLE_CODEC_SUBRIP_H
