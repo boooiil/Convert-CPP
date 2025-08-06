@@ -1,6 +1,5 @@
 #include "ArgumentRegistry.h"
 
-#include <memory>
 #include <nlohmann/json.hpp>
 #include <stdexcept>
 #include <string>
@@ -30,6 +29,8 @@ std::unordered_map<std::string, Command> ArgumentRegistry::flag_to_command_map =
      {"--crop", Command::CROP},
      {"-co", Command::CONSTRAIN},
      {"--constrain", Command::CONSTRAIN},
+     {"-con", Command::CONTAINER},
+     {"--container", Command::CONTAINER},
      {"-crf", Command::CRF},
      {"--crf", Command::CRF},
      {"-dr", Command::DISPLAYREFRESH},
@@ -58,14 +59,14 @@ std::unordered_map<std::string, Command> ArgumentRegistry::flag_to_command_map =
 ArgumentRegistry::~ArgumentRegistry(void) {
   LOG_DEBUG("Destroying ArgumentRegistry...");
   LOG_DEBUG("Expecting to destroy { GenericArgument }");
-  for (auto& [command, argument] : this->arguments) {
+  for (auto &[command, argument] : this->arguments) {
     if (argument != nullptr) {
       delete argument;
     }
   }
 }
 
-void ArgumentRegistry::add(std::string flag, GenericArgument* argument) {
+void ArgumentRegistry::add(std::string flag, GenericArgument *argument) {
   if (flag_to_command_map.find(flag) == flag_to_command_map.end()) {
     throw std::invalid_argument("Tried to add flag: '" + flag +
                                 "'that does not exist.");
@@ -75,7 +76,7 @@ void ArgumentRegistry::add(std::string flag, GenericArgument* argument) {
   arguments[flag_to_command_map[flag]] = argument;
 }
 
-void ArgumentRegistry::add(Command flag, GenericArgument* argument) {
+void ArgumentRegistry::add(Command flag, GenericArgument *argument) {
   arguments[flag] = argument;
 }
 
@@ -91,7 +92,7 @@ void ArgumentRegistry::remove(std::string flag) {
 
 void ArgumentRegistry::remove(Command flag) { arguments.erase(flag); }
 
-void ArgumentRegistry::update(std::string flag, GenericArgument* argument) {
+void ArgumentRegistry::update(std::string flag, GenericArgument *argument) {
   if (flag_to_command_map.find(flag) == flag_to_command_map.end()) {
     throw std::invalid_argument("Tried to update flag: '" + flag +
                                 "'that does not exist.");
@@ -101,7 +102,7 @@ void ArgumentRegistry::update(std::string flag, GenericArgument* argument) {
   arguments[flag_to_command_map[flag]] = argument;
 }
 
-void ArgumentRegistry::update(Command flag, GenericArgument* argument) {
+void ArgumentRegistry::update(Command flag, GenericArgument *argument) {
   arguments[flag] = argument;
 }
 
@@ -126,10 +127,10 @@ void ArgumentRegistry::parse(std::vector<std::string> args) {
     }
 
     // check if the argument has been registered
-    GenericArgument* argument = this->get(option);
+    GenericArgument *argument = this->get(option);
 
     // parse argument as a flag argument
-    FlagArgument* flagArgument = dynamic_cast<FlagArgument*>(argument);
+    FlagArgument *flagArgument = dynamic_cast<FlagArgument *>(argument);
 
     // if the argument is a flag argument, parse it as such
     // we do this since we do not need to check the next argument
@@ -159,7 +160,7 @@ void ArgumentRegistry::invalidArgument(std::string arg) {
   LOG_DEBUG("Invalid argument:", arg);
 }
 
-GenericArgument* ArgumentRegistry::get(std::string flag) {
+GenericArgument *ArgumentRegistry::get(std::string flag) {
   // iterate over the flag and long flag of the arguments and return the
   // argument that matches the flag
 
@@ -173,14 +174,14 @@ GenericArgument* ArgumentRegistry::get(std::string flag) {
   return arguments[flag_to_command_map[flag]];
 }
 
-GenericArgument* ArgumentRegistry::get(Command flag) { return arguments[flag]; }
+GenericArgument *ArgumentRegistry::get(Command flag) { return arguments[flag]; }
 
 const std::unordered_map<std::string, Command>
 ArgumentRegistry::get_flag_to_command_map() const {
   return flag_to_command_map;
 }
 
-const std::unordered_map<Command, GenericArgument*>
+const std::unordered_map<Command, GenericArgument *>
 ArgumentRegistry::get_all() {
   return arguments;
 }
@@ -203,13 +204,13 @@ bool ArgumentRegistry::has(Command flag) const {
 
 void ArgumentRegistry::fromJSON(const nlohmann::json json) {
   // Implementation for deserializing from JSON
-    (void)json;
+  (void)json;
 }
 
 nlohmann::json ArgumentRegistry::toJSON(void) {
   nlohmann::json json;
 
-  for (const auto& [command, argument] : arguments) {
+  for (const auto &[command, argument] : arguments) {
     // check if flag exists in arguments
     // skip --
 

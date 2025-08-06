@@ -11,13 +11,12 @@
 
 #include <regex>
 #include <string>
-#include <vector>
 
 /**
  * @brief Handle various functions that modify std strings.
  */
 class StringUtils {
- public:
+public:
   /**
    * @brief Truncate a string.
    *
@@ -36,8 +35,8 @@ class StringUtils {
    * @param[in] to    -  The sequence of characters to replace with.
    * @return The modified string.
    */
-  static std::string replaceAll(std::string str, const std::string& from,
-                                const std::string& to);
+  static std::string replaceAll(std::string str, const std::string &from,
+                                const std::string &to);
 
   /**
    * @brief Replace all occurances of a regex pattern with a provided sequence
@@ -48,8 +47,8 @@ class StringUtils {
    * @param[in] to    - The sequence of characters to replace with.
    * @return The modified string.
    */
-  static std::string replaceAll(const std::string& str, const std::regex& from,
-                                const std::string& to);
+  static std::string replaceAll(const std::string &str, const std::regex &from,
+                                const std::string &to);
 
   /**
    * @brief Turn all characters to lower case.
@@ -68,6 +67,14 @@ class StringUtils {
   static std::string toUpperCase(std::string str);
 
   /**
+   * @brief Convert a string to proper case (title case).
+   *
+   * @param[in] str The string to convert.
+   * @return The converted string.
+   */
+  static std::string toProperCase(std::string str);
+
+  /**
    * @brief Check if a string contains another.
    *
    * @param str The string to check.
@@ -75,7 +82,7 @@ class StringUtils {
    * @return true
    * @return false
    */
-  static bool contains(const std::string& str, const std::string& pattern);
+  static bool contains(const std::string &str, const std::string &pattern);
 };
 
-#endif  // !STRING_UTILS
+#endif // !STRING_UTILS

@@ -1,13 +1,12 @@
 #include "Settings.h"
 
-#include <stduuid/uuid.h>
+#include <uuid.h>
 
 #include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
 
 #include "../../utils/logging/Logger.h"
-#include "enums/Tunes.h"
 
 Settings::Settings()
     : /*activityRegistry(new EnumToStringRegistry<Activity>()),
@@ -18,15 +17,14 @@ Settings::Settings()
       tunesRegistry(new EnumToStringRegistry<Tunes>()),
       platformRegistry(new EnumToStringRegistry<Platform>()),
       loggingFormatRegistry(new EnumToStringRegistry<LoggingOptions>()),*/
-      childOptionsMap({}),
-      parentOptions(new ParentOptions()),
+      childOptionsMap({}), parentOptions(new ParentOptions()),
       programOptions(new ProgramOptions()) {}
 
 Settings::~Settings() {
   LOG_DEBUG("deleting { parentOptions, programOptions, childOptions }");
   if (!this->childOptionsMap.empty()) {
     LOG_DEBUG("Deleting child options");
-    for (auto& [uuid, childOptions] : this->childOptionsMap) {
+    for (auto &[uuid, childOptions] : this->childOptionsMap) {
       LOG_DEBUG("Deleting child options with uuid:", uuid);
       delete childOptions;
     }
@@ -41,7 +39,7 @@ Settings::~Settings() {
   }
 }
 
-void Settings::init(std::vector<std::string>& args) {
+void Settings::init(std::vector<std::string> &args) {
   // LOG_DEBUG("Creating settings object with (",
   //             std::to_string(argc), ") args.");
 
@@ -237,7 +235,7 @@ nlohmann::json Settings::toJSON() {
   settings["ProgramOptions"] = this->programOptions->toJSON();
   settings["ParentOptions"] = this->parentOptions->toJSON();
 
-  for (const auto& [uuid, childOptions] : this->childOptionsMap) {
+  for (const auto &[uuid, childOptions] : this->childOptionsMap) {
     settings["ChildOptions"][uuids::to_string(uuid)] = childOptions->toJSON();
   }
 

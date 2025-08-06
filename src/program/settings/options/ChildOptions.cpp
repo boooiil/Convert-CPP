@@ -1,6 +1,5 @@
 #include "ChildOptions.h"
 
-#include "../../../utils/logging/LogColor.h"
 #include "../../../utils/logging/Logger.h"
 #include "../../Program.h"
 #include "../../child/media/MediaDefinedFormat.h"
@@ -13,7 +12,6 @@
 #include "../arguments/video/Quality.h"
 #include "../enums/Encoders.h"
 #include "../enums/HWAccelerators.h"
-#include "../enums/LoggingOptions.h"
 #include "../enums/Tunes.h"
 #include "nlohmann/json.hpp"
 
@@ -60,6 +58,9 @@ void ChildOptions::prepare(void) {
       Command::CONSTRAIN,
       new FlagArgument("Constrain the bitrate to the specified value", "-co",
                        "--constrain", false));
+  argumentRegistry->add(Command::CONTAINER, new EnumArgument<Container>(
+                                                "Container to use", "-con",
+                                                "--container", Container::MKV));
   argumentRegistry->add(Command::CRF,
                         new IntegerArgument("Constant Rate Factor (CRF) value",
                                             "-crf", "--crf", -1));
@@ -85,9 +86,9 @@ void ChildOptions::prepare(void) {
   argumentRegistry->add(Command::QUALITY,
                         new Quality("Quality value", "-q", "--quality",
                                     MediaDefinedFormat::formats.at("720p")));
-  argumentRegistry->add(
-      Command::START, new TimeStringArgument("Start time for processing", "-ss",
-                                             "--start", ""));
+  argumentRegistry->add(Command::START,
+                        new TimeStringArgument("Start time for processing",
+                                               "-ss", "--start", ""));
   argumentRegistry->add(Command::TRIM,
                         new TimeStringVectorArgument(
                             "Trim the video to the specified duration", "-tr",
@@ -97,7 +98,7 @@ void ChildOptions::prepare(void) {
       new EnumArgument<Tunes>("Tune to use", "-t", "--tune", Tunes::DEFAULT));
 }
 
-void ChildOptions::parse(std::vector<std::string>& args) {
+void ChildOptions::parse(std::vector<std::string> &args) {
   this->i_args = args;
   this->argumentRegistry->parse(args);
 }
@@ -120,15 +121,15 @@ void ChildOptions::validate(void) {
   switch (
       this->argumentRegistry->get_t<EnumArgument<Encoders>>(Command::ENCODER)
           ->get()) {
-    case Encoders::AV1:
-    case Encoders::AV1_AMF:
-    case Encoders::AV1_NVENC:
-    case Encoders::AV1_QSV:
-      this->argumentRegistry->get_t<EnumArgument<Tunes>>(Command::TUNE)
-          ->set(Tunes::DEFAULT);
-      break;
-    default:
-      break;
+  case Encoders::AV1:
+  case Encoders::AV1_AMF:
+  case Encoders::AV1_NVENC:
+  case Encoders::AV1_QSV:
+    this->argumentRegistry->get_t<EnumArgument<Tunes>>(Command::TUNE)
+        ->set(Tunes::DEFAULT);
+    break;
+  default:
+    break;
   }
 
   LOG_DEBUG("Running Encoder:",
@@ -141,16 +142,16 @@ void ChildOptions::validate(void) {
     switch (
         this->argumentRegistry->get_t<EnumArgument<Encoders>>(Command::ENCODER)
             ->get()) {
-      case Encoders::HEVC:
-      case Encoders::HEVC_AMF:
-      case Encoders::HEVC_NVENC:
-      case Encoders::HEVC_QSV:
-        LOG_DEBUG("HEVC does not support film tune.");
-        this->argumentRegistry->get_t<EnumArgument<Tunes>>(Command::TUNE)
-            ->set(Tunes::DEFAULT);
-        break;
-      default:
-        break;
+    case Encoders::HEVC:
+    case Encoders::HEVC_AMF:
+    case Encoders::HEVC_NVENC:
+    case Encoders::HEVC_QSV:
+      LOG_DEBUG("HEVC does not support film tune.");
+      this->argumentRegistry->get_t<EnumArgument<Tunes>>(Command::TUNE)
+          ->set(Tunes::DEFAULT);
+      break;
+    default:
+      break;
     }
   }
 

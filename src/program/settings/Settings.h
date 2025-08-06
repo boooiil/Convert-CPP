@@ -1,20 +1,16 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include <stduuid/uuid.h>
+#include <uuid.h>
 
 #include <nlohmann/json_fwd.hpp>
 
-#include "enums/Activity.h"
-#include "enums/EnumToStringFactory.h"
-#include "enums/EnumToStringRegistry.h"
-#include "enums/SubtitleCodec.h"
 #include "options/ChildOptions.h"
 #include "options/ParentOptions.h"
 #include "options/ProgramOptions.h"
 
 class Settings : public JSONSerializable {
- public:
+public:
   Settings(void);
   ~Settings(void);
 
@@ -30,19 +26,19 @@ class Settings : public JSONSerializable {
 
   // logging, parent, refresh, hwa, hwd, hwe, platform, supported enc, supported
   // hwacc
-  ProgramOptions* programOptions;
+  ProgramOptions *programOptions;
   // amount
-  ParentOptions* parentOptions;
+  ParentOptions *parentOptions;
   // amount, ffmpeg
-  std::unordered_map<uuids::uuid, ChildOptions*> childOptionsMap;
+  std::unordered_map<uuids::uuid, ChildOptions *> childOptionsMap;
 
   std::string cwd;
 
-  void init(std::vector<std::string>& args);
+  void init(std::vector<std::string> &args);
 
   void fromJSON(nlohmann::json json) override;
 
   nlohmann::json toJSON(void);
 };
 
-#endif  // !SETTINGS_H
+#endif // !SETTINGS_H

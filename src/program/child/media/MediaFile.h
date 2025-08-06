@@ -9,7 +9,7 @@
 #ifndef MEDIA_FILE
 #define MEDIA_FILE
 
-#include <stduuid/uuid.h>
+#include <uuid.h>
 
 #include <string>
 
@@ -17,7 +17,7 @@
  * @brief Hold information about a media file.
  */
 class MediaFile {
- public:
+public:
   /**
    * @brief Construct a new Media File object.
    *
@@ -58,11 +58,11 @@ class MediaFile {
   /// @brief File extension
   std::string ext;
 
-  int number;           /// @brief Unsure?
-  std::size_t size;     /// @brief File size in bytes
-  std::size_t newSize;  /// @brief File size in bytes after conversion
-  int quality;          /// @brief Quality of the file
-  int season;           /// @brief Season number
+  int number;          /// @brief Unsure?
+  std::size_t size;    /// @brief File size in bytes
+  std::size_t newSize; /// @brief File size in bytes after conversion
+  int quality;         /// @brief Quality of the file
+  int season;          /// @brief Season number
 
   /**
    * @brief Rename the current media name to a standard format.
@@ -71,7 +71,7 @@ class MediaFile {
    */
   void rename();
 
- private:
+private:
   /**
    * @brief Compile the full path of the original file.
    *
@@ -124,4 +124,4 @@ class MediaFile {
   void resolveQuality(std::string original_filename);
 };
 
-#endif  // !MEDIA_FILE
+#endif // !MEDIA_FILE

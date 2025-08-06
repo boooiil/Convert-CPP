@@ -17,8 +17,9 @@
 #include "../settings/arguments/FlagArgument.h"
 #include "../settings/arguments/IntegerArgument.h"
 #include "../settings/enums/Activity.h"
-#include "../settings/enums/LoggingOptions.h"
+#include "../settings/enums/EnumToStringFactory.h"
 #include "media/Media.h"
+
 
 std::vector<std::thread> workerThreads;
 
@@ -28,17 +29,17 @@ std::vector<std::thread> workerThreads;
 
 Child::Child(void) : endable(false) {}
 
-void Child::prepare(std::vector<std::string>& args) {
+void Child::prepare(std::vector<std::string> &args) {
   // initialize settings
 
-  std::random_device rd;   // Seed for random number generator
-  std::mt19937 gen(rd());  // Standard mersenne_twister_engine seeded with rd()
+  std::random_device rd;  // Seed for random number generator
+  std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
   uuids::uuid_random_generator generator(
-      gen);  // Pass the generator to uuid_random_generator
+      gen); // Pass the generator to uuid_random_generator
   this->id = generator();
 
   Program::settings->childOptionsMap[this->id] = new ChildOptions();
-  ChildOptions& childOptions = *Program::settings->childOptionsMap[this->id];
+  ChildOptions &childOptions = *Program::settings->childOptionsMap[this->id];
 
   childOptions.prepare();
   childOptions.parse(args);
@@ -52,7 +53,7 @@ void Child::prepare(std::vector<std::string>& args) {
     std::string cwd = file.path().parent_path().string();
     std::string filename = file.path().filename().string();
 
-    Media* media = new Media(this->id, filename, cwd);
+    Media *media = new Media(this->id, filename, cwd);
     media->file->rename();
 
     if (!std::filesystem::exists(media->file->conversionFolderPath) &&
@@ -95,15 +96,15 @@ void Child::run(void) {
   this->setEndable(false);
   int currentAmount = static_cast<int>(this->converting.size());
 
-  ChildOptions& childOptions = *Program::settings->childOptionsMap[this->id];
+  ChildOptions &childOptions = *Program::settings->childOptionsMap[this->id];
 
-  IntegerArgument* setAmount =
+  IntegerArgument *setAmount =
       childOptions.argumentRegistry->get_t<IntegerArgument>(Command::AMOUNT);
 
   LOG_DEBUG(std::to_string(currentAmount), setAmount->toString());
 
   if ((currentAmount < (int)*setAmount) && !this->pending.empty()) {
-    Media* media = this->pending.front();
+    Media *media = this->pending.front();
 
     // if there are no media files waiting
     // and the current amount of converting media is 0
@@ -140,7 +141,7 @@ void Child::run(void) {
 
     // iterate over converting
     while (!this->converting.empty()) {
-      Media* value = this->converting.front();
+      Media *value = this->converting.front();
       LOG(LogColor::fgRed("CURRENT FILE: " + value->file->conversionName));
       this->converting.pop();
     }
@@ -149,11 +150,11 @@ void Child::run(void) {
   }
 
   // temp queue for conversion iteration
-  std::queue<Media*> t_queue;
+  std::queue<Media *> t_queue;
 
   // iterate over converting media
   while (!this->converting.empty()) {
-    Media* media = this->converting.front();
+    Media *media = this->converting.front();
 
     LOG_DEBUG(media->file->originalFileNameExt,
               EnumToStringFactory::get(media->getActivity()).getName());
@@ -209,7 +210,7 @@ void Child::end(void) {
   LOG_DEBUG("Ending child runner.");
   LOG_DEBUG("Expected to delete { pending[], converting[], settings }.");
   // iterate over running threads and join
-  for (auto& t : workerThreads) {
+  for (auto &t : workerThreads) {
     if (t.joinable()) {
       t.join();
     }
@@ -220,7 +221,7 @@ void Child::end(void) {
 
   // iterate over pending
   while (!this->pending.empty()) {
-    Media* media = this->pending.front();
+    Media *media = this->pending.front();
     this->pending.pop();
 
     LOG_DEBUG("Deleting media in:", media->file->originalFileNameExt);
@@ -230,7 +231,7 @@ void Child::end(void) {
 
   // iterate over converting
   while (!this->converting.empty()) {
-    Media* media = this->converting.front();
+    Media *media = this->converting.front();
     this->converting.pop();
 
     LOG_DEBUG("Deleting media in:", media->file->originalFileNameExt);
@@ -258,14 +259,14 @@ nlohmann::json Child::toJSON() {
 
   json child;
 
-  std::queue<Media*> t_queue;
+  std::queue<Media *> t_queue;
 
   child["pending"] = nlohmann::json::array();
   child["converting"] = nlohmann::json::array();
 
   // converting file
   while (!this->converting.empty()) {
-    Media* media = this->converting.front();
+    Media *media = this->converting.front();
 
     nlohmann::json mediaDebug;
     nlohmann::json mediaFileDebug;
@@ -277,7 +278,7 @@ nlohmann::json Child::toJSON() {
     mediaDebug["started"] = media->started;
     mediaDebug["ended"] = media->ended;
     // this might not work
-    mediaDebug["ffmpegArguments"] = media->ffmpegArguments;
+    mediaDebug["ffmpegArguments"] = media->ffmpegArguments->build();
 
     mediaFileDebug["originalFileNameExt"] = media->file->originalFileNameExt;
     mediaFileDebug["originalFullPath"] = media->file->originalFullPath;
@@ -321,11 +322,11 @@ nlohmann::json Child::toJSON() {
   }
 
   this->converting = t_queue;
-  t_queue = std::queue<Media*>();
+  t_queue = std::queue<Media *>();
 
   // pending file
   while (!this->pending.empty()) {
-    Media* media = this->pending.front();
+    Media *media = this->pending.front();
     nlohmann::json mediaDebug;
     nlohmann::json mediaFileDebug;
     nlohmann::json mediaVideoDebug;
@@ -335,7 +336,7 @@ nlohmann::json Child::toJSON() {
         EnumToStringFactory::get(media->getActivity()).getName();
     mediaDebug["started"] = media->started;
     mediaDebug["ended"] = media->ended;
-    mediaDebug["ffmpegArguments"] = media->ffmpegArguments;
+    mediaDebug["ffmpegArguments"] = media->ffmpegArguments->build();
 
     mediaFileDebug["originalFileNameExt"] = media->file->originalFileNameExt;
     mediaFileDebug["originalFullPath"] = media->file->originalFullPath;
