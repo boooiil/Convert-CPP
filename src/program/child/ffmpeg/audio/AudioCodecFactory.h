@@ -14,7 +14,7 @@
 
 class AudioCodecFactory {
  public:
-  auto createAudioCodec(AudioCodec audioCodec) -> BaseAudioCodec* {
+  static auto createAudioCodec(AudioCodec audioCodec) -> BaseAudioCodec* {
     switch (audioCodec) {
       case AudioCodec::AAC:
         return new AudioCodec_AAC();
@@ -37,6 +37,27 @@ class AudioCodecFactory {
       case AudioCodec::NONE:
         return nullptr;
     }
+  }
+  static auto createAudioCodec(const std::string& audioCodecName)
+      -> BaseAudioCodec* {
+    if (audioCodecName == "aac") {
+      return new AudioCodec_AAC();
+    } else if (audioCodecName == "ac3") {
+      return new AudioCodec_AC3();
+    } else if (audioCodecName == "eac3") {
+      return new AudioCodec_EAC3();
+    } else if (audioCodecName == "flac") {
+      return new AudioCodec_FLAC();
+    } else if (audioCodecName == "mp3") {
+      return new AudioCodec_MP3();
+    } else if (audioCodecName == "opus") {
+      return new AudioCodec_OPUS();
+    } else if (audioCodecName == "truehd") {
+      return new AudioCodec_TRUEHD();
+    } else if (audioCodecName == "vorbis") {
+      return new AudioCodec_VORBIS();
+    }
+    return nullptr;
   }
 };
 
