@@ -78,7 +78,8 @@ ProbeResultStreamAudio::ProbeResultStreamAudio(nlohmann::json JSON)
   }
   if (!JSON["sample_rate"].is_null()) {
     LOG_DEBUG("sample_rate: ", JSON["sample_rate"]);
-    ProbeResultStreamAudio::sample_rate = JSON["sample_rate"];
+    std::string result = JSON["sample_rate"];
+    ProbeResultStreamAudio::sample_rate = std::stoi(result);
   }
   if (!JSON["channels"].is_null()) {
     LOG_DEBUG("channels: ", std::to_string((int)JSON["channels"]));

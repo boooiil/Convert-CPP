@@ -18,7 +18,7 @@
  * @brief Probe result stream audio class.
  */
 class ProbeResultStreamAudio : public ProbeResultStream {
- public:
+public:
   /** This constructor should never be called. */
   ProbeResultStreamAudio();
 
@@ -33,7 +33,7 @@ class ProbeResultStreamAudio : public ProbeResultStream {
   /// @brief sample format
   std::string sample_fmt;
   /// @brief sample rate
-  std::string sample_rate;
+  int sample_rate;
   /// @brief audio channels
   int channels;
   /// @brief channel layout
@@ -44,4 +44,4 @@ class ProbeResultStreamAudio : public ProbeResultStream {
   int initial_padding;
 };
 
-#endif  // PROBE_RESULT_STREAM_AUDIO
+#endif // PROBE_RESULT_STREAM_AUDIO

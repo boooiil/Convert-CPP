@@ -335,7 +335,7 @@ void ChildDisplay::printInformationTyped(NTicker* ticker, Child* child) {
           LogColor::fgOrange(prsa.channel_layout));
 
       LOG(tab(4) + LogColor::fgBlue("Sample Rate") + colon +
-          LogColor::fgOrange(prsa.sample_rate));
+          LogColor::fgOrange(std::to_string(prsa.sample_rate)));
 
       LOG(tab(4) + LogColor::fgBlue("Bit Rate") + colon +
           LogColor::fgOrange(prsa.tags.BPS));
