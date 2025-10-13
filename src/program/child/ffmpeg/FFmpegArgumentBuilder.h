@@ -20,12 +20,12 @@ public:
   // if container supports video codec, use
   // else stop program
   // others use default
-  void validate(uuids::uuid id);
+  void validate();
   std::vector<std::string> build();
 
 private:
-  BaseContainer *container;
-  Media *media;
+  BaseContainer *container = nullptr;
+  Media *media = nullptr;
 };
 
 #endif // FFMPEG_ARGUMENT_BUILDER_H
