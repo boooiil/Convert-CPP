@@ -1,17 +1,18 @@
 #ifndef BASE_CONTAINER_H
 #define BASE_CONTAINER_H
 
+#include <set>
+#include <string>
 #include <vector>
 
 #include "../../../../utils/logging/Logger.h"
 #include "../../../settings/enums/AudioCodec.h"
 #include "../../../settings/enums/Container.h"
 #include "../../../settings/enums/Encoders.h"
-#include "../../../settings/enums/StringEnumDataHolder.h"
 #include "../../../settings/enums/SubtitleCodec.h"
-#include "../audio/AudioCodec_AAC.h"
 #include "../audio/BaseAudioCodec.h"
 #include "../subtitle/BaseSubtitleCodec.h"
+#include "../subtitle/SubtitleCodecFactory.h"
 #include "../subtitle/SubtitleCodec_ASS.h"
 #include "../video/BaseVideoCodec.h"
 #include "../video/VideoCodec_HEVC.h"
@@ -34,7 +35,7 @@
  */
 
 class BaseContainer {
- public:
+public:
   // BaseContainer(BaseAudioCodec* _audio_codec,
   //               BaseSubtitleCodec* _subtitle_codec,
   //               BaseVideoCodec* _video_codec)
@@ -63,6 +64,8 @@ class BaseContainer {
 
   virtual Container getType() = 0;
   virtual std::string getName() = 0;
+  virtual std::string getDisplayName() = 0;
+  virtual std::set<std::string> getAliases() = 0;
 
   virtual std::vector<Encoders> supportedVideoCodecs() = 0;
   virtual Encoders fallbackVideoCodec() = 0;
@@ -71,7 +74,7 @@ class BaseContainer {
     return getParam(encoder, &BaseContainer::supportedVideoCodecs,
                     &BaseContainer::fallbackVideoCodec);
   }
-  virtual const void setVideoCodec(BaseVideoCodec* _video_codec) {
+  virtual const void setVideoCodec(BaseVideoCodec *_video_codec) {
     // use default video codec if null
     if (_video_codec == nullptr) {
       return;
@@ -111,7 +114,8 @@ class BaseContainer {
     return getParam(_audio_codec, &BaseContainer::supportedAudioCodecs,
                     &BaseContainer::fallbackAudioCodec);
   }
-  virtual const void setAudioCodec(std::vector<BaseAudioCodec*> _audio_codecs) {
+  virtual const void
+  setAudioCodec(std::vector<BaseAudioCodec *> _audio_codecs) {
     // use default video codec if null
     if (_audio_codecs.empty()) {
       return;
@@ -162,43 +166,39 @@ class BaseContainer {
     return getParam(_subtitle_codec, &BaseContainer::supportedSubtitleCodecs,
                     &BaseContainer::fallbackSubtitleCodec);
   }
-  virtual const void setSubtitleCodec(BaseSubtitleCodec* _subtitle_codec) {
+  virtual const void setSubtitleCodec(BaseSubtitleCodec *_subtitle_codec) {
     // use default video codec if null
     if (_subtitle_codec == nullptr) {
-      return;
+      this->subtitle_codec = (BaseSubtitleCodec *)this->fallbackSubtitleCodec();
+    }
+    auto provided_codec = _subtitle_codec;
+    auto supported_codec = getSubtitleCodec(provided_codec->getType());
+
+    if (provided_codec->getType() != supported_codec) {
+      delete this->subtitle_codec;
+      this->subtitle_codec =
+          SubtitleCodecFactory::create(this->fallbackSubtitleCodec());
     }
 
-    SubtitleCodec wanted_type = _subtitle_codec->getType();
-    SubtitleCodec validated = getSubtitleCodec(wanted_type);
-
-    // throw on invalid video codec
-    if (validated != wanted_type) {
-      LOG_DEBUG("Invalid audio codec for container", this->getName(),
-                _subtitle_codec->getName());
-      throw std::runtime_error("Invalid video codec: " +
-                               _subtitle_codec->getName());
-    }
-
-    LOG_DEBUG("Setting video codec to", _subtitle_codec->getName());
     delete subtitle_codec;
-    subtitle_codec = _subtitle_codec;
+    this->subtitle_codec = _subtitle_codec;
   }
 
-  auto getAudioCodecs() -> const std::vector<BaseAudioCodec*>& {
+  auto getAudioCodecs() -> std::vector<BaseAudioCodec *> & {
     return audio_codec;
   }
 
-  auto getVideoCodec() -> const BaseVideoCodec* { return video_codec; }
+  auto getVideoCodec() -> BaseVideoCodec * { return video_codec; }
 
-  auto getSubtitleCodec() -> const BaseSubtitleCodec* { return subtitle_codec; }
+  auto getSubtitleCodec() -> BaseSubtitleCodec * { return subtitle_codec; }
 
- private:
+private:
   template <typename T, typename C>
   const T getParam(T search, std::vector<T> (C::*provider)(),
                    T (C::*fallback)()) {
     auto params = (this->*provider)();
 
-    for (auto& p : params) {
+    for (auto &p : params) {
       if (p == search) {
         return p;
       }
@@ -206,9 +206,9 @@ class BaseContainer {
     return (this->*fallback)();
   }
 
-  std::vector<BaseAudioCodec*> audio_codec = {};
-  BaseVideoCodec* video_codec = new VideoCodec_HEVC();
-  BaseSubtitleCodec* subtitle_codec = new SubtitleCodec_ASS();
+  std::vector<BaseAudioCodec *> audio_codec = {};
+  BaseVideoCodec *video_codec = new VideoCodec_HEVC();
+  BaseSubtitleCodec *subtitle_codec = new SubtitleCodec_ASS();
 };
 
-#endif  // BASE_CONTAINER_H
+#endif // BASE_CONTAINER_H

@@ -2,24 +2,23 @@
 #define CONTAINER_MKV_H
 
 #include "../../../settings/enums/AudioCodec.h"
-#include "../../../settings/enums/StringEnumDataHolder.h"
 #include "BaseContainer.h"
 
 // TODO: turn all of these into smart pointers so i dont have to delete them
 
 class Container_MKV : public BaseContainer {
- public:
+public:
   auto getType() -> Container override { return Container::MKV; }
   auto getName() -> std::string override { return "mkv"; }
 
   auto supportedAudioCodecs() -> std::vector<AudioCodec> override {
     return {
-        AudioCodec::AAC,     // aac
-        AudioCodec::AC3,     // ac3
-        AudioCodec::MP3,     // mp3
-        AudioCodec::FLAC,    // flac
-        AudioCodec::VORBIS,  // vorbis
-        AudioCodec::OPUS     // opus
+        AudioCodec::AAC,    // aac
+        AudioCodec::AC3,    // ac3
+        AudioCodec::MP3,    // mp3
+        AudioCodec::FLAC,   // flac
+        AudioCodec::VORBIS, // vorbis
+        AudioCodec::OPUS    // opus
     };
   }
 
@@ -50,4 +49,4 @@ class Container_MKV : public BaseContainer {
   auto fallbackVideoCodec() -> Encoders override { return Encoders::HEVC; };
 };
 
-#endif  // CONTAINER_MKV_H
+#endif // CONTAINER_MKV_H
