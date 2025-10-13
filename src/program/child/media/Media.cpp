@@ -21,12 +21,13 @@
 #include "MediaProcessValidate.h"
 #include "MediaVideoProperties.h"
 #include "MediaWorkingProperties.h"
-
+#include "src/program/Program.h"
+#include "src/program/settings/enums/EnumToStringFactory.h"
 
 Media::Media()
-    : started(0), ended(0), activity(Activity::WAITING), file(new MediaFile()),
-      probeResult(nullptr), video(new MediaVideoProperties()),
-      working(new MediaWorkingProperties()) {
+    : started(0), ended(0), probeResult(nullptr), file(new MediaFile()),
+      video(new MediaVideoProperties()), working(new MediaWorkingProperties()),
+      ffmpegArguments(nullptr), activity(Activity::WAITING) {
   std::random_device rd;  // Seed for random number generator
   std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
   uuids::uuid_random_generator generator(
@@ -37,10 +38,11 @@ Media::Media()
 Media::Media(uuids::uuid id, std::string name, std::string path)
     : id(id), started(0), ended(0), probeResult(nullptr),
       file(new MediaFile(id, name, path)), video(new MediaVideoProperties()),
-      working(new MediaWorkingProperties()), activity(Activity::WAITING) {}
+      working(new MediaWorkingProperties()), ffmpegArguments(nullptr),
+      activity(Activity::WAITING) {}
 
 Media::~Media() {
-  LOG_DEBUG("Deconstructing media: ", this->file->originalFileNameExt);
+  LOG_DEBUG("Deconstructing media: ", this->id);
 
   if (file != nullptr)
     delete file;
@@ -50,6 +52,9 @@ Media::~Media() {
     delete working;
   if (probeResult != nullptr)
     delete probeResult;
+
+  LOG_DEBUG("Deleting ffmpegArguments: {}",
+            static_cast<void *>(ffmpegArguments));
   if (ffmpegArguments != nullptr)
     delete ffmpegArguments;
 }
@@ -111,6 +116,12 @@ void Media::setActivity(Activity provided_activity) {
 }
 
 void Media::doStatistics() {
+  if (Program::stopFlag == true) {
+    LOG_DEBUG("Stopping statistics due to stop flag.");
+    this->setActivity(Activity::FINISHED);
+    return;
+  }
+
   this->setActivity(Activity::STATISTICS);
 
   LOG_DEBUG("Starting statistics for: ", this->file->originalFileNameExt);
@@ -127,6 +138,12 @@ void Media::doStatistics() {
   this->setActivity(Activity::WAITING_CONVERT);
 }
 void Media::doConversion() {
+  if (Program::stopFlag == true) {
+    LOG_DEBUG("Stopping conversion due to stop flag.");
+    this->setActivity(Activity::FAILED_SYSTEM);
+    return;
+  }
+
   this->setActivity(Activity::CONVERT);
 
   LOG_DEBUG("Starting conversion for: ", this->file->originalFileNameExt);
@@ -146,6 +163,13 @@ void Media::doConversion() {
   this->setActivity(Activity::WAITING_VALIDATE);
 }
 void Media::doValidation() {
+
+  if (Program::stopFlag == true) {
+    LOG_DEBUG("Stopping validation due to stop flag.");
+    this->setActivity(Activity::FAILED_SYSTEM);
+    return;
+  }
+
   this->setActivity(Activity::VALIDATE);
 
   LOG_DEBUG("Starting validation for: ", this->file->originalFileNameExt);
@@ -163,6 +187,7 @@ void Media::doValidation() {
 
 void Media::buildFFmpegArguments(bool isValidate) {
   this->ffmpegArguments = new FFmpegArgumentBuilder(this);
+  this->ffmpegArguments->validate();
 }
 
 void Media::fromJSON(nlohmann::json json) {
