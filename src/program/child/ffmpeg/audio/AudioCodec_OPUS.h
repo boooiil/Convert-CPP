@@ -2,28 +2,28 @@
 #define AUDIO_CODEC_OPUS_H
 
 #include "../../../settings/enums/AudioCodec.h"
-#include "../../../settings/enums/StringEnumDataHolder.h"
 #include "BaseAudioCodec.h"
 
 class AudioCodec_OPUS : public BaseAudioCodec {
- public:
+public:
   AudioCodec_OPUS(int channel = 2, int sampleRate = 48000, int bitDepth = 16)
       : BaseAudioCodec(channel, sampleRate, bitDepth) {};
 
   auto getType() -> AudioCodec override { return AudioCodec::OPUS; };
   auto getName() -> std::string override { return "opus"; };
   auto getDisplayName() -> std::string override { return "Opus"; };
+  auto getAliases() -> std::set<std::string> override { return {"opus"}; };
 
   auto supportedChannels() -> std::vector<int> override {
     return {
-        1,  // mono
-        2,  // l, r
-        3,  // fl, c, fr
-        4,  // fl, fr, rl, rr
-        5,  // fl, fc, fr, rl, rr
-        6,  // fl, fc, fr, rl, rr, lfe
-        7,  // fl, fc, fr, rl, rr, lfe, rc
-        8   // fl, fc, fr, rl, rr, lfe, sl, sr
+        1, // mono
+        2, // l, r
+        3, // fl, c, fr
+        4, // fl, fr, rl, rr
+        5, // fl, fc, fr, rl, rr
+        6, // fl, fc, fr, rl, rr, lfe
+        7, // fl, fc, fr, rl, rr, lfe, rc
+        8  // fl, fc, fr, rl, rr, lfe, sl, sr
     };
   };
   auto fallbackChannel() -> int override { return 2; };
@@ -37,4 +37,4 @@ class AudioCodec_OPUS : public BaseAudioCodec {
   auto fallbackBitDepth() -> int override { return 16; };
 };
 
-#endif  // AUDIO_CODEC_OPUS_H
+#endif // AUDIO_CODEC_OPUS_H

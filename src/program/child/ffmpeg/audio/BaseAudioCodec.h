@@ -1,21 +1,23 @@
 #ifndef BASE_AUDIO_CODEC_H
 #define BASE_AUDIO_CODEC_H
 
+#include <set>
 #include <string>
 #include <vector>
 
 #include "../../../settings/enums/AudioCodec.h"
 
 class BaseAudioCodec {
- public:
+public:
+  virtual ~BaseAudioCodec() = default;
   BaseAudioCodec(int channel, int sampleRate, int bitDepth)
-      : runningChannel(channel),
-        runningSampleRate(sampleRate),
+      : runningChannel(channel), runningSampleRate(sampleRate),
         runningBitDepth(bitDepth) {};
 
   virtual auto getType() -> AudioCodec { return AudioCodec::NONE; };
   virtual auto getName() -> std::string { return "BaseAudioCodec"; };
   virtual auto getDisplayName() -> std::string { return "Base Audio Codec"; };
+  virtual auto getAliases() -> std::set<std::string> { return {}; };
 
   virtual auto supportedChannels() -> std::vector<int> = 0;
   virtual auto fallbackChannel() -> int = 0;
@@ -59,38 +61,38 @@ class BaseAudioCodec {
   auto getChannelLayout() -> std::string {
     // Return a string representation of the channel layout
     switch (this->runningChannel) {
-      case 1:
-        return "Mono";
-      case 2:
-        return "Stereo";
-      case 3:
-        return "3.0";
-      case 4:
-        return "Quad";
-      case 5:
-        return "5.0";
-      case 6:
-        return "5.1";
-      case 7:
-        return "6.1";
-      case 8:
-        return "7.1";
-      case 9:
-        return "8.1";
-      case 10:
-        return "9.1";
-      default:
-        return "unknown";
+    case 1:
+      return "Mono";
+    case 2:
+      return "Stereo";
+    case 3:
+      return "3.0";
+    case 4:
+      return "Quad";
+    case 5:
+      return "5.0";
+    case 6:
+      return "5.1";
+    case 7:
+      return "6.1";
+    case 8:
+      return "7.1";
+    case 9:
+      return "8.1";
+    case 10:
+      return "9.1";
+    default:
+      return "unknown";
     }
   }
 
- private:
+private:
   template <typename T, typename C>
   auto getParam(T search, std::vector<T> (C::*provider)(), T (C::*fallback)())
       -> const T {
     auto params = (this->*provider)();
 
-    for (auto& p : params) {
+    for (auto &p : params) {
       if (p == search) {
         return p;
       }
@@ -104,4 +106,4 @@ class BaseAudioCodec {
   int runningBitDepth;
 };
 
-#endif  // BASE_AUDIO_CODEC_H
+#endif // BASE_AUDIO_CODEC_H

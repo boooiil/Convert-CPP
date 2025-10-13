@@ -2,30 +2,30 @@
 #define AUDIO_CODEC_FLAC_H
 
 #include "../../../settings/enums/AudioCodec.h"
-#include "../../../settings/enums/StringEnumDataHolder.h"
 #include "BaseAudioCodec.h"
 
 class AudioCodec_FLAC : public BaseAudioCodec {
- public:
+public:
   AudioCodec_FLAC(int channel = 2, int sampleRate = 96000, int bitDepth = 24)
       : BaseAudioCodec(channel, sampleRate, bitDepth) {};
 
   auto getType() -> AudioCodec override { return AudioCodec::FLAC; };
   auto getName() -> std::string override { return "flac"; };
   auto getDisplayName() -> std::string override { return "FLAC"; };
+  auto getAliases() -> std::set<std::string> override { return {"flac"}; };
 
   auto supportedChannels() -> std::vector<int> override {
     return {
-        1,  // mono
-        2,  // l, r
-        3,  // fl, c, fr
-        4,  // fl, fr, rl, rr
-        5,  // fl, fc, fr, rl, rr
-        6,  // fl, fc, fr, rl, rr, lfe
-        7,  // fl, fc, fr, rl, rr, lfe, rc
-        8,  // fl, fc, fr, rl, rr, lfe, sl, sr
-        9,  // fl, fc, fr, rl, rr, lfe, sl, sr, rc
-        10  // fl, fc, fr, rl, rr, lfe, sl, sr, rc, tl, tr
+        1, // mono
+        2, // l, r
+        3, // fl, c, fr
+        4, // fl, fr, rl, rr
+        5, // fl, fc, fr, rl, rr
+        6, // fl, fc, fr, rl, rr, lfe
+        7, // fl, fc, fr, rl, rr, lfe, rc
+        8, // fl, fc, fr, rl, rr, lfe, sl, sr
+        9, // fl, fc, fr, rl, rr, lfe, sl, sr, rc
+        10 // fl, fc, fr, rl, rr, lfe, sl, sr, rc, tl, tr
     };
   };
   auto fallbackChannel() -> int override { return 2; };
@@ -42,4 +42,4 @@ class AudioCodec_FLAC : public BaseAudioCodec {
   auto fallbackBitDepth() -> int override { return 24; };
 };
 
-#endif  // AUDIO_CODEC_FLAC_H
+#endif // AUDIO_CODEC_FLAC_H
