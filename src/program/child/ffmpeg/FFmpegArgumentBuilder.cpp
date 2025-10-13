@@ -16,9 +16,12 @@
 #include "audio/AudioCodecFactory.h"
 #include "container/BaseContainer.h"
 #include "container/ContainerFactory.h"
+#include "src/utils/logging/LogColor.h"
+#include "subtitle/SubtitleCodecFactory.h"
 #include "video/VideoCodecFactory.h"
 
-FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media) : media(_media) {
+FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
+    : container(nullptr), media(_media) {
   ChildOptions &childOptions = *Program::settings->childOptionsMap[media->id];
   ArgumentRegistry &argumentRegistry = *childOptions.argumentRegistry;
   MediaFormat format = argumentRegistry.get_t<Quality>(Command::QUALITY)->get();
@@ -35,7 +38,52 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media) : media(_media) {
 
   auto videoCodec = VideoCodecFactory::createVideoCodec(wanted_enc);
   auto audioCodecs = std::vector<BaseAudioCodec *>();
-  this->container = ContainerFactory::createContainer(wanted_container);
+
+  this->container = ContainerFactory::create(wanted_container);
+
+  // TODO: make this user adjustable
+  auto subtitleCodec =
+      SubtitleCodecFactory::create(container->fallbackSubtitleCodec());
+
+  LOG_DEBUG("Container ptr: {}", static_cast<void *>(container));
+  // this is the new way since i added index to the
+  // audio codecs.
+  // all audio codecs should be mapped to the streams
+  // regardless if the user specified a mapping.
+
+#pragma region AUDIO ASSERTIONS
+
+  // wanted index total
+  int w_index_total = 0;
+  // exist index total
+  int e_index_total = 0;
+
+  for (int i = 0; i < audioStreams->get().size(); i++) {
+    LOG_DEBUG("WANTED AS INDEX: ", audioStreams->get()[i]);
+    w_index_total += audioStreams->get()[i];
+  }
+
+  for (int i = 0; i < media->probeResult->audioStreams.size(); i++) {
+    LOG_DEBUG("EXISTING AS INDEX: ", i);
+    e_index_total += i;
+  }
+
+  LOG_DEBUG("W:", w_index_total, "E:", e_index_total);
+
+  // need to assert that the audio codecs
+  //
+
+  if (w_index_total > e_index_total) {
+    LOG_DEBUG("WANTED INDEX TOTAL IS GREATER THAN EXISTING INDEX TOTAL");
+    LOG_DEBUG("WANTED INDEX TOTAL: ", w_index_total);
+    LOG_DEBUG("EXISTING INDEX TOTAL: ", e_index_total);
+    LOG(LogColor::fgRed("Wanted audio indexes exceed existing audio streams."));
+    Program::stopFlag = true;
+    // throw std::invalid_argument(
+    //     "Wanted audio indexes exceed existing audio streams.");
+  }
+
+#pragma endregion
 
 #pragma region AUDIO SETTINGS
 
@@ -86,19 +134,19 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media) : media(_media) {
     if (wanted_codecs.size() > i) {
       LOG_DEBUG("Audio index [", i, "] is using codec (", wanted_codecs[i],
                 ")");
-      audioCodec = AudioCodecFactory::createAudioCodec(wanted_codecs[i]);
+      audioCodec = AudioCodecFactory::create(wanted_codecs[i]);
     }
     // else use the last codec in the list
     else if (!wanted_codecs.empty()) {
       LOG_DEBUG("Audio index [", i, "] exceeded codecs, using last codec (",
                 wanted_codecs[wanted_codecs.size() - 1], ")");
-      audioCodec = AudioCodecFactory::createAudioCodec(
-          wanted_codecs[wanted_codecs.size() - 1]);
+      audioCodec =
+          AudioCodecFactory::create(wanted_codecs[wanted_codecs.size() - 1]);
     }
     // else copy the codec
     else {
       LOG_DEBUG("Audio index [", i, "] marked for copy codec.");
-      audioCodec = AudioCodecFactory::createAudioCodec(media_audio_codec);
+      audioCodec = AudioCodecFactory::create(media_audio_codec);
       // set bit depth
       audioCodec->setBitDepth(
           media->probeResult->audioStreams[i].bits_per_sample);
@@ -133,6 +181,7 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media) : media(_media) {
   }
 #pragma endregion AUDIO SETTINGS
 
+  this->container->setSubtitleCodec(subtitleCodec);
   this->container->setAudioCodec(audioCodecs);
   this->container->setVideoCodec(videoCodec);
 }
@@ -145,79 +194,13 @@ FFmpegArgumentBuilder::~FFmpegArgumentBuilder() {
   }
 }
 
-void FFmpegArgumentBuilder::validate(uuids::uuid id) {
-  // ChildOptions &childOptions = *Program::settings->childOptionsMap[id];
-  // ArgumentRegistry &argumentRegistry = *childOptions.argumentRegistry;
-
-  // Running: Settings Init -> Container(a, v, s) -> Validate -> Init A, V, S ->
-  // Adapted Container
-
-  // Think for a second. Here are the multiple ways we could handle creating a
-  // container:
-  // Settings Init -> Container(settings) -> Adapted Container
-  // Settings Init -> Container(a, v, s)  -> Validate Container -> Adapted
-  // Container
-
-  // TODO: store results of validation in the codec instances as well as
-  // updating the program settings
-  // if video codec is not supported, stop program
-  // if audio codec is not supported, use default
-  // if subtitle codec is not supported, use default
-
-  // TODO: default behavior for incorrect validation should result
-  // in a stop flag and a display of acceptable parameters. However,
-  // I kinda don't want to do that as the defaults are generally okay
-  // for me and I figure that most people would understand acceptable params
-  // on their desired codecs.
-
-  // validate with codec.getXXX() as the result modifies the default
-  // TODO: rename to codec.validateXXX() for better clarity;
-  // ie: this.audio_codec->getChannels(int) -> BaseAudioCodec.runningChannels =
-  // getChannels():int or getFallbackChannel():int
-  // this.audio_codec.getRunningChannel() -> BaseAudioCodec.runningChannels;
-
-  // sample rate (current = default)
-  // bit depth (current = default)
-
-  /**
-   * 8/1/25
-   * I should not have to use this validation function as the set methods within
-   * the base classes throw on invalid parameters.
-   *
-   */
-
-  // auto wanted_encoder_codec =
-  //     argumentRegistry.get_t<BaseArgument<Encoders>>(Command::ENCODER)->get();
-  // auto wanted_encoder_tune =
-  //     argumentRegistry.get_t<BaseArgument<Tunes>>(Command::TUNE)->get();
-  // auto wanted_encoder_level = 4.1;
-  // auto wanted_encoder_preset = "slow";
-
-  // auto wanted_audio_codec =
-  //     argumentRegistry.get_t<VectorArgument<std::string>>(Command::AUDIOCODEC)
-  //         ->get();
-  // auto wanted_audio_channels =
-  //     argumentRegistry.get_t<VectorArgument<int>>(Command::AUDIOCHANNELS)
-  //         ->get();
-  // auto wanted_audio_bit_depth = 16;
-  // auto wanted_audio_sample_rate = 48000;
-
-  // auto wanted_subtitle_codec = SubtitleCodec::ASS;
-
-  // auto validated_encoder_codec =
-  //     this->container->getVideoCodec(wanted_encoder_codec);
-
-  // if (validated_encoder_codec != wanted_encoder_codec) {
-  //   LOG_DEBUG(
-  //       "Wanted encoder was not in the acceptable encoders list for this "
-  //       "container.",
-  //       EnumToStringFactory::get(wanted_encoder_codec).getName());
-
-  //   Program::stopFlag = true;
-  return;
-}
+void FFmpegArgumentBuilder::validate() { return; }
 
 std::vector<std::string> FFmpegArgumentBuilder::build() {
+
+  assert(container->getAudioCodecs().size() <=
+         media->probeResult->audioStreams.size());
+
   // ProgramOptions& programSettings = *Program::settings->programOptions;
   ChildOptions &childOptions = *Program::settings->childOptionsMap[media->id];
   ArgumentRegistry &argumentRegistry = *childOptions.argumentRegistry;
@@ -238,44 +221,6 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
   result.push_back("-i \"" + media->file->originalFullPath + "\"");
 
   result.push_back("-map 0:v:0");
-
-  VectorArgument<int> *audioStreams =
-      argumentRegistry.get_t<VectorArgument<int>>(Command::AUDIOSTREAMS);
-
-  // this is the new way since i added index to the
-  // audio codecs.
-  // all audio codecs should be mapped to the streams
-  // regardless if the user specified a mapping.
-
-#pragma region AUDIO ASSERTIONS
-
-  // wanted index total
-  int w_index_total = 0;
-  // exist index total
-  int e_index_total = 0;
-
-  for (int i = 0; i < audioStreams->get().size(); i++) {
-    LOG_DEBUG("WANTED AS INDEX: ", audioStreams->get()[i]);
-    w_index_total += audioStreams->get()[i];
-  }
-
-  for (int i = 0; i < media->probeResult->audioStreams.size(); i++) {
-    LOG_DEBUG("EXISTING AS INDEX: ", i);
-    e_index_total += i;
-  }
-
-  LOG_DEBUG("W:", w_index_total, "E:", e_index_total);
-
-  // need to assert that the audio codecs
-  //
-
-  assert(container->getAudioCodecs().size() != 0 &&
-         w_index_total <= e_index_total);
-
-  assert(container->getAudioCodecs().size() <=
-         media->probeResult->audioStreams.size());
-
-#pragma endregion
 
   for (auto codec : container->getAudioCodecs()) {
     std::string codec_name = codec->getName();
@@ -367,7 +312,8 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
 
   // }
 
-  result.push_back("-c:s copy");
+  std::string subtitle_name = this->container->getSubtitleCodec()->getName();
+  result.push_back("-c:s " + subtitle_name);
 
   if (argumentRegistry.get_t<BaseArgument<Tunes>>(Command::TUNE)->get() !=
       Tunes::DEFAULT) {
