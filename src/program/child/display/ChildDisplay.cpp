@@ -12,7 +12,6 @@
 #include "../../../utils/logging/LogColor.h"
 #include "../../../utils/logging/Logger.h"
 #include "../../Program.h"
-#include "../../generics/GenericRunner.h"
 #include "../../settings/Settings.h"
 #include "../../settings/arguments/ArgumentRegistry.h"
 #include "../../settings/arguments/EnumArgument.h"
@@ -39,11 +38,11 @@ inline auto tab(int spaces) -> std::string {
 // NOLINTEND(modernize-return-braced-init-list)
 
 void ChildDisplay::print() {
-  Child& child =
+  Child &child =
       *Program::ticker->getRunner<NTicker>()->runner->getRunner<Child>();
 
-  ChildOptions& childOptions = *Program::settings->childOptionsMap[child.id];
-  ArgumentRegistry& argumentRegistry = *childOptions.argumentRegistry;
+  ChildOptions &childOptions = *Program::settings->childOptionsMap[child.id];
+  ArgumentRegistry &argumentRegistry = *childOptions.argumentRegistry;
 
   std::string sendStr = "";
 
@@ -85,6 +84,14 @@ void ChildDisplay::print() {
       LogColor::fgGray(
           argumentRegistry.get_t<IntegerArgument>(Command::AMOUNT)->toString());
 
+  std::string container =
+      ob + LogColor::fgCyan("CONTAINER") + cb + " " +
+      LogColor::fgGray(
+          EnumToStringFactory::get<Container>(
+              argumentRegistry
+                  .get_t<EnumArgument<Container>>(Command::CONTAINER)
+                  ->get())
+              .getName());
   // std::string a = ArgumentRegistry::get_t<IntegerArgument>("-a");
 
   std::string constrain = ob + LogColor::fgRed("CONSTRAIN") + cb;
@@ -93,7 +100,7 @@ void ChildDisplay::print() {
 
   std::string header = time + " " + encoder + " " + runningEncoder + " " +
                        runningDecoder + " " + resolution + " " + tune + " " +
-                       amount;
+                       amount + " " + container;
 
   if (argumentRegistry.get_t<FlagArgument>(Command::CONSTRAIN)->get()) {
     header += " " + constrain;
@@ -118,10 +125,10 @@ void ChildDisplay::print() {
   sendStr += header + "\n";
   // Program::log->sendBuffer(bufferLen, header);
 
-  std::queue<Media*> t_queue;
+  std::queue<Media *> t_queue;
 
   while (!child.converting.empty()) {
-    Media* media = child.converting.front();
+    Media *media = child.converting.front();
     child.converting.pop();
 
     float mediaFPS = media->working->fps > 0 ? media->working->fps : 1;
@@ -177,10 +184,10 @@ void ChildDisplay::print() {
   }
 
   child.converting = t_queue;
-  t_queue = std::queue<Media*>();
+  t_queue = std::queue<Media *>();
 
   while (!child.pending.empty()) {
-    Media* media = child.pending.front();
+    Media *media = child.pending.front();
     child.pending.pop();
 
     std::string fileName = ob + LogColor::fgCyan("FILE") + cb + " " +
@@ -227,7 +234,7 @@ void ChildDisplay::printDebug(void) {
   // TODO: finish
 }
 
-void ChildDisplay::printInformationTyped(NTicker* ticker, Child* child) {
+void ChildDisplay::printInformationTyped(NTicker *ticker, Child *child) {
   assert(ticker != nullptr);
   assert(child != nullptr);
 
@@ -244,11 +251,11 @@ void ChildDisplay::printInformationTyped(NTicker* ticker, Child* child) {
     return;
   }
 
-  std::queue<Media*> media_t_queue;
+  std::queue<Media *> media_t_queue;
   while (!child->pending.empty()) {
-    ChildOptions& childOptions = *Program::settings->childOptionsMap[child->id];
+    ChildOptions &childOptions = *Program::settings->childOptionsMap[child->id];
 
-    Media* media = child->pending.front();
+    Media *media = child->pending.front();
     child->pending.pop();
 
     media->doStatistics();
