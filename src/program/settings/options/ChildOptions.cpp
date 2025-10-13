@@ -16,9 +16,9 @@
 #include "nlohmann/json.hpp"
 
 ChildOptions::ChildOptions(void)
-    : argumentRegistry(new ArgumentRegistry()),
-      runningEncoder(Encoders::INVALID),
-      runningHWAccel(HWAccelerators::INVALID) {}
+    : runningEncoder(Encoders::INVALID),
+      runningHWAccel(HWAccelerators::INVALID),
+      argumentRegistry(new ArgumentRegistry()) {}
 
 ChildOptions::~ChildOptions(void) {
   if (this->argumentRegistry != nullptr) {
@@ -66,7 +66,7 @@ void ChildOptions::prepare(void) {
                                             "-crf", "--crf", -1));
   argumentRegistry->add(Command::ENCODER, new EnumArgument<Encoders>(
                                               "Encoder to use", "-e",
-                                              "--encoder", Encoders::INVALID));
+                                              "--encoder", Encoders::HEVC));
   argumentRegistry->add(
       Command::HARDWAREACCEL,
       new EnumArgument<HWAccelerators>("Hardware accelerator to use", "-hwa",
