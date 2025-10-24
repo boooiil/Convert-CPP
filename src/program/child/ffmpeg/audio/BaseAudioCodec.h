@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "../../../settings/enums/AudioCodec.h"
-
 class BaseAudioCodec {
 public:
   virtual ~BaseAudioCodec() = default;
@@ -14,7 +12,6 @@ public:
       : runningChannel(channel), runningSampleRate(sampleRate),
         runningBitDepth(bitDepth) {};
 
-  virtual auto getType() -> AudioCodec { return AudioCodec::NONE; };
   virtual auto getName() -> std::string { return "BaseAudioCodec"; };
   virtual auto getDisplayName() -> std::string { return "Base Audio Codec"; };
   virtual auto getAliases() -> std::set<std::string> { return {}; };
