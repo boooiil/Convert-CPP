@@ -22,6 +22,7 @@ public:
    */
   virtual auto getType() -> Encoders { return Encoders::INVALID; };
   virtual auto getName() -> std::string { return "BaseVideoCodec"; };
+  virtual auto getDisplayName() -> std::string { return "Base Video Codec"; };
   virtual auto getAliases() -> std::set<std::string> { return {}; };
 
   /**
