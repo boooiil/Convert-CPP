@@ -13,7 +13,6 @@
 #include "../../../utils/logging/Logger.h"
 #include "../../Program.h"
 #include "../../settings/Settings.h"
-#include "../../settings/arguments/ArgumentRegistry.h"
 #include "../../settings/arguments/EnumArgument.h"
 #include "../../settings/arguments/FlagArgument.h"
 #include "../../settings/arguments/IntegerArgument.h"
@@ -56,19 +55,15 @@ void ChildDisplay::print() {
                      TimeUtils::dateFormat(TimeUtils::getEpoch());
   std::string encoder =
       ob + LogColor::fgCyan("TARGET ENC") + cb + " " +
-      LogColor::fgGray(
-          EnumToStringFactory::get(
-              argumentRegistry.get_t<BaseArgument<Encoders>>(Command::ENCODER)
-                  ->get())
-              .getName());
+      LogColor::fgGray(EnumToStringFactory::get(
+          argumentRegistry.get_t<BaseArgument<Encoders>>(Command::ENCODER)
+              ->get()));
   std::string runningEncoder =
       ob + LogColor::fgCyan("ENC") + cb + " " +
-      LogColor::fgGray(
-          EnumToStringFactory::get(childOptions.runningEncoder).getName());
+      LogColor::fgGray(EnumToStringFactory::get(childOptions.runningEncoder));
   std::string runningDecoder =
       ob + LogColor::fgCyan("ACC") + cb + " " +
-      LogColor::fgGray(
-          EnumToStringFactory::get(childOptions.runningHWAccel).getName());
+      LogColor::fgGray(EnumToStringFactory::get(childOptions.runningHWAccel));
   std::string resolution =
       ob + LogColor::fgCyan("RES") + cb + " " +
       LogColor::fgGray(
@@ -86,12 +81,9 @@ void ChildDisplay::print() {
 
   std::string container =
       ob + LogColor::fgCyan("CONTAINER") + cb + " " +
-      LogColor::fgGray(
-          EnumToStringFactory::get<Container>(
-              argumentRegistry
-                  .get_t<EnumArgument<Container>>(Command::CONTAINER)
-                  ->get())
-              .getName());
+      LogColor::fgGray(EnumToStringFactory::get<Container>(
+          argumentRegistry.get_t<EnumArgument<Container>>(Command::CONTAINER)
+              ->get()));
   // std::string a = ArgumentRegistry::get_t<IntegerArgument>("-a");
 
   std::string constrain = ob + LogColor::fgRed("CONSTRAIN") + cb;
