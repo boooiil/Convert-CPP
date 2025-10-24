@@ -1,0 +1,85 @@
+{
+    "mkv": {
+        "defaults": {
+            "audioCodec": "vorbis",
+            "videoCodec": "hevc",
+            "subtitleCodec": "ass"
+        },
+        "name": "mkv",
+        "displayName": "Matroska",
+        "aliases": [
+            "mkv",
+            "matroska",
+            "matroska video"
+        ],
+        "supportedAudioCodecs": [
+            "aac",
+            "ac3",
+            "mp3",
+            "flac",
+            "vorbis",
+            "libvorbis",
+            "opus"
+        ],
+        "supportedSubtitleCodecs": [
+            "ass",
+            "dvb_sub",
+            "mov_text",
+            "srt",
+            "ssa",
+            "subrip",
+            "webvtt"
+        ],
+        "supportedVideoCodecs": [
+            "av1",
+            "av1_amf",
+            "av1_nvenc",
+            "av1_qsv",
+            "h264",
+            "h264_amf",
+            "h264_nvenc",
+            "h264_qsv",
+            "hevc",
+            "hevc_amf",
+            "hevc_nvenc",
+            "hevc_qsv"
+        ]
+    },
+    "mp4": {
+        "defaults": {
+            "audioCodec": "aac",
+            "videoCodec": "h264",
+            "subtitleCodec": "srt"
+        },
+        "name": "mp4",
+        "displayName": "MPEG-4 Part 14",
+        "aliases": [
+            "mp4",
+            "mpeg-4",
+            "mpeg4",
+            "mp4 video"
+        ],
+        "supportedAudioCodecs": [
+            "aac",
+            "ac3",
+            "mp3",
+            "flac",
+            "vorbis",
+            "opus"
+        ],
+        "supportedSubtitleCodecs": [
+            "dvb_sub",
+            "srt"
+        ],
+        "supportedVideoCodecs": [
+            "h264",
+            "h264_nvenc",
+            "h264_amf",
+            "h264_qsv",
+            "hevc",
+            "hevc_amf",
+            "hevc_nvenc",
+            "hevc_qsv"
+        ]
+    }
+}

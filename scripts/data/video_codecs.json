@@ -1,0 +1,548 @@
+{
+    "av1_amf": {
+        "defaults": {
+            "runningPreset": "high_quality",
+            "runningLevel": "4.1",
+            "runningTune": "DEFAULT"
+        },
+        "name": "av1_amf",
+        "displayName": "av1_amf",
+        "aliases": [
+            "av1_amf",
+            "amf_av1",
+            "amd_av1",
+            "av1_amd"
+        ],
+        "controlRateFlag": "-crf",
+        "supportedLevels": [
+            "1.0",
+            "1.1",
+            "2.0",
+            "2.1",
+            "3.0",
+            "3.1",
+            "4.0",
+            "4.1",
+            "5.0",
+            "5.1",
+            "5.2"
+        ],
+        "supportedPresets": [
+            "default",
+            "high_quality",
+            "performance",
+            "low_latency",
+            "lossless",
+            "high_performance"
+        ],
+        "supportedTunes": [
+            "FILM",
+            "ZERO_LATENCY",
+            "GRAIN"
+        ]
+    },
+    "av1_nvenc": {
+        "defaults": {
+            "runningPreset": "high_quality",
+            "runningLevel": "4.1",
+            "runningTune": "DEFAULT"
+        },
+        "name": "av1_nvenc",
+        "displayName": "av1_nvenc",
+        "aliases": [
+            "av1_nvenc",
+            "nvenc_av1",
+            "nvidia_av1",
+            "av1_nvidia"
+        ],
+        "controlRateFlag": "-crf",
+        "supportedLevels": [
+            "1.0",
+            "1.1",
+            "2.0",
+            "2.1",
+            "3.0",
+            "3.1",
+            "4.0",
+            "4.1",
+            "5.0",
+            "5.1",
+            "5.2"
+        ],
+        "supportedPresets": [
+            "default",
+            "high_quality",
+            "performance",
+            "low_latency",
+            "lossless",
+            "high_performance"
+        ],
+        "supportedTunes": [
+            "ZERO_LATENCY",
+            "GRAIN"
+        ]
+    },
+    "av1_qsv": {
+        "defaults": {
+            "runningPreset": "high_quality",
+            "runningLevel": "4.1",
+            "runningTune": "DEFAULT"
+        },
+        "name": "av1_qsv",
+        "displayName": "av1_qsv",
+        "aliases": [
+            "av1_qsv",
+            "qsv_av1",
+            "intel_av1",
+            "av1_intel"
+        ],
+        "controlRateFlag": "-crf",
+        "supportedLevels": [
+            "1.0",
+            "1.1",
+            "2.0",
+            "2.1",
+            "3.0",
+            "3.1",
+            "4.0",
+            "4.1",
+            "5.0",
+            "5.1",
+            "5.2"
+        ],
+        "supportedPresets": [
+            "default",
+            "high_quality",
+            "performance",
+            "low_latency",
+            "lossless",
+            "high_performance"
+        ],
+        "supportedTunes": [
+            "ZERO_LATENCY",
+            "GRAIN"
+        ]
+    },
+    "av1": {
+        "defaults": {
+            "runningPreset": "2",
+            "runningLevel": "4.0",
+            "runningTune": "DEFAULT"
+        },
+        "name": "av1",
+        "displayName": "av1",
+        "aliases": [
+            "av1",
+            "av1_main",
+            "av1_high",
+            "av1_profile"
+        ],
+        "controlRateFlag": "-crf",
+        "supportedLevels": [
+            "1.0",
+            "2.0",
+            "3.0",
+            "4.0",
+            "5.0",
+            "6.0",
+            "7.0"
+        ],
+        "supportedPresets": [
+            "0",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6"
+        ],
+        "supportedTunes": [
+            "PSNR",
+            "SSIM"
+        ]
+    },
+    "h264_amf": {
+        "defaults": {
+            "runningPreset": "high_quality",
+            "runningLevel": "4.1",
+            "runningTune": "DEFAULT"
+        },
+        "name": "h264_amf",
+        "displayName": "h264_amf",
+        "aliases": [
+            "h264_amf",
+            "amf_h264",
+            "amd_h264",
+            "h264_amd"
+        ],
+        "controlRateFlag": "-crf",
+        "supportedLevels": [
+            "1.0",
+            "1.1",
+            "2.0",
+            "2.1",
+            "3.0",
+            "3.1",
+            "4.0",
+            "4.1",
+            "5.0",
+            "5.1",
+            "5.2"
+        ],
+        "supportedPresets": [
+            "default",
+            "high_quality",
+            "performance",
+            "low_latency",
+            "lossless",
+            "high_performance"
+        ],
+        "supportedTunes": [
+            "FILM",
+            "ZERO_LATENCY",
+            "GRAIN"
+        ]
+    },
+    "h264_nvenc": {
+        "defaults": {
+            "runningPreset": "high_quality",
+            "runningLevel": "4.1",
+            "runningTune": "DEFAULT"
+        },
+        "name": "h264_nvenc",
+        "displayName": "h264_nvenc",
+        "aliases": [
+            "h264_nvenc",
+            "nvenc_h264",
+            "nvidia_h264",
+            "h264_nvidia"
+        ],
+        "controlRateFlag": "-crf",
+        "supportedLevels": [
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "2.0",
+            "2.1",
+            "2.2",
+            "3.0",
+            "3.1",
+            "3.2",
+            "4.0",
+            "4.1",
+            "4.2",
+            "5.0",
+            "5.1",
+            "5.2",
+            "6.0",
+            "6.1",
+            "6.2"
+        ],
+        "supportedPresets": [
+            "default",
+            "high_quality",
+            "performance",
+            "low_latency",
+            "low_latency_high_quality"
+        ],
+        "supportedTunes": [
+            "ZERO_LATENCY",
+            "GRAIN"
+        ]
+    },
+    "h264_qsv": {
+        "defaults": {
+            "runningPreset": "high_quality",
+            "runningLevel": "4.1",
+            "runningTune": "DEFAULT"
+        },
+        "name": "h264_qsv",
+        "displayName": "h264_qsv",
+        "aliases": [
+            "h264_qsv",
+            "qsv_h264",
+            "intel_h264",
+            "h264_intel"
+        ],
+        "controlRateFlag": "-crf",
+        "supportedLevels": [
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "2.0",
+            "2.1",
+            "2.2",
+            "3.0",
+            "3.1",
+            "3.2",
+            "4.0",
+            "4.1",
+            "4.2",
+            "5.0",
+            "5.1",
+            "5.2",
+            "6.0",
+            "6.1",
+            "6.2"
+        ],
+        "supportedPresets": [
+            "default",
+            "high_quality",
+            "performance",
+            "low_latency",
+            "low_latency_high_quality"
+        ],
+        "supportedTunes": [
+            "ZERO_LATENCY",
+            "GRAIN"
+        ]
+    },
+    "h264": {
+        "defaults": {
+            "runningPreset": "slow",
+            "runningLevel": "4.1",
+            "runningTune": "DEFAULT"
+        },
+        "name": "h264",
+        "displayName": "h264",
+        "aliases": [
+            "h264",
+            "avc",
+            "mpeg4_part10",
+            "h264_main",
+            "h264_high"
+        ],
+        "controlRateFlag": "-crf",
+        "supportedLevels": [
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "2.0",
+            "2.1",
+            "2.2",
+            "3.0",
+            "3.1",
+            "3.2",
+            "4.0",
+            "4.1",
+            "4.2",
+            "5.0",
+            "5.1",
+            "5.2",
+            "6.0",
+            "6.1",
+            "6.2"
+        ],
+        "supportedPresets": [
+            "ultrafast",
+            "superfast",
+            "veryfast",
+            "faster",
+            "fast",
+            "medium",
+            "slow",
+            "slower",
+            "veryslow",
+            "placebo"
+        ],
+        "supportedTunes": [
+            "PSNR",
+            "SSIM",
+            "ZERO_LATENCY",
+            "GRAIN"
+        ]
+    },
+    "hevc_amf": {
+        "defaults": {
+            "runningPreset": "high_quality",
+            "runningLevel": "4.1",
+            "runningTune": "DEFAULT"
+        },
+        "name": "hevc_amf",
+        "displayName": "hevc_amf",
+        "aliases": [
+            "hevc_amf",
+            "amf_hevc",
+            "amd_hevc",
+            "hevc_amd"
+        ],
+        "controlRateFlag": "-crf",
+        "supportedLevels": [
+            "1.0",
+            "1.1",
+            "2.0",
+            "2.1",
+            "3.0",
+            "3.1",
+            "4.0",
+            "4.1",
+            "5.0",
+            "5.1",
+            "5.2"
+        ],
+        "supportedPresets": [
+            "default",
+            "high_quality",
+            "performance",
+            "low_latency",
+            "low_latency_high_quality"
+        ],
+        "supportedTunes": [
+            "FILM",
+            "ZERO_LATENCY",
+            "GRAIN"
+        ]
+    },
+    "hevc_nvenc": {
+        "defaults": {
+            "runningPreset": "high_quality",
+            "runningLevel": "4.1",
+            "runningTune": "DEFAULT"
+        },
+        "name": "hevc_nvenc",
+        "displayName": "hevc_nvenc",
+        "aliases": [
+            "hevc_nvenc",
+            "nvenc_hevc",
+            "nvidia_hevc",
+            "hevc_nvidia"
+        ],
+        "controlRateFlag": "-crf",
+        "supportedLevels": [
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "2.0",
+            "2.1",
+            "2.2",
+            "3.0",
+            "3.1",
+            "3.2",
+            "4.0",
+            "4.1",
+            "4.2",
+            "5.0",
+            "5.1",
+            "5.2",
+            "6.0",
+            "6.1",
+            "6.2"
+        ],
+        "supportedPresets": [
+            "default",
+            "high_quality",
+            "performance",
+            "low_latency",
+            "low_latency_high_quality"
+        ],
+        "supportedTunes": [
+            "ZERO_LATENCY",
+            "GRAIN"
+        ]
+    },
+    "hevc_qsv": {
+        "defaults": {
+            "runningPreset": "high_quality",
+            "runningLevel": "4.1",
+            "runningTune": "DEFAULT"
+        },
+        "name": "hevc_qsv",
+        "displayName": "hevc_qsv",
+        "aliases": [
+            "hevc_qsv",
+            "qsv_hevc",
+            "intel_hevc",
+            "hevc_intel"
+        ],
+        "controlRateFlag": "-crf",
+        "supportedLevels": [
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "2.0",
+            "2.1",
+            "2.2",
+            "3.0",
+            "3.1",
+            "3.2",
+            "4.0",
+            "4.1",
+            "4.2",
+            "5.0",
+            "5.1",
+            "5.2",
+            "6.0",
+            "6.1",
+            "6.2"
+        ],
+        "supportedPresets": [
+            "default",
+            "high_quality",
+            "performance",
+            "low_latency",
+            "low_latency_high_quality"
+        ],
+        "supportedTunes": [
+            "ZERO_LATENCY",
+            "GRAIN"
+        ]
+    },
+    "hevc": {
+        "defaults": {
+            "runningPreset": "slow",
+            "runningLevel": "4.1",
+            "runningTune": "DEFAULT"
+        },
+        "name": "hevc",
+        "displayName": "hevc",
+        "aliases": [
+            "hevc",
+            "h265"
+        ],
+        "controlRateFlag": "-crf",
+        "supportedLevels": [
+            "1.0",
+            "1.1",
+            "1.2",
+            "1.3",
+            "2.0",
+            "2.1",
+            "2.2",
+            "3.0",
+            "3.1",
+            "3.2",
+            "4.0",
+            "4.1",
+            "4.2",
+            "5.0",
+            "5.1",
+            "5.2",
+            "6.0",
+            "6.1",
+            "6.2"
+        ],
+        "supportedPresets": [
+            "ultrafast",
+            "superfast",
+            "veryfast",
+            "faster",
+            "fast",
+            "medium",
+            "slow",
+            "slower",
+            "veryslow",
+            "placebo"
+        ],
+        "supportedTunes": [
+            "PSNR",
+            "SSIM",
+            "ZERO_LATENCY",
+            "GRAIN"
+        ]
+    }
+}

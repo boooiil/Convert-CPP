@@ -1,0 +1,300 @@
+{
+    "aac": {
+        "defaults": {
+            "channel": 2,
+            "sampleRate": 48000,
+            "bitDepth": 16
+        },
+        "name": "aac",
+        "displayName": "AAC",
+        "aliases": [
+            "aac"
+        ],
+        "supportedChannels": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+        ],
+        "supportedSampleRates": [
+            8000,
+            11025,
+            12000,
+            16000,
+            22050,
+            24000,
+            32000,
+            44100,
+            48000,
+            64000,
+            88200,
+            96000
+        ],
+        "supportedBitDepths": [
+            16,
+            24
+        ]
+    },
+    "ac3": {
+        "defaults": {
+            "channel": 2,
+            "sampleRate": 48000,
+            "bitDepth": 16
+        },
+        "name": "ac3",
+        "displayName": "Dolby Digital",
+        "aliases": [
+            "ac3",
+            "dolby_digital"
+        ],
+        "supportedChannels": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+        ],
+        "supportedSampleRates": [
+            8000,
+            11025,
+            12000,
+            16000,
+            22050,
+            24000,
+            32000,
+            44100,
+            48000
+        ],
+        "supportedBitDepths": [
+            16
+        ]
+    },
+    "eac3": {
+        "defaults": {
+            "channel": 2,
+            "sampleRate": 48000,
+            "bitDepth": 16
+        },
+        "name": "eac3",
+        "displayName": "Dolby Digital Plus",
+        "aliases": [
+            "eac3",
+            "dolby_digital_plus"
+        ],
+        "supportedChannels": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+        ],
+        "supportedSampleRates": [
+            32000,
+            44100,
+            48000,
+            64000,
+            96000,
+            128000
+        ],
+        "supportedBitDepths": [
+            16,
+            24
+        ]
+    },
+    "flac": {
+        "defaults": {
+            "channel": 2,
+            "sampleRate": 96000,
+            "bitDepth": 24
+        },
+        "name": "flac",
+        "displayName": "FLAC",
+        "aliases": [
+            "flac"
+        ],
+        "supportedChannels": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+        ],
+        "supportedSampleRates": [
+            8000,
+            11025,
+            12000,
+            16000,
+            22050,
+            24000,
+            32000,
+            44100,
+            48000,
+            64000,
+            88200,
+            96000,
+            176400,
+            192000,
+            384000
+        ],
+        "supportedBitDepths": [
+            8,
+            16,
+            24,
+            32
+        ]
+    },
+    "mp3": {
+        "defaults": {
+            "channel": 2,
+            "sampleRate": 48000,
+            "bitDepth": 16
+        },
+        "name": "mp3",
+        "displayName": "MP3",
+        "aliases": [
+            "mp3"
+        ],
+        "supportedChannels": [
+            1,
+            2
+        ],
+        "supportedSampleRates": [
+            8000,
+            11025,
+            12000,
+            16000,
+            22050,
+            24000,
+            32000,
+            44100,
+            48000
+        ],
+        "supportedBitDepths": [
+            16
+        ]
+    },
+    "opus": {
+        "defaults": {
+            "channel": 2,
+            "sampleRate": 48000,
+            "bitDepth": 16
+        },
+        "name": "opus",
+        "displayName": "Opus",
+        "aliases": [
+            "opus"
+        ],
+        "supportedChannels": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+        ],
+        "supportedSampleRates": [
+            8000,
+            12000,
+            16000,
+            24000,
+            48000
+        ],
+        "supportedBitDepths": [
+            16
+        ]
+    },
+    "truehd": {
+        "defaults": {
+            "channel": 2,
+            "sampleRate": 48000,
+            "bitDepth": 16
+        },
+        "name": "truehd",
+        "displayName": "Dolby TrueHD",
+        "aliases": [
+            "truehd",
+            "dolby_truehd"
+        ],
+        "supportedChannels": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10
+        ],
+        "supportedSampleRates": [
+            32000,
+            44100,
+            48000,
+            96000,
+            192000,
+            384000
+        ],
+        "supportedBitDepths": [
+            16,
+            24
+        ]
+    },
+    "libvorbis": {
+        "defaults": {
+            "channel": 2,
+            "sampleRate": 48000,
+            "bitDepth": 16
+        },
+        "name": "libvorbis",
+        "displayName": "Vorbis",
+        "aliases": [
+            "libvorbis",
+            "vorbis"
+        ],
+        "supportedChannels": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8
+        ],
+        "supportedSampleRates": [
+            8000,
+            11025,
+            12000,
+            16000,
+            22050,
+            24000,
+            32000,
+            44100,
+            48000,
+            64000,
+            88200,
+            96000
+        ],
+        "supportedBitDepths": [
+            16
+        ]
+    }
+}
