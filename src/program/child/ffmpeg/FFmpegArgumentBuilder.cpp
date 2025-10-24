@@ -6,7 +6,6 @@
 #include "../../../program/Program.h"
 #include "../../../utils/logging/Logger.h"
 #include "../../child/media/Media.h"
-#include "../../settings/arguments/ArgumentRegistry.h"
 #include "../../settings/arguments/EnumArgument.h"
 #include "../../settings/arguments/FlagArgument.h"
 #include "../../settings/arguments/StringArgument.h"
@@ -16,6 +15,8 @@
 #include "audio/AudioCodecFactory.h"
 #include "container/BaseContainer.h"
 #include "container/ContainerFactory.h"
+#include "src/program/settings/enums/Command.h"
+#include "src/program/settings/enums/EnumToStringFactory.h"
 #include "src/utils/logging/LogColor.h"
 #include "subtitle/SubtitleCodecFactory.h"
 #include "video/VideoCodecFactory.h"
@@ -36,10 +37,14 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
   VectorArgument<int> *audioStreams =
       argumentRegistry.get_t<VectorArgument<int>>(Command::AUDIOSTREAMS);
 
-  auto videoCodec = VideoCodecFactory::createVideoCodec(wanted_enc);
+  // TODO: either use enums for codecs or strings for everything
+
+  auto videoCodec =
+      VideoCodecFactory::create(EnumToStringFactory::get(wanted_enc));
   auto audioCodecs = std::vector<BaseAudioCodec *>();
 
-  this->container = ContainerFactory::create(wanted_container);
+  this->container =
+      ContainerFactory::create(EnumToStringFactory::get(wanted_container));
 
   // TODO: make this user adjustable
   auto subtitleCodec =
@@ -289,14 +294,14 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
                      ":flags=lanczos");
 
   StringArgument *startBeginning =
-      argumentRegistry.get_t<StringArgument>("-ss");
+      argumentRegistry.get_t<StringArgument>(Command::START);
 
   if (!startBeginning->get().empty()) {
     result.push_back("-ss " + startBeginning->get());
   }
 
   TimeStringVectorArgument *trim =
-      argumentRegistry.get_t<TimeStringVectorArgument>("-tr");
+      argumentRegistry.get_t<TimeStringVectorArgument>(Command::TRIM);
 
   if (!trim->get().empty()) {
     result.push_back("-ss " + trim->get()[0]);
