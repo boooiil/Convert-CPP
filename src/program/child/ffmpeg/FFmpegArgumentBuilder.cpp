@@ -110,6 +110,8 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
       argumentRegistry.get_t<VectorArgument<int>>(Command::AUDIOCHANNELS)
           ->get();
 
+  // we are generating a new BaseAudioCodec for each audio stream
+  // in the existing audio streams
   for (int i = 0; i < media->probeResult->audioStreams.size(); i++) {
     BaseAudioCodec *audioCodec = nullptr;
     int media_channels = media->probeResult->audioStreams[i].channels;
@@ -171,6 +173,10 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
       LOG_DEBUG("Audio index [", i, "] is using channel (", wanted_channels[i],
                 ")");
       audioCodec->setChannel(wanted_channels[i]);
+    } else if (!wanted_channels.empty()) {
+      LOG_DEBUG("Audio index [", i, "] exceeded channels, using last channel (",
+                wanted_channels[wanted_channels.size() - 1], ")");
+      audioCodec->setChannel(wanted_channels[wanted_channels.size() - 1]);
     }
     // copy channels
     else {
@@ -179,7 +185,7 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
     }
 
     // set index
-    audioCodec->setIndex(i);
+    audioCodec->setIndex(audioCodecs.size());
 
     // push to audio codecs
     audioCodecs.push_back(audioCodec);
@@ -242,7 +248,7 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
               ") and bit depth (", bit_depth, ")");
 
     LOG_DEBUG("Formatted title for index [", stream,
-              "] is: ", codec_display_name, " ", channel_layout);
+              "] is:", codec_display_name, channel_layout);
 
     result.push_back("-map 0:a:" + std::to_string(stream));
 
