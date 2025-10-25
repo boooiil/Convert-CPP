@@ -22,35 +22,46 @@ def generate(
         class_name: str = key.upper()
         includes += f'#include "{class_prefix}_{class_name}_Generated.h"\n'
         initBody += f"""
-    auto {key} = []() -> {generic_class}* {{
-        return new {class_prefix}_{class_name}_Generated();
-    }};
-    for (auto &alias : {class_prefix}_{class_name}_Generated().getAliases()) {{
-        codec_map[alias] = {key};
-    }}
-
+  auto {key} = []() -> {generic_class}* {{
+    return new {class_prefix}_{class_name}_Generated();
+  }};
+  for (auto &alias : {class_prefix}_{class_name}_Generated().getAliases()) {{
+    codec_registry.add(
+      alias,
+      std::make_unique<std::function<{generic_class}*()>>({key}));
+  }}
 """
 
     body = f"""#include "{class_prefix}Factory.h"
 {includes}
 #include <functional>
 #include <string>
-#include <unordered_map>
 
-std::unordered_map<std::string, std::function<{generic_class}*()>> {class_prefix}Factory::codec_map;
+Registry<std::string, std::function<{generic_class} *()>> 
+    {class_prefix}Factory::codec_registry;
 
-auto {class_prefix}Factory::create(const std::string &name) -> {generic_class}* {{
-  if (codec_map.empty()) {{
+auto {class_prefix}Factory::create(const std::string &name) 
+    -> {generic_class} * {{
+  if (codec_registry.empty()) {{
     initialize();
   }}
 
-  auto it = codec_map.find(name);
+  auto result = codec_registry.get(name);
 
-  if (it != codec_map.end()) {{
-    return it->second();
+  if (result != nullptr) {{
+    return (*result)();
   }}
 
   return nullptr;
+}}
+
+auto {class_prefix}Factory::registry()
+    -> const Registry<std::string, std::function<{generic_class} *()>> & {{
+  if (codec_registry.empty()) {{
+    initialize();
+  }}
+
+  return codec_registry;
 }}
 
 auto {class_prefix}Factory::initialize() -> void {{
