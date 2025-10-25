@@ -13,13 +13,11 @@
 #include "../../utils/logging/Logger.h"
 #include "../Program.h"
 #include "../settings/Settings.h"
-#include "../settings/arguments/ArgumentRegistry.h"
 #include "../settings/arguments/FlagArgument.h"
 #include "../settings/arguments/IntegerArgument.h"
 #include "../settings/enums/Activity.h"
 #include "../settings/enums/EnumToStringFactory.h"
 #include "media/Media.h"
-
 
 std::vector<std::thread> workerThreads;
 

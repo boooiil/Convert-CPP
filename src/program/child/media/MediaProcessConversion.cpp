@@ -9,14 +9,13 @@
 #include "../../../utils/logging/Logger.h"
 #include "../../Program.h"
 #include "../../settings/Settings.h"
-#include "../../settings/arguments/ArgumentRegistry.h"
 #include "../../settings/arguments/FlagArgument.h"
 #include "../../settings/enums/Activity.h"
 #include "../../settings/enums/Encoders.h"
 #include "Media.h"
 #include "MediaProcess.h"
 
-MediaProcessConversion::MediaProcessConversion(Media* media)
+MediaProcessConversion::MediaProcessConversion(Media *media)
     : MediaProcess(media) {}
 
 MediaProcessConversion::~MediaProcessConversion() {
@@ -26,9 +25,9 @@ MediaProcessConversion::~MediaProcessConversion() {
 void MediaProcessConversion::parse(std::string data) {
   LOG_DEBUG("PARSING LINE:", data);
 
-  ChildOptions& childOptions =
+  ChildOptions &childOptions =
       *Program::settings->childOptionsMap[this->object->id];
-  //ArgumentRegistry& argumentRegistry = *childOptions.argumentRegistry;
+  // ArgumentRegistry& argumentRegistry = *childOptions.argumentRegistry;
 
   // Return fail IF:
   // 1&2. Encode fails to find a device
@@ -43,7 +42,7 @@ void MediaProcessConversion::parse(std::string data) {
                           std::regex::icase)) {
     // if the user wants to use hardware encoding (nvenc, amf, qsv)
 
-    FlagArgument& hweFlag = *childOptions.argumentRegistry->get_t<FlagArgument>(
+    FlagArgument &hweFlag = *childOptions.argumentRegistry->get_t<FlagArgument>(
         Command::HARDWAREENCODE);
 
     if (hweFlag) {
@@ -52,21 +51,21 @@ void MediaProcessConversion::parse(std::string data) {
     }
 
     switch (childOptions.runningEncoder) {
-      case Encoders::AV1_AMF:
-      case Encoders::AV1_NVENC:
-      case Encoders::AV1_QSV:
-      case Encoders::H264_AMF:
-      case Encoders::H264_NVENC:
-      case Encoders::H264_QSV:
-      case Encoders::HEVC_AMF:
-      case Encoders::HEVC_NVENC:
-      case Encoders::HEVC_QSV:
-        this->object->setActivity(Activity::FAILED_HARDWARE);
-        break;
-      default:
-        throw std::runtime_error(
-            "Out of memory even though hardware encoding is disabled. This "
-            "should not happen.");
+    case Encoders::AV1_AMF:
+    case Encoders::AV1_NVENC:
+    case Encoders::AV1_QSV:
+    case Encoders::H264_AMF:
+    case Encoders::H264_NVENC:
+    case Encoders::H264_QSV:
+    case Encoders::HEVC_AMF:
+    case Encoders::HEVC_NVENC:
+    case Encoders::HEVC_QSV:
+      this->object->setActivity(Activity::FAILED_HARDWARE);
+      break;
+    default:
+      throw std::runtime_error(
+          "Out of memory even though hardware encoding is disabled. This "
+          "should not happen.");
     };
   }
 
@@ -103,10 +102,14 @@ void MediaProcessConversion::parse(std::string data) {
         RegexUtils::getFirstMatch(data, "fps=.+?(\\d+\\.\\d+|\\d+)");
     ;
 
-    if (quality == "") quality = "-1.0";
-    if (bitrate == "") bitrate = "-1.0";
-    if (completedFrames == "") completedFrames = "-1";
-    if (fps == "") fps = "-1.0";
+    if (quality == "")
+      quality = "-1.0";
+    if (bitrate == "")
+      bitrate = "-1.0";
+    if (completedFrames == "")
+      completedFrames = "-1";
+    if (fps == "")
+      fps = "-1.0";
 
     // assert(quality != "");
     // assert(bitrate != "");
@@ -114,7 +117,8 @@ void MediaProcessConversion::parse(std::string data) {
     // assert(completedFrames != "");
     // assert(fps != "");
 
-    if (quality != "-1.0") this->object->working->quality = std::stof(quality);
+    if (quality != "-1.0")
+      this->object->working->quality = std::stof(quality);
     this->object->working->bitrate = std::stof(bitrate);
     this->object->working->completedFrames = std::stoll(completedFrames);
     this->object->working->fps = std::stof(fps);

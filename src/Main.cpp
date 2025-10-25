@@ -1,9 +1,8 @@
 #ifdef _WIN32
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
+#include <stdlib.h>
 #include <windows.h>
-
-#include <cstdlib>
 
 #include "./utils/signals/WindowsSignalHandler.h"
 
@@ -24,6 +23,11 @@ using SignalHandler = UnixSignalHandler;
 /**
  * WALK AWAY NOTES:
  *
+ * We need to iterate over all of the subtitle streams and see if they can be
+ mapped to the desired codecs.
+ * If a stream cannot be mapped, we need to decide whether to drop it or use a
+ fallback codec.
+
  * We are creating a lot of memory by allocating for each new
  * supported codec (BaseContainer). We should probably make a registry of
  * supported video, audio, and subtitle codecs that we can pull from instead of
@@ -76,7 +80,7 @@ using SignalHandler = UnixSignalHandler;
  * @param argv Argument values
  * @return int
  */
-auto main(int argc, char* argv[]) -> int {
+int main(int argc, char *argv[]) {
 #ifdef _DEBUG
 #define new new (_NORMAL_BLOCK, __FILE__, __LINE__)
 
@@ -95,7 +99,7 @@ auto main(int argc, char* argv[]) -> int {
 
     program.run();
 
-  } catch (const std::exception& e) {
+  } catch (const std::exception &e) {
     std::cout << "Error: " << e.what() << std::endl;
   }
 

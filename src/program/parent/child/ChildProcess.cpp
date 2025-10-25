@@ -4,21 +4,15 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-#include "../../../utils/StringUtils.h"
 #include "../../../utils/logging/Logger.h"
-#include "../../child/media/Media.h"
 #include "../../settings/enums/Activity.h"
-#include "../../settings/enums/StringEnumDataHolder.h"
 #include "ChildProcessConversion.h"
+#include "src/program/settings/enums/EnumToStringFactory.h"
+#include "src/utils/StringUtils.h"
 
 ChildProcess::ChildProcess(std::string path, std::string filename)
-    : path(path),
-      filename(filename),
-      pid(-1),
-      endable(true),
-      ended(0),
-      started(0),
-      activity(Activity::WAITING) {}
+    : path(path), filename(filename), pid(-1), endable(true), ended(0),
+      started(0), activity(Activity::WAITING) {}
 
 ChildProcess::~ChildProcess(void) {}
 
