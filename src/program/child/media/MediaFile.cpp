@@ -10,41 +10,22 @@
 #include "../../../utils/StringUtils.h"
 #include "../../../utils/logging/Logger.h"
 #include "../../settings/arguments/video/Quality.h"
+#include "src/program/settings/arguments/EnumArgument.h"
+#include "src/program/settings/enums/Command.h"
+#include "src/program/settings/enums/Container.h"
+#include "src/program/settings/enums/EnumToStringFactory.h"
 
 MediaFile::MediaFile()
-    : conversionName(""),
-      conversionNameExt(""),
-      conversionFilePath(""),
-      conversionFolderPath(""),
-      episode(""),
-      series(""),
-      originalFileNameExt(""),
-      originalFullPath(""),
-      cwd(""),
-      ext(""),
-      number(0),
-      size(0),
-      newSize(0),
-      quality(0),
-      season(0) {}
+    : cwd(""), originalFileNameExt(""), originalFullPath(""),
+      conversionName(""), conversionNameExt(""), conversionFilePath(""),
+      conversionFolderPath(""), episode(""), series(""), ext(""), number(0),
+      size(0), newSize(0), quality(0), season(0) {}
 
 MediaFile::MediaFile(uuids::uuid media_id, std::string name, std::string path)
-    : media_id(media_id),
-      conversionName(""),
-      conversionNameExt(""),
-      conversionFilePath(""),
-      conversionFolderPath(""),
-      episode(""),
-      series(""),
-      originalFileNameExt(name),
-      originalFullPath(""),
-      cwd(path),
-      ext(""),
-      number(0),
-      size(0),
-      newSize(0),
-      quality(0),
-      season(0) {}
+    : media_id(media_id), cwd(path), originalFileNameExt(name),
+      originalFullPath(""), conversionName(""), conversionNameExt(""),
+      conversionFilePath(""), conversionFolderPath(""), episode(""), series(""),
+      ext(""), number(0), size(0), newSize(0), quality(0), season(0) {}
 
 MediaFile::~MediaFile() { LOG_DEBUG("Deconstructing MediaFile"); }
 
@@ -132,7 +113,7 @@ void MediaFile::resolveConversionPaths(std::string provided_series,
                                        int provided_season,
                                        std::string provided_episode,
                                        std::string path) {
-  ArgumentRegistry& argumentRegistry =
+  ArgumentRegistry &argumentRegistry =
       *Program::settings->childOptionsMap[this->media_id]->argumentRegistry;
 
   MediaFormat format = argumentRegistry.get_t<Quality>(Command::QUALITY)->get();
@@ -152,12 +133,18 @@ void MediaFile::resolveConversionPaths(std::string provided_series,
                                   provided_episode + " [" + program_quality +
                                   "]";
 
+  std::string wanted_container =
+      EnumToStringFactory::get<Container>(
+          argumentRegistry.get_t<EnumArgument<Container>>(Command::CONTAINER)
+              ->get())
+          .getName();
+
   this->conversionName = compiled_filename;
-  this->conversionNameExt = compiled_filename + ".mkv";
+  this->conversionNameExt = compiled_filename + "." + wanted_container;
   this->conversionFolderPath = path + "/" + provided_series + " Season " +
                                std::to_string(provided_season) + "/";
   this->conversionFilePath =
-      this->conversionFolderPath + compiled_filename + ".mkv";
+      this->conversionFolderPath + compiled_filename + "." + wanted_container;
 }
 
 void MediaFile::resolveExtension(std::string original_filename) {
