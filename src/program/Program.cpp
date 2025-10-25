@@ -1,25 +1,24 @@
 #include "Program.h"
 
-#include <chrono>
 #include <fstream>
 #include <iosfwd>
 #include <nlohmann/json.hpp>
 #include <string>
-#include <thread>
 #include <vector>
 
 #include "../utils/ListUtils.h"
 #include "../utils/logging/LogColor.h"
 #include "../utils/logging/Logger.h"
-#include "generics/GenericRunner.h"
 #include "generics/JSONSerializableRunner.h"
 #include "settings/Settings.h"
-#include "settings/arguments/BaseArgument.h"
+#include "settings/arguments/EnumArgument.h"
+#include "settings/enums/EnumToStringFactory.h"
+#include "settings/enums/LoggingOptions.h"
 #include "ticker/NTicker.h"
 
-JSONSerializableRunner* Program::ticker = nullptr;
+JSONSerializableRunner *Program::ticker = nullptr;
 // Log* Program::log = nullptr;
-Settings* Program::settings = nullptr;
+Settings *Program::settings = nullptr;
 bool Program::stopFlag = false;
 
 Program::Program(void) : endable(true) {}
@@ -28,7 +27,7 @@ Program::~Program(void) {
   // this->end();
 }
 
-void Program::prepare(std::vector<std::string>& args) {
+void Program::prepare(std::vector<std::string> &args) {
   // Program::log = new Log();
   EnumToStringFactory::init();
 
@@ -37,31 +36,32 @@ void Program::prepare(std::vector<std::string>& args) {
   Program::settings->programOptions->parse(args);
 
   switch (Program::settings->programOptions->argumentRegistry
-              ->get_t<BaseArgument<LoggingOptions>>(Command::LOGGINGOPTIONS)
+              ->get_t<EnumArgument<LoggingOptions>>(Command::LOGGINGOPTIONS)
               ->get()) {
-    case LoggingOptions::DEBUG:
-    case LoggingOptions::JSON_DEBUG:
-      Logger::debug_flag = true;
-      break;
-    case LoggingOptions::VERBOSE:
-    case LoggingOptions::JSON_VERBOSE:
-      Logger::debug_flag = true;
-      // set verbose
-      break;
-    default:
-      Logger::debug_flag = false;
-      break;
+  case LoggingOptions::DEBUG:
+  case LoggingOptions::JSON_DEBUG:
+    Logger::debug_flag = true;
+    break;
+  case LoggingOptions::VERBOSE:
+  case LoggingOptions::JSON_VERBOSE:
+    Logger::debug_flag = true;
+    // set verbose
+    break;
+  default:
+    Logger::debug_flag = false;
+    break;
   };
 
   Program::settings->programOptions->gatherSystemDetails();
   Program::settings->programOptions->validate();
 
   Program::ticker = new NTicker();
-  if (!stopFlag) Program::ticker->prepare(args);
+  if (!stopFlag)
+    Program::ticker->prepare(args);
 }
 
-void Program::prepare(int argc, char* argv[]) {
-    (void)argc;
+void Program::prepare(int argc, char *argv[]) {
+  (void)argc;
   std::vector<std::string> args = ListUtils::toStrVector(argv);
 
   args.erase(args.begin());
@@ -71,7 +71,8 @@ void Program::prepare(int argc, char* argv[]) {
 }
 
 void Program::run() {
-  if (!stopFlag) Program::ticker->run();
+  if (!stopFlag)
+    Program::ticker->run();
 }
 
 void Program::end(void) {

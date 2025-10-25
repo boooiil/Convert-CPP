@@ -11,7 +11,6 @@
 #include "../parent/Parent.h"
 #include "../parent/display/ParentDisplay.h"
 #include "../settings/Help.h"
-#include "../settings/arguments/ArgumentRegistry.h"
 #include "../settings/arguments/EnumArgument.h"
 #include "../settings/arguments/FlagArgument.h"
 #include "../settings/arguments/IntegerArgument.h"
@@ -23,8 +22,8 @@ NTicker::NTicker() : endable(true) {
   this->runner = nullptr;
 }
 
-void NTicker::determineNextAction(std::vector<std::string>& args) {
-  ArgumentRegistry* program_arg_reg =
+void NTicker::determineNextAction(std::vector<std::string> &args) {
+  ArgumentRegistry *program_arg_reg =
       Program::settings->programOptions->argumentRegistry;
 
   if (program_arg_reg->get_t<FlagArgument>(Command::HELP)->get()) {
@@ -63,9 +62,9 @@ void NTicker::determineNextAction(std::vector<std::string>& args) {
 //   this->determineNextAction(arguments->args);
 // }
 
-void NTicker::prepare(std::vector<std::string>& args) {
+void NTicker::prepare(std::vector<std::string> &args) {
   // use parent display
-  ArgumentRegistry* program_arg_reg =
+  ArgumentRegistry *program_arg_reg =
       Program::settings->programOptions->argumentRegistry;
 
   if (program_arg_reg->get_t<FlagArgument>(Command::PARENT)->get()) {
@@ -82,7 +81,7 @@ void NTicker::prepare(std::vector<std::string>& args) {
 }
 
 void NTicker::run() {
-  ArgumentRegistry* program_arg_reg =
+  ArgumentRegistry *program_arg_reg =
       Program::settings->programOptions->argumentRegistry;
 
   if (program_arg_reg->get_t<FlagArgument>(Command::INFO)->get()) {
@@ -93,22 +92,26 @@ void NTicker::run() {
   while (!Program::stopFlag) {
     this->runner->run();
 
+    if (Program::stopFlag) {
+      continue;
+    }
+
     LoggingOptions log_option =
         program_arg_reg
             ->get_t<EnumArgument<LoggingOptions>>(Command::LOGGINGOPTIONS)
             ->get();
 
     switch (log_option) {
-      case LoggingOptions::DEBUG:
-      case LoggingOptions::JSON_DEBUG:
-        this->display->printDebug();
-        break;
-      case LoggingOptions::JSON:
-        this->display->printJSON();
-        break;
-      default:
-        this->display->print();
-        break;
+    case LoggingOptions::DEBUG:
+    case LoggingOptions::JSON_DEBUG:
+      this->display->printDebug();
+      break;
+    case LoggingOptions::JSON:
+      this->display->printJSON();
+      break;
+    default:
+      this->display->print();
+      break;
     }
 
     std::this_thread::sleep_for(

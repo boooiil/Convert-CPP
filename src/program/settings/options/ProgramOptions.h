@@ -7,22 +7,20 @@
 #include <string>
 #include <vector>
 
-#include "../../settings/arguments/ArgumentRegistry.h"
-#include "../../settings/enums/Decoders.h"
 #include "../../settings/enums/Encoders.h"
 #include "../../settings/enums/HWAccelerators.h"
 #include "../../settings/enums/Tunes.h"
 #include "../enums/GPUProviders.h"
 #include "../enums/Platform.h"
-#include "../enums/StringEnumDataHolder.h"
+#include "src/program/registry/ArgumentRegistry.h"
 
 class ProgramOptions : public JSONSerializable {
- public:
+public:
   ProgramOptions(void);
   ~ProgramOptions(void);
 
   // TODO dtor deletion
-  ArgumentRegistry* argumentRegistry;
+  ArgumentRegistry *argumentRegistry;
   std::vector<std::string> i_args;
 
   /// @brief The current operating system of the user's machine
@@ -50,7 +48,7 @@ class ProgramOptions : public JSONSerializable {
   void gatherSystemDetails(void);
 
   void fromJSON(nlohmann::json) override;
-  nlohmann::json toJSON(void);
+  nlohmann::json toJSON(void) override;
 };
 
-#endif  // PROGRAM_SETTINGS_H
+#endif // PROGRAM_SETTINGS_H
