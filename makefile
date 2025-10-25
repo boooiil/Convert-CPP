@@ -1,56 +1,96 @@
-CXX = g++
-CCFLAGS = -std=c++20
+.PHONY: validate_meson linux_validate_meson linux_validate_meson_builddir win_validate_meson win_validate_meson_builddir copy_build generate clean valgrind debug run
+# Absolute path to the directory where this Makefile lives
+MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
-BASEDIR = src
-OBJ_DIR = obj
-DIST_DIR = dist
-OUTPUT_NAME = convert
-PLATFORM = LINUX
-
-DEBUG_ARGS = -d -i
-ARGS = -a 2
-
-SRCS := $(shell find $(BASEDIR) -type f -name '*.cpp')
-LINUX_OBJS := $(patsubst $(BASEDIR)/%.cpp,$(DIST_DIR)/linux/$(OBJ_DIR)/%.o,$(SRCS))
-WINDOWS_OBJS := $(patsubst $(BASEDIR)/%.cpp,$(DIST_DIR)/windows/$(OBJ_DIR)/%.o,$(SRCS))
-INC_DIRS := $(shell find $(BASEDIR) -type d)
-INC_FLAGS := $(addprefix -I,$(INC_DIRS))
-
-# Add additional include paths for MinGW
-MINGW_INC_FLAGS := -Iexternal -Iexternal/nlohmann
+# file builds to builddir/
+COPY_DEST := $(MAKEFILE_DIR)
+COMPILE_TYPE := debug
 
 ifeq ($(OS),Windows_NT)
-    PLATFORM = WIN32
+    PLATFORM := windows
+	OUTPUT_NAME := convert.exe
+else
+    PLATFORM := linux
+	OUTPUT_NAME := convert
 endif
 
-.PHONY: all linux windows clean valgrind debug run
+RUN_DEST := ./$(OUTPUT_NAME)
 
-all: linux windows
+compile: generate
+	@meson compile -C build-$(COMPILE_TYPE)
+	@$(MAKE) -s copy_build COMPILE_TYPE=$(COMPILE_TYPE)
 
-linux: $(LINUX_OBJS)
-	$(CXX) $(LINUX_OBJS) -o $(DIST_DIR)/$(OUTPUT_NAME)
+linux_validate_meson:
+	@if ! command -v meson >/dev/null 2>&1; then \
+		echo "Meson build system is not installed. Please install it to proceed."; \
+		exit 1; \
+	@else \
+	    echo "Meson is installed."; \
+	fi
 
-windows: $(WINDOWS_OBJS)
-	x86_64-w64-mingw32-g++ $(WINDOWS_OBJS) -o $(DIST_DIR)/$(OUTPUT_NAME).exe $(MINGW_INC_FLAGS)
+linux_validate_meson_builddir:
+	@if [ ! -d "build-debug" ]; then \
+		meson setup build-debug --buildtype debug; \
+	else \
+		echo "Build directory 'build-debug' exists."; \
+	fi
+	@if [ ! -d "build-release" ]; then \
+		meson setup build-release --buildtype release; \
+	else \
+		echo "Build directory 'build-release' exists."; \
+	fi
 
-$(DIST_DIR)/linux/$(OBJ_DIR)/%.o: $(BASEDIR)/%.cpp
-	@mkdir -p $(dir $@)
-	$(CXX) $(CCFLAGS) -D LINUX $(INC_FLAGS) -c $< -o $@
+win_validate_meson:
+	@where meson >nul 2>nul || ( \
+		echo Meson build system is not installed. Please install it to proceed. & \
+		exit 1 \
+	)
+	@echo Meson is installed.
 
-$(DIST_DIR)/windows/$(OBJ_DIR)/%.o: $(BASEDIR)/%.cpp
-	@mkdir -p $(dir $@)
-	x86_64-w64-mingw32-g++ $(CCFLAGS) -D WIN32 $(INC_FLAGS) $(MINGW_INC_FLAGS) -c $< -o $@ 
+win_validate_meson_builddir:
+	@if not exist build-debug ( \
+		meson setup build-debug --buildtype debug \
+	) else ( \
+		echo Build directory 'build-debug' exists. \
+	)
+	@if not exist build-release ( \
+		meson setup build-release --buildtype release \
+	) else ( \
+		echo Build directory 'build-release' exists. \
+	)
+
+validate_meson:
+ifeq ($(PLATFORM),windows)
+	@echo Detected Windows platform.
+	@$(MAKE) -s win_validate_meson
+else
+	@echo Detected Linux platform.
+	@$(MAKE) -s linux_validate_meson
+endif
+
+validate_meson_builddir: validate_meson
+ifeq ($(PLATFORM),windows)
+	@$(MAKE) -s win_validate_meson_builddir
+else
+	@$(MAKE) -s linux_validate_meson_builddir
+endif
+
+generate: validate_meson_builddir
+	py scripts/populate_ffmpeg_types.py ./
+	node scripts/compile_meson.js
+
+copy_build:
+	@echo Copying build files to $(COPY_DEST)
+	@python -c "import shutil, os; shutil.copyfile('build-$(COMPILE_TYPE)/$(OUTPUT_NAME)', os.path.join('$(COPY_DEST)', '$(OUTPUT_NAME)'))"
 
 clean:
-	rm -rf $(DIST_DIR)
-	rm convert
-	rm convert.exe
+	meson compile -C build-$(COMPILE_TYPE) --clean
 
-valgrind: linux
-	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./$(DIST_DIR)/$(OUTPUT_NAME) $(DEBUG_ARGS)
+valgrind: compile
+	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(RUN_DEST) $(DEBUG_ARGS)
 
-debug: linux
-	./$(DIST_DIR)/$(OUTPUT_NAME) $(DEBUG_ARGS)
+debug: compile
+	$(RUN_DEST) $(DEBUG_ARGS)
 
-run: linux
-	./$(DIST_DIR)/$(OUTPUT_NAME) $(ARGS)
+run: compile
+	$(RUN_DEST) $(ARGS)
