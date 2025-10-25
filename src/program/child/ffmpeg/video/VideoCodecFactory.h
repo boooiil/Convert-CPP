@@ -2,19 +2,21 @@
 #define VIDEO_CODEC_FACTORY_H
 
 #include "BaseVideoCodec.h"
+#include "src/program/registry/Registry.h"
 
 #include <functional>
 #include <string>
-#include <unordered_map>
 
 class VideoCodecFactory {
 public:
   static auto create(const std::string &name) -> BaseVideoCodec *;
+  static auto registry()
+      -> const Registry<std::string, std::function<BaseVideoCodec *()>> &;
 
 private:
   static auto initialize() -> void;
-  static std::unordered_map<std::string, std::function<BaseVideoCodec *()>>
-      codec_map;
+  static Registry<std::string, std::function<BaseVideoCodec *()>>
+      codec_registry;
 };
 
 #endif // VIDEO_CODEC_FACTORY_H
