@@ -11,25 +11,17 @@
 #include <stdio.h>
 
 #include <array>
-#include <chrono>
 #include <cstdio>
-#include <cstdlib>
-#include <iostream>
 #include <memory>
 #include <nlohmann/json.hpp>
 #include <regex>
-#include <sstream>
 #include <stdexcept>
 #include <string>
-#include <thread>
 #include <vector>
 
 #include "../../../utils/ListUtils.h"
 #include "../../../utils/RegexUtils.h"
-#include "../../../utils/StringUtils.h"
-#include "../../../utils/logging/LogColor.h"
 #include "../../../utils/logging/Logger.h"
-#include "../../Program.h"
 #include "../arguments/EnumArgument.h"
 #include "../arguments/FlagArgument.h"
 #include "../arguments/IntegerArgument.h"
@@ -44,10 +36,8 @@
 // TODO: fill this out, rm ApplicationEncodingDecision
 
 ProgramOptions::ProgramOptions()
-    : GPU_Providers({}),
-      argumentRegistry(new ArgumentRegistry()),
-      preferredGPUProvider(GPUProviders::INVALID),
-      platform(Platform::INVALID) {
+    : argumentRegistry(new ArgumentRegistry()), platform(Platform::INVALID),
+      GPU_Providers({}), preferredGPUProvider(GPUProviders::INVALID) {
   ProgramOptions::tuneRegex = {std::regex(R"(film)", std::regex::icase),
                                std::regex(R"(anim)", std::regex::icase),
                                std::regex(R"(grain)", std::regex::icase)};
@@ -227,33 +217,37 @@ void ProgramOptions::prepare(void) {
   // logging, parent, refresh, hwa, hwd, hwe, platform, supported enc, supported
   // hwacc
 
-  argumentRegistry->add(Command::DISPLAYREFRESH,
-                        new IntegerArgument("Display refresh rate in ms", "-dr",
-                                            "--displayrefresh", 1000));
   argumentRegistry->add(
-      Command::HARDWAREACCEL,
-      new EnumArgument<HWAccelerators>("Hardware accelerator to use", "-hwa",
-                                       "--hwaccel", HWAccelerators::INVALID));
-  argumentRegistry->add(Command::HARDWAREDECODE,
-                        new FlagArgument("Use hardware decoding if available",
-                                         "-hwd", "--hardwaredecode", true));
-  argumentRegistry->add(Command::HARDWAREENCODE,
-                        new FlagArgument("Use hardware encoding if available",
-                                         "-hwe", "--hardwareencode", false));
+      Command::DISPLAYREFRESH,
+      std::make_unique<IntegerArgument>("Display refresh rate in ms", "-dr",
+                                        "--displayrefresh", 1000));
+  argumentRegistry->add(Command::HARDWAREACCEL,
+                        std::make_unique<EnumArgument<HWAccelerators>>(
+                            "Hardware accelerator to use", "-hwa", "--hwaccel",
+                            HWAccelerators::INVALID));
   argumentRegistry->add(
-      Command::HELP,
-      new FlagArgument("Print the help message", "-h", "--help", false));
+      Command::HARDWAREDECODE,
+      std::make_unique<FlagArgument>("Use hardware decoding if available",
+                                     "-hwd", "--hardwaredecode", true));
   argumentRegistry->add(
-      Command::INFO, new FlagArgument("Print information about the input file",
-                                      "-i", "--info", false));
+      Command::HARDWAREENCODE,
+      std::make_unique<FlagArgument>("Use hardware encoding if available",
+                                     "-hwe", "--hardwareencode", false));
+  argumentRegistry->add(Command::HELP,
+                        std::make_unique<FlagArgument>("Print the help message",
+                                                       "-h", "--help", false));
+  argumentRegistry->add(
+      Command::INFO,
+      std::make_unique<FlagArgument>("Print information about the input file",
+                                     "-i", "--info", false));
   argumentRegistry->add(Command::LOGGINGOPTIONS,
-                        new EnumArgument<LoggingOptions>(
+                        std::make_unique<EnumArgument<LoggingOptions>>(
                             "Logging format to use", "-lf", "--loggingformat",
                             LoggingOptions::DEFAULT));
 
-  argumentRegistry->add(
-      Command::PARENT,
-      new FlagArgument("Run as parent process", "-parent", "--parent", false));
+  argumentRegistry->add(Command::PARENT, std::make_unique<FlagArgument>(
+                                             "Run as parent process", "-parent",
+                                             "--parent", false));
 }
 
 void ProgramOptions::parse(std::vector<std::string> args) {

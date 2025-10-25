@@ -1,11 +1,8 @@
 #include "ParentOptions.h"
 
-#include "../../../utils/StringUtils.h"
-#include "../../../utils/logging/LogColor.h"
 #include "../../../utils/logging/Logger.h"
-#include "../../Program.h"
-#include "../arguments/FlagArgument.h"
 #include "../arguments/IntegerArgument.h"
+#include <nlohmann/json.hpp>
 
 ParentOptions::ParentOptions(void) : argumentRegistry(new ArgumentRegistry()) {}
 
@@ -22,12 +19,12 @@ void ParentOptions::prepare(void) {
   // Prepare the options
   // amount
 
-  argumentRegistry->add(
-      Command::AMOUNT,
-      new IntegerArgument("Amount of media to process", "-a", "--amount", 1));
+  argumentRegistry->add(Command::AMOUNT,
+                        std::make_unique<IntegerArgument>(
+                            "Amount of media to process", "-a", "--amount", 1));
 }
 
-void ParentOptions::parse(std::vector<std::string>& args) {
+void ParentOptions::parse(std::vector<std::string> &args) {
   this->i_args = args;
   this->argumentRegistry->parse(args);
 }
