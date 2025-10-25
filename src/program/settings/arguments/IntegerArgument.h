@@ -8,7 +8,7 @@
 #include "BaseArgument.h"
 
 class IntegerArgument : public BaseArgument<int> {
- public:
+public:
   IntegerArgument(std::string _helpMessage, std::string _flag,
                   std::string _longFlag, int data)
       : BaseArgument(_helpMessage, _flag, _longFlag, data) {}
@@ -18,16 +18,16 @@ class IntegerArgument : public BaseArgument<int> {
   void parse(std::string argument) override {
     try {
       value = std::stoi(argument);
-    } catch (std::invalid_argument& e) {
+    } catch (std::invalid_argument &e) {
       LOG_DEBUG(e.what());
       this->setErrored(true);
     }
   }
 
-  virtual const std::string toString(void) const {
+  virtual const std::string toString(void) const override {
     return std::to_string(value);
   }
-  virtual const bool hasData(void) const { return this->value != -1; }
+  virtual const bool hasData(void) const override { return this->value != -1; }
 };
 
-#endif  // INTEGER_ARGUMENT_H
+#endif // INTEGER_ARGUMENT_H

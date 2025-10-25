@@ -1,12 +1,6 @@
 #ifndef LOGGING_OPTIONS_H
 #define LOGGING_OPTIONS_H
 
-#include <string>
-#include <unordered_map>
-#include <vector>
-
-#include "StringEnumDataHolder.h"
-
 enum class LoggingOptions {
   INVALID = 0,
 
@@ -16,21 +10,23 @@ enum class LoggingOptions {
   JSON,
   JSON_DEBUG,
   JSON_VERBOSE
-  //public:
-  // static const StringEnumDataHolder<LoggingOptions> INVALID;
-  // static const StringEnumDataHolder<LoggingOptions> DEFAULT;
-  // static const StringEnumDataHolder<LoggingOptions> DEBUG;
-  // static const StringEnumDataHolder<LoggingOptions> VERBOSE;
-  // static const StringEnumDataHolder<LoggingOptions> JSON;
-  // static const StringEnumDataHolder<LoggingOptions> JSON_DEBUG;
-  // static const StringEnumDataHolder<LoggingOptions> JSON_VERBOSE;
+  // public:
+  //  static const StringEnumDataHolder<LoggingOptions> INVALID;
+  //  static const StringEnumDataHolder<LoggingOptions> DEFAULT;
+  //  static const StringEnumDataHolder<LoggingOptions> DEBUG;
+  //  static const StringEnumDataHolder<LoggingOptions> VERBOSE;
+  //  static const StringEnumDataHolder<LoggingOptions> JSON;
+  //  static const StringEnumDataHolder<LoggingOptions> JSON_DEBUG;
+  //  static const StringEnumDataHolder<LoggingOptions> JSON_VERBOSE;
 
-  // static const std::vector<const StringEnumDataHolder<LoggingOptions>*> _all() {
+  // static const std::vector<const StringEnumDataHolder<LoggingOptions>*>
+  // _all() {
   //   return {&INVALID, &DEFAULT,    &DEBUG,       &VERBOSE,
   //           &JSON,    &JSON_DEBUG, &JSON_VERBOSE};
   // }
 
-  // static const StringEnumDataHolder<LoggingOptions> getKey(std::string value) {
+  // static const StringEnumDataHolder<LoggingOptions> getKey(std::string value)
+  // {
   //   for (auto& item : _all()) {
   //     if (item->getName() == value) {
   //       return *item;
@@ -64,4 +60,4 @@ enum class LoggingOptions {
   // static bool isVerbose(StringEnumDataHolder<LoggingOptions> providedOption);
 };
 
-#endif  // LOGGING_OPTIONS_H
+#endif // LOGGING_OPTIONS_H
