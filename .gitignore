@@ -1,26 +1,20 @@
-*.sln
-*.vcxproj
-*.filters
-*.user
+*
 
-/.vs
-/.vscode
-/vcpkg_installed/x64-windows
-/vcpkg.json
-/x64
-/CppProperties.json
-/dist
-/obj
-/packages
+# Files
+!README.md
+!makefile
+!meson.build
+!JSONFormat.md
 
-.vscode/c_cpp_properties.json
-.vscode/settings.json
-*.mkv
-convert*
-container_debug.json
-/docs
-/Doxyfile
-ClassDiagram*
-
-subprojects/*
+# Directories
+!scripts/
+!scripts/*
+!scripts/data/*
+!subprojects/
 !subprojects/*.wrap
+!src/
+!src/**
+
+# Ignore all generated files
+**/ffmpeg/*/*_Generated.h
+**/ffmpeg/*/*Factory.cpp
