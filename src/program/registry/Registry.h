@@ -27,6 +27,7 @@ public:
   }
 
   bool has(const K &key) const { return registry.find(key) != registry.end(); }
+  bool empty() const { return registry.empty(); }
 
   V *get(const K &key) {
     auto it = registry.find(key);
