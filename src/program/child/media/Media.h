@@ -13,17 +13,14 @@
 
 #include <nlohmann/json_fwd.hpp>
 #include <string>
-#include <vector>
 
 #include "../../generics/JSONSerializable.h"
 #include "../../settings/enums/Activity.h"
-#include "../../settings/enums/StringEnumDataHolder.h"
 #include "../ffmpeg/FFmpegArgumentBuilder.h"
 #include "../ffmpeg/probe/ProbeResult.h"
 #include "MediaFile.h"
 #include "MediaVideoProperties.h"
 #include "MediaWorkingProperties.h"
-
 
 /**
  * @brief Media class.
