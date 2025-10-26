@@ -89,17 +89,17 @@ void MediaProcessConversion::parse(std::string data) {
     this->object->setActivity(Activity::FAILED_INVALID_AUDIO_CHANNELS);
   }
 
-  else if (RegexUtils::isMatch(data, "frame=.+?(\\d+)")) {
+  else if (RegexUtils::isMatch(data, "frame=\\s*(\\d+)")) {
     LOG_DEBUG("PARSING LINE");
 
     std::string quality =
         RegexUtils::getFirstMatch(data, "q=(\\d+\\.\\d+|-\\d+\\.\\d+)");
     std::string bitrate =
-        RegexUtils::getFirstMatch(data, "bitrate= ?(\\d+\\.\\d+)");
+        RegexUtils::getFirstMatch(data, "bitrate=\\s*(\\d+\\.\\d+)");
     std::string completedFrames =
-        RegexUtils::getFirstMatch(data, "frame=.+?(\\d+)");
+        RegexUtils::getFirstMatch(data, "frame=\\s*(\\d+)");
     std::string fps =
-        RegexUtils::getFirstMatch(data, "fps=.+?(\\d+\\.\\d+|\\d+)");
+        RegexUtils::getFirstMatch(data, "fps=\\s*(\\d+\\.\\d+|\\d+)");
     ;
 
     if (quality == "")
@@ -107,7 +107,7 @@ void MediaProcessConversion::parse(std::string data) {
     if (bitrate == "")
       bitrate = "-1.0";
     if (completedFrames == "")
-      completedFrames = "-1";
+      completedFrames = "0";
     if (fps == "")
       fps = "-1.0";
 
