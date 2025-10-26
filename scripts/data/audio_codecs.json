@@ -188,16 +188,17 @@
             16
         ]
     },
-    "opus": {
+    "libopus": {
         "defaults": {
             "channel": 2,
             "sampleRate": 48000,
             "bitDepth": 16
         },
-        "name": "opus",
+        "name": "libopus",
         "displayName": "Opus",
         "aliases": [
-            "opus"
+            "opus",
+            "libopus"
         ],
         "supportedChannels": [
             1,
