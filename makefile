@@ -75,9 +75,10 @@ else
 	@$(MAKE) -s linux_validate_meson_builddir
 endif
 
-generate: validate_meson_builddir
+generate:
 	python scripts/populate_ffmpeg_types.py ./
 	node scripts/compile_meson.js
+	@$(MAKE) -s validate_meson_builddir
 
 copy_build:
 	@echo Copying build files to $(COPY_DEST)
