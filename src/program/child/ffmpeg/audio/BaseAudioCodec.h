@@ -50,11 +50,13 @@ public:
     this->runningBitDepth = getBitDepth(bitDepth);
   };
   auto setIndex(int index) -> void { this->index = index; };
+  auto setMapIndex(int mapIndex) -> void { this->mapIndex = mapIndex; };
 
   auto getRunningChannel() -> const int { return this->runningChannel; };
   auto getRunningSampleRate() -> const int { return this->runningSampleRate; };
   auto getRunningBitDepth() -> const int { return this->runningBitDepth; };
   auto getIndex() -> const int { return this->index; };
+  auto getMapIndex() -> const int { return this->mapIndex; };
   auto getChannelLayout() -> std::string {
     // Return a string representation of the channel layout
     switch (this->runningChannel) {
@@ -98,6 +100,7 @@ private:
   }
 
   int index;
+  int mapIndex;
   int runningChannel;
   int runningSampleRate;
   int runningBitDepth;
