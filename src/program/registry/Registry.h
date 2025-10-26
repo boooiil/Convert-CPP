@@ -35,8 +35,17 @@ public:
     if (it != registry.end()) {
       return it->second.get();
     } else {
-      LOG_DEBUG("There was no key ", std::string(typeid(key).name()),
-                "in the registry.");
+
+      LOG_DEBUG("No key of type ", typeid(K).name(), " found in the registry.");
+
+      if constexpr (std::is_same_v<K, int>) {
+        LOG_DEBUG("Integer key not found: ", key);
+      } else if constexpr (std::is_same_v<K, std::string>) {
+        LOG_DEBUG("String key not found: ", key);
+      } else {
+        LOG_DEBUG("Unknown key type: ", typeid(K).name());
+      }
+
       return nullptr;
     }
   }
