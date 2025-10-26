@@ -186,6 +186,7 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
 
     // set index
     audioCodec->setIndex(audioCodecs.size());
+    audioCodec->setMapIndex(i);
 
     // push to audio codecs
     audioCodecs.push_back(audioCodec);
@@ -238,26 +239,28 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
     std::string codec_display_name = codec->getDisplayName();
     std::string channel_layout = codec->getChannelLayout();
 
-    int stream = codec->getIndex();
+    int as_index = codec->getIndex();
+    int as_map_index = codec->getMapIndex();
     int channels = codec->getRunningChannel();
     int sample_rate = codec->getRunningSampleRate();
     int bit_depth = codec->getRunningBitDepth();
 
-    LOG_DEBUG("Audio index [", stream, "] using codec (", codec_name,
-              ") with channels (", channels, ") and sample rate (", sample_rate,
-              ") and bit depth (", bit_depth, ")");
+    LOG_DEBUG("Audio index [", as_index, "] mapped at [", as_map_index,
+              "] using codec (", codec_name, ") with channels (", channels,
+              ") and sample rate (", sample_rate, ") and bit depth (",
+              bit_depth, ")");
 
-    LOG_DEBUG("Formatted title for index [", stream,
+    LOG_DEBUG("Formatted title for index [", as_index,
               "] is:", codec_display_name, channel_layout);
 
-    result.push_back("-map 0:a:" + std::to_string(stream));
+    result.push_back("-map 0:a:" + std::to_string(as_map_index));
 
-    result.push_back("-c:a:" + std::to_string(stream) + " " + codec_name);
-    result.push_back("-ac:a:" + std::to_string(stream) + " " +
+    result.push_back("-c:a:" + std::to_string(as_index) + " " + codec_name);
+    result.push_back("-ac:a:" + std::to_string(as_index) + " " +
                      std::to_string(channels));
-    result.push_back("-ar:a:" + std::to_string(stream) + " " +
+    result.push_back("-ar:a:" + std::to_string(as_index) + " " +
                      std::to_string(sample_rate));
-    result.push_back("-metadata:s:a:" + std::to_string(stream) + " " +
+    result.push_back("-metadata:s:a:" + std::to_string(as_index) + " " +
                      " title=\"" + codec_display_name + " " + channel_layout +
                      "\"");
   }
