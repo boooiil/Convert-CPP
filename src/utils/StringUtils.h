@@ -9,6 +9,7 @@
 #ifndef STRING_UTILS
 #define STRING_UTILS
 
+#include "logging/LogColor.h"
 #include <regex>
 #include <string>
 
@@ -73,6 +74,73 @@ public:
    * @return The converted string.
    */
   static std::string toProperCase(std::string str);
+
+  /**
+   * @brief Wrap content in brackets with specified colors.
+   *
+   * @param innerContent - The content to wrap.
+   * @param outerContent - The content to wrap with.
+   * @return std::string - The formatted string.
+   */
+  static std::string bracket(const std::string &innerContent,
+                             const std::string &outerContent) {
+    return bracket(innerContent, outerContent, LogColor::fgGray,
+                   LogColor::fgCyan, LogColor::fgGray);
+  }
+
+  /**
+   * @brief Wrap content in brackets with specified colors.
+   *
+   * @param innerContent - The content to wrap.
+   * @param outerContent - The content to wrap with.
+   * @param bracketColor - The color of the brackets.
+   * @return std::string - The formatted string.
+   */
+  template <typename LogColorFn>
+  static std::string bracket(const std::string &innerContent,
+                             const std::string &outerContent,
+                             LogColorFn &bracketColor) {
+    return bracket(innerContent, outerContent, bracketColor, LogColor::fgCyan,
+                   LogColor::fgGray);
+  }
+
+  /**
+   * @brief Wrap content in brackets with specified colors.
+   *
+   * @param innerContent - The content to wrap.
+   * @param outerContent - The content to wrap with.
+   * @param bracketColor - The color of the brackets.
+   * @param innerColor   - The color of the inner content.
+   * @return std::string - The formatted string.
+   */
+  template <typename LogColorFn>
+  static std::string bracket(const std::string &innerContent,
+                             const std::string &outerContent,
+                             LogColorFn &bracketColor, LogColorFn &innerColor) {
+
+    return bracket(innerContent, outerContent, bracketColor, innerColor,
+                   LogColor::fgGray);
+  }
+
+  /**
+   * @brief Wrap content in brackets with specified colors.
+   *
+   * @param innerContent - The content to wrap.
+   * @param outerContent - The content to wrap with.
+   * @param bracketColor - The color of the brackets.
+   * @param innerColor   - The color of the inner content.
+   * @param outerColor   - The color of the outer content.
+   * @return std::string - The formatted string.
+   */
+  template <typename LogColorFn>
+  static std::string bracket(const std::string &innerContent,
+                             const std::string &outerContent,
+                             LogColorFn &bracketColor, LogColorFn &innerColor,
+                             LogColorFn &outerColor) {
+
+    return bracketColor("[") + innerColor(innerContent) + bracketColor("]") +
+           (outerContent.empty() ? "" : " " + outerColor(outerContent));
+  }
 
   /**
    * @brief Check if a string contains another.
