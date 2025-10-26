@@ -16,5 +16,6 @@
 !src/**
 
 # Ignore all generated files
+**/meson.build
 **/ffmpeg/*/*_Generated.h
 **/ffmpeg/*/*Factory.cpp
