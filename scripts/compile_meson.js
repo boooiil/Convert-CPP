@@ -35,7 +35,7 @@ function readDirectoryRecursive(directory) {
     }
 
     // check if meson.build already exists
-    if (statSync(root + 'meson.build').isFile()) {
+    if (existsSync(root + 'meson.build') && statSync(root + 'meson.build').isFile()) {
         var existing = require('fs').readFileSync(root + 'meson.build', 'utf-8');
         if (existing === built) {
             console.log(`${root}meson.build... Skipped (up to date).`);
