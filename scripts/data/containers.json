@@ -10,7 +10,7 @@
         "aliases": [
             "mkv",
             "matroska",
-            "matroska video"
+            "matroska_video"
         ],
         "supportedAudioCodecs": [
             "aac",
@@ -19,7 +19,8 @@
             "flac",
             "vorbis",
             "libvorbis",
-            "opus"
+            "opus",
+            "libopus"
         ],
         "supportedSubtitleCodecs": [
             "ass",
@@ -57,7 +58,7 @@
             "mp4",
             "mpeg-4",
             "mpeg4",
-            "mp4 video"
+            "mp4_video"
         ],
         "supportedAudioCodecs": [
             "aac",
@@ -65,7 +66,9 @@
             "mp3",
             "flac",
             "vorbis",
-            "opus"
+            "libvorbis",
+            "opus",
+            "libopus"
         ],
         "supportedSubtitleCodecs": [
             "dvb_sub",
