@@ -76,7 +76,7 @@ else
 endif
 
 generate: validate_meson_builddir
-	py scripts/populate_ffmpeg_types.py ./
+	python scripts/populate_ffmpeg_types.py ./
 	node scripts/compile_meson.js
 
 copy_build:
