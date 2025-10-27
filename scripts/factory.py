@@ -67,9 +67,6 @@ auto {class_prefix}Factory::registry()
 auto {class_prefix}Factory::initialize() -> void {{
 {initBody}
 }}"""
-    
-    with open(os.path.join(destination, f"{class_prefix}Factory.cpp"), "w") as out_file:
-        out_file.write(body)
 
     if (not os.path.exists(os.path.join(destination, f"{class_prefix}Factory.cpp"))):
         with open(os.path.join(destination, f"{class_prefix}Factory.cpp"), "w") as out_file:
