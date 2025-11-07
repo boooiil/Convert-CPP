@@ -36,6 +36,7 @@ enum class Activity {
   FAILED_INVALID_DURATION_TO,
   FAILED_INVALID_ENCODER,
   FAILED_JSON_PARSE,
+  FAILED_SUBTITLE_ENCODING_INVALID,
   FAILED_SYSTEM,
   FINISHED,
   STATISTICS,
@@ -107,4 +108,4 @@ enum class Activity {
    }*/
 };
 
-#endif  // !ACTIVITY_H
+#endif // !ACTIVITY_H
