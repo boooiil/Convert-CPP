@@ -1,25 +1,35 @@
 #ifndef GENERIC_RUNNER_H
 #define GENERIC_RUNNER_H
 
+#include "src/utils/logging/Logger.h"
 #include <string>
 #include <type_traits>
 #include <vector>
 
 class GenericRunner {
 public:
-  virtual void prepare(std::vector<std::string>& args) = 0;
+  virtual void prepare(std::vector<std::string> &args) = 0;
   virtual void run(void) = 0;
   virtual void end(void) = 0;
 
-  virtual void setEndable(bool flag) = 0;
-  virtual bool isEndable(void) = 0;
+  virtual bool isEndable(void) const { return endable; };
+  virtual void setEndable(bool flag) { endable = flag; };
 
-  template <typename T>
-  T* getRunner(void) {
-    static_assert(std::is_base_of<GenericRunner, T>::value,
-      "T must be a subclass of GenericRunner");
-    return dynamic_cast<T*>(this);
+  virtual bool isCompleted(void) const { return completed; };
+  virtual void setCompleted(bool flag) {
+    LOG_DEBUG("runner marked as completed :", flag ? "True" : "False");
+    completed = flag;
   };
+
+  template <typename T> T *getRunner(void) {
+    static_assert(std::is_base_of<GenericRunner, T>::value,
+                  "T must be a subclass of GenericRunner");
+    return dynamic_cast<T *>(this);
+  };
+
+private:
+  bool endable = true;
+  bool completed = false;
 };
 
-#endif  // !GENERIC_RUNNER_H
+#endif // !GENERIC_RUNNER_H
