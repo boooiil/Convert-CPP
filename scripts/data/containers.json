@@ -15,6 +15,7 @@
         "supportedAudioCodecs": [
             "aac",
             "ac3",
+            "eac3",
             "mp3",
             "flac",
             "vorbis",
