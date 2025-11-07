@@ -1,10 +1,11 @@
 import os
 import sys
-import audio_codec
-import container
-import video_codec
-import subtitle_codec
-import factory
+from ffmpeg_codecs import audio_codec, container, video_codec, subtitle_codec, factory
+# import audio_codec
+# import container
+# import video_codec
+# import subtitle_codec
+# import factory
 
 print("CWD:", os.getcwd())
 print("args:", sys.argv)

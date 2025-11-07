@@ -10,6 +10,7 @@
 !scripts/
 !scripts/*
 !scripts/data/*
+!scripts/ffmpeg_codecs/*
 !subprojects/
 !subprojects/*.wrap
 !src/
