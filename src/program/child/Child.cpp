@@ -61,6 +61,9 @@ void Child::prepare(std::vector<std::string> &args) {
       std::filesystem::create_directory(media->file->conversionFolderPath);
     }
 
+    LOG_DEBUG("Adding media to pending queue: ",
+              media->file->originalFileNameExt);
+
     this->pending.push(media);
   }
 }
@@ -99,7 +102,9 @@ void Child::run(void) {
   IntegerArgument *setAmount =
       childOptions.argumentRegistry->get_t<IntegerArgument>(Command::AMOUNT);
 
-  LOG_DEBUG(std::to_string(currentAmount), setAmount->toString());
+  LOG_DEBUG("C:" + std::to_string(currentAmount), "W:" + setAmount->toString(),
+            "T:" +
+                std::to_string(this->pending.size() + this->converting.size()));
 
   if ((currentAmount < (int)*setAmount) && !this->pending.empty()) {
     Media *media = this->pending.front();
@@ -112,7 +117,8 @@ void Child::run(void) {
                 EnumToStringFactory::get(media->getActivity()).getName());
       if (currentAmount == 0) {
         this->setEndable(true);
-        Program::stopFlag = true;
+        this->setCompleted(true);
+        // Program::stopFlag = true;
       }
     } else {
       LOG_DEBUG("Queued media for encoding:", media->file->originalFileNameExt,
@@ -162,11 +168,17 @@ void Child::run(void) {
                 EnumToStringFactory::get(media->getActivity()).getName());
 
       if (media->isWaitingToStatistics()) {
+        LOG_DEBUG("Media is waiting for statistics:",
+                  media->file->originalFileNameExt);
         media->doStatistics();
       } else if (media->isWaitingToConvert()) {
+        LOG_DEBUG("Media is waiting for conversion:",
+                  media->file->originalFileNameExt);
         media->buildFFmpegArguments(false);
         workerThreads.emplace_back([media]() { media->doConversion(); });
       } else if (media->isWaitingToValidate()) {
+        LOG_DEBUG("Media is waiting for validation:",
+                  media->file->originalFileNameExt);
         workerThreads.emplace_back([media]() { media->doValidation(); });
       }
     }
@@ -243,13 +255,6 @@ void Child::end(void) {
   }*/
 }
 
-void Child::setEndable(bool flag) {
-  LOG_DEBUG("Child has been set as endable:", this->endable ? "True" : "False");
-  this->endable = flag;
-}
-
-bool Child::isEndable(void) { return this->endable; }
-
 void Child::fromJSON(nlohmann::json) {}
 
 nlohmann::json Child::toJSON() {
@@ -275,8 +280,14 @@ nlohmann::json Child::toJSON() {
         EnumToStringFactory::get(media->getActivity()).getName();
     mediaDebug["started"] = media->started;
     mediaDebug["ended"] = media->ended;
-    // this might not work
-    mediaDebug["ffmpegArguments"] = media->ffmpegArguments->build();
+
+    if (media->ffmpegArguments == nullptr) {
+      LOG_DEBUG("Media ffmpegArguments is null:",
+                media->file->originalFileNameExt);
+    } else {
+      // this might not work
+      mediaDebug["ffmpegArguments"] = media->ffmpegArguments->build();
+    }
 
     mediaFileDebug["originalFileNameExt"] = media->file->originalFileNameExt;
     mediaFileDebug["originalFullPath"] = media->file->originalFullPath;
@@ -334,7 +345,14 @@ nlohmann::json Child::toJSON() {
         EnumToStringFactory::get(media->getActivity()).getName();
     mediaDebug["started"] = media->started;
     mediaDebug["ended"] = media->ended;
-    mediaDebug["ffmpegArguments"] = media->ffmpegArguments->build();
+
+    if (media->ffmpegArguments == nullptr) {
+      LOG_DEBUG("Media ffmpegArguments is null:",
+                media->file->originalFileNameExt);
+    } else {
+      // this might not work
+      mediaDebug["ffmpegArguments"] = media->ffmpegArguments->build();
+    }
 
     mediaFileDebug["originalFileNameExt"] = media->file->originalFileNameExt;
     mediaFileDebug["originalFullPath"] = media->file->originalFullPath;
