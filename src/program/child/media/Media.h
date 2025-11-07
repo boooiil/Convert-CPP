@@ -150,6 +150,44 @@ public:
    */
   const bool isWaitingToValidate(void);
 
+  /**
+   * @brief Get ms until item is completed based on its total frames,
+   * current fps, and completed frames.
+   *
+   * @return const int
+   */
+  int eta() const;
+
+  /**
+   * @brief Get the percent of completed frames over total frames as a whole
+   * number.
+   *
+   * @return const int
+   */
+  int percentCompleted() const;
+
+  /**
+   * @brief Get how close the CR value is to the specified one.
+   *
+   * @return const float
+   */
+  float quality() const;
+
+  /**
+   * @brief Get how many frames the video is encoding over the source's FPS.
+   *
+   * @return const float
+   */
+  float speed() const;
+
+  /**
+   * @brief Get how much the encoding process has reduced the file size as a
+   * whole number.
+   *
+   * @return float
+   */
+  int percentReduced() const;
+
   void fromJSON(nlohmann::json) override;
 
   nlohmann::json toJSON(void) override;

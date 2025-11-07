@@ -157,8 +157,15 @@ void Media::doConversion() {
     return;
   }
 
-  this->file->newSize =
-      std::filesystem::file_size(this->file->conversionFilePath);
+  if (!std::filesystem::exists(this->file->conversionFilePath)) {
+    LOG_DEBUG("Converted file does not exist: ",
+              this->file->conversionFilePath);
+    this->setActivity(Activity::FAILED_FILE_MISSING);
+    return;
+  } else {
+    this->file->newSize =
+        std::filesystem::file_size(this->file->conversionFilePath);
+  }
 
   this->setActivity(Activity::WAITING_VALIDATE);
 }
@@ -188,6 +195,45 @@ void Media::doValidation() {
 void Media::buildFFmpegArguments(bool isValidate) {
   this->ffmpegArguments = new FFmpegArgumentBuilder(this);
   this->ffmpegArguments->validate();
+}
+
+int Media::eta() const {
+
+  float mediaFPS = this->working->fps > 0 ? this->working->fps : 1;
+  auto totalFrames = this->video->totalFrames;
+  auto completedFrames = this->working->completedFrames;
+
+  return static_cast<int>(ceil((totalFrames - completedFrames) / mediaFPS) *
+                          1000);
+}
+
+int Media::percentCompleted() const {
+
+  auto totalFrames = static_cast<double>(this->video->totalFrames);
+  auto completedFrames = this->working->completedFrames;
+
+  return static_cast<int>(std::round((completedFrames / totalFrames) * 100));
+}
+
+float Media::quality() const {
+  float crf = this->working->quality;
+  int v_crf = this->video->crf;
+
+  return (v_crf / crf) * 100;
+}
+
+float Media::speed() const {
+  float workingFPS = this->working->fps;
+  float videoFPS = this->video->fps;
+
+  return workingFPS / videoFPS;
+}
+
+int Media::percentReduced() const {
+  auto currSize = static_cast<double>(this->file->size);
+  auto newSize = this->file->newSize;
+
+  return static_cast<int>(std::round(((currSize - newSize) / currSize) * 100));
 }
 
 void Media::fromJSON(nlohmann::json json) {

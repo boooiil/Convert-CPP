@@ -124,29 +124,13 @@ void ChildDisplay::print() {
     Media *media = child.converting.front();
     child.converting.pop();
 
-    float mediaFPS = media->working->fps > 0 ? media->working->fps : 1;
-    auto totalFrames = static_cast<double>(media->video->totalFrames);
-    auto completedFrames = static_cast<double>(media->working->completedFrames);
-
-    int eta_result = static_cast<int>(
-        ceil((totalFrames - completedFrames) / mediaFPS) * 1000);
-
-    int percent_result =
-        static_cast<int>(std::round((completedFrames / totalFrames) * 100));
-
     // create a time util to get this
     std::string started =
         StringUtils::bracket("STR", TimeUtils::timeFormat(media->started));
 
     // create a time util to get this
     std::string eta =
-        StringUtils::bracket("ETA", TimeUtils::durationFormat(eta_result));
-
-    float crf = media->working->quality;
-    int v_crf = media->video->crf;
-
-    float workingFPS = media->working->fps;
-    float videoFPS = media->video->fps;
+        StringUtils::bracket("ETA", TimeUtils::durationFormat(media->eta()));
 
     std::string fileName = StringUtils::bracket(
         "FILE", StringUtils::truncateString(media->file->conversionName, 25));
@@ -154,14 +138,14 @@ void ChildDisplay::print() {
     std::string activity = StringUtils::bracket(
         "ACT", EnumToStringFactory::get(media->getActivity()));
 
-    std::string progress =
-        StringUtils::bracket("PROG", std::to_string(percent_result) + "%");
+    std::string progress = StringUtils::bracket(
+        "PROG", std::to_string(media->percentCompleted()) + "%");
 
     std::string cq = StringUtils::bracket(
-        "QUAL", NumberUtils::formatNumber((v_crf / crf) * 100, 2) + "%");
+        "QUAL", NumberUtils::formatNumber(media->quality(), 2) + "%");
 
     std::string speed = StringUtils::bracket(
-        "SPEED", NumberUtils::formatNumber(workingFPS / videoFPS, 2));
+        "SPEED", NumberUtils::formatNumber(media->speed(), 2));
 
     std::string bitrate = StringUtils::bracket(
         "BITRATE",
@@ -190,11 +174,6 @@ void ChildDisplay::print() {
         "ACT", EnumToStringFactory::get(media->getActivity()));
 
     if (media->hasFinished()) {
-      auto currSize = static_cast<double>(media->file->size);
-      auto newSize = static_cast<double>(media->file->newSize);
-
-      int calculatedSize =
-          static_cast<int>(std::round(((currSize - newSize) / currSize) * 100));
 
       std::string ended =
           StringUtils::bracket("END", TimeUtils::timeFormat(media->ended));
@@ -203,8 +182,8 @@ void ChildDisplay::print() {
           "ELAPSED",
           TimeUtils::durationFormat((media->ended - media->started) * 1000));
 
-      std::string reduced =
-          StringUtils::bracket("REDUCED", std::to_string(calculatedSize) + "%");
+      std::string reduced = StringUtils::bracket(
+          "REDUCED", std::to_string(media->percentReduced()) + "%");
 
       sendStr += fileName + " " + activity + " " + reduced + " " + ended + " " +
                  elapsed + "\n";
@@ -281,7 +260,7 @@ void ChildDisplay::printInformationTyped(NTicker *ticker, Child *child) {
 
     LOG();
     // parent bloc
-    LOG(ob + "Parent - " + LogColor::fgGray(childOptions.CWD) + cb);
+    LOG(ob + "CWD - " + LogColor::fgGray(childOptions.CWD) + cb);
     LOG();
     // file bloc
     LOG(tab(1) + ob + LogColor::fgRed(media->file->originalFileNameExt) + cb);
