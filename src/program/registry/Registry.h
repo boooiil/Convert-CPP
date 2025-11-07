@@ -12,24 +12,26 @@ template <typename K, typename V> class Registry : public JSONSerializable {
 public:
   Registry() = default;
   Registry(Registry &&) = default;
-  Registry &operator=(Registry &&) = default;
+  virtual Registry &operator=(Registry &&) = default;
 
   virtual ~Registry(void) = default;
 
-  Registry &add(const K &key, std::unique_ptr<V> value) {
+  virtual Registry &add(const K &key, std::unique_ptr<V> value) {
     registry[key] = std::move(value);
     return *this;
   }
 
-  Registry &remove(const K &key) {
+  virtual Registry &remove(const K &key) {
     registry.erase(key);
     return *this;
   }
 
-  bool has(const K &key) const { return registry.find(key) != registry.end(); }
-  bool empty() const { return registry.empty(); }
+  virtual bool has(const K &key) const {
+    return registry.find(key) != registry.end();
+  }
+  virtual bool empty() const { return registry.empty(); }
 
-  V *get(const K &key) {
+  virtual V *get(const K &key) {
     auto it = registry.find(key);
 
     if (it != registry.end()) {
@@ -50,7 +52,7 @@ public:
     }
   }
 
-  const V *get(const K &key) const {
+  virtual const V *get(const K &key) const {
     auto it = registry.find(key);
 
     if (it != registry.end()) {
@@ -62,14 +64,14 @@ public:
     }
   }
 
-  std::set<K> keySet() const {
+  virtual std::set<K> keySet() const {
     std::set<K> keys;
     for (const auto &[k, _] : registry)
       keys.insert(k);
     return keys;
   }
 
-  std::set<V *> values() const {
+  virtual std::set<V *> values() const {
     std::set<V *> vals;
     for (const auto &[_, v] : registry)
       vals.insert(v.get());
@@ -83,7 +85,17 @@ public:
     return json;
   };
 
-private:
+  V *operator[](const K &key) {
+    // This will insert a null unique_ptr if the key doesn't exist.
+    return registry[key].get();
+  }
+
+  const V *operator[](const K &key) const {
+    auto it = registry.find(key);
+    return it != registry.end() ? it->second.get() : nullptr;
+  }
+
+protected:
   std::unordered_map<K, std::unique_ptr<V>> registry;
 };
 
