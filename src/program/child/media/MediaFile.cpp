@@ -74,11 +74,11 @@ void MediaFile::rename() {
     this->resolveConversionPaths(this->series, this->season, this->episode,
                                  this->cwd);
 
-    LOG_DEBUG("Original file:", this->originalFileNameExt);
+    LOG_VERBOSE("Original file:", this->originalFileNameExt);
     LOG_DEBUG("Original path:", this->originalFullPath);
-    LOG_DEBUG("Renamed file:", this->conversionName);
+    LOG_VERBOSE("Renamed file:", this->conversionName);
     LOG_DEBUG("Renamed file path:", this->conversionFilePath);
-    LOG_DEBUG("Renamed folder path:", this->conversionFolderPath);
+    LOG_VERBOSE("Renamed folder path:", this->conversionFolderPath);
   } else {
     // TODO: finish
     LOG_DEBUG("Could not match media name: ", this->originalFileNameExt);
@@ -199,7 +199,7 @@ void MediaFile::resolveEpisode(std::string episode_match) {
 
 void MediaFile::resolveQuality(std::string original_filename) {
   std::string quality_match = RegexUtils::getFirstMatch(
-      original_filename, R"((1080p|720p|480p))", std::regex::icase);
+      original_filename, R"((2160p|1080p|720p|480p))", std::regex::icase);
 
   if (quality_match == "") {
     LOG_DEBUG("Could not find quality for file: ", this->originalFileNameExt);

@@ -92,8 +92,10 @@ void NTicker::run() {
   while (!Program::stopFlag) {
     this->runner->run();
 
-    if (Program::stopFlag) {
-      continue;
+    if (this->runner->isCompleted() || Program::stopFlag) {
+      // TODO: try to get away from stopflag
+      Program::stopFlag = true;
+      break;
     }
 
     LoggingOptions log_option =
@@ -104,6 +106,10 @@ void NTicker::run() {
     switch (log_option) {
     case LoggingOptions::DEBUG:
     case LoggingOptions::JSON_DEBUG:
+      this->display->printDebug();
+      break;
+    case LoggingOptions::VERBOSE:
+    case LoggingOptions::JSON_VERBOSE:
       this->display->printDebug();
       break;
     case LoggingOptions::JSON:

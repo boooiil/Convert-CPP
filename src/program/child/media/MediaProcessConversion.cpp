@@ -23,7 +23,7 @@ MediaProcessConversion::~MediaProcessConversion() {
 }
 
 void MediaProcessConversion::parse(std::string data) {
-  LOG_DEBUG("PARSING LINE:", data);
+  LOG_VERBOSE("PARSING LINE:", data);
 
   ChildOptions &childOptions =
       *Program::settings->childOptionsMap[this->object->id];
@@ -87,10 +87,13 @@ void MediaProcessConversion::parse(std::string data) {
              StringUtils::contains(data, "Failed to configure output pad") ||
              StringUtils::contains(data, "Error reinitializing filters")) {
     this->object->setActivity(Activity::FAILED_INVALID_AUDIO_CHANNELS);
+  } else if (StringUtils::contains(data,
+                                   "from text to text or bitmap to bitmap")) {
+    this->object->setActivity(Activity::FAILED_SUBTITLE_ENCODING_INVALID);
   }
 
   else if (RegexUtils::isMatch(data, "frame=\\s*(\\d+)")) {
-    LOG_DEBUG("PARSING LINE");
+    LOG_DEBUG("Line matched for progress parsing.");
 
     std::string quality =
         RegexUtils::getFirstMatch(data, "q=(\\d+\\.\\d+|-\\d+\\.\\d+)");

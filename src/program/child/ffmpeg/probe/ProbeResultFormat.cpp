@@ -6,15 +6,16 @@
 #include "ProbeResultFormatTags.h"
 
 ProbeResultFormat::ProbeResultFormat()
-    : nb_programs(-1), nb_streams(-1), probe_score(-1) {}
+    : nb_streams(-1), nb_programs(-1), probe_score(-1) {}
 ProbeResultFormat::~ProbeResultFormat() {}
 
 ProbeResultFormat::ProbeResultFormat(nlohmann::json JSON)
-    : nb_programs(-1), nb_streams(-1), probe_score(-1) {
-  LOG_DEBUG("index: ", JSON.dump(4));
+    : nb_streams(-1), nb_programs(-1), probe_score(-1) {
+
+  LOG_VERBOSE("index: ", JSON.dump(4));
 
   if (!JSON["filename"].is_null()) {
-    LOG_DEBUG("filename: ", JSON["filename"]);
+    LOG_VERBOSE("filename: ", JSON["filename"]);
     ProbeResultFormat::filename = JSON["filename"];
   }
   if (!JSON["nb_streams"].is_null()) {
@@ -24,31 +25,31 @@ ProbeResultFormat::ProbeResultFormat(nlohmann::json JSON)
     ProbeResultFormat::nb_programs = JSON["nb_programs"];
   }
   if (!JSON["format_name"].is_null()) {
-    LOG_DEBUG("format_name: ", JSON["format_name"]);
+    LOG_VERBOSE("format_name: ", JSON["format_name"]);
     ProbeResultFormat::format_name = JSON["format_name"];
   }
   if (!JSON["format_long_name"].is_null()) {
-    LOG_DEBUG("format_long_name: ", JSON["format_long_name"]);
+    LOG_VERBOSE("format_long_name: ", JSON["format_long_name"]);
     ProbeResultFormat::format_long_name = JSON["format_long_name"];
   }
   if (!JSON["start_time"].is_null()) {
-    LOG_DEBUG("start_time: ", JSON["start_time"]);
+    LOG_VERBOSE("start_time: ", JSON["start_time"]);
     ProbeResultFormat::start_time = JSON["start_time"];
   }
   if (!JSON["duration"].is_null()) {
-    LOG_DEBUG("duration: ", JSON["duration"]);
+    LOG_VERBOSE("duration: ", JSON["duration"]);
     ProbeResultFormat::duration = JSON["duration"];
   }
   if (!JSON["size"].is_null()) {
-    LOG_DEBUG("size: ", JSON["size"]);
+    LOG_VERBOSE("size: ", JSON["size"]);
     ProbeResultFormat::size = JSON["size"];
   }
   if (!JSON["bit_rate"].is_null()) {
-    LOG_DEBUG("bit_rate: ", JSON["bit_rate"]);
+    LOG_VERBOSE("bit_rate: ", JSON["bit_rate"]);
     ProbeResultFormat::bit_rate = JSON["bit_rate"];
   }
   if (!JSON["probe_score"].is_null()) {
-    LOG_DEBUG("probe_score");
+    LOG_VERBOSE("probe_score");
     ProbeResultFormat::probe_score = JSON["probe_score"];
   }
 

@@ -41,14 +41,20 @@ void Program::prepare(std::vector<std::string> &args) {
   case LoggingOptions::DEBUG:
   case LoggingOptions::JSON_DEBUG:
     Logger::debug_flag = true;
+    Logger::verbose_flag = false;
+    std::cout << "Attach debugger then press enter to continue...";
+    std::cin.get();
     break;
   case LoggingOptions::VERBOSE:
   case LoggingOptions::JSON_VERBOSE:
     Logger::debug_flag = true;
-    // set verbose
+    Logger::verbose_flag = true;
+    std::cout << "Attach debugger then press enter to continue...";
+    std::cin.get();
     break;
   default:
     Logger::debug_flag = false;
+    Logger::verbose_flag = false;
     break;
   };
 

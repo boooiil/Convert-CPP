@@ -9,30 +9,15 @@
  */
 
 ProbeResultStreamDisposition::ProbeResultStreamDisposition()
-    : default_(-1),
-      dub(-1),
-      original(-1),
-      comment(-1),
-      lyrics(-1),
-      karaoke(-1),
-      forced(-1),
-      hearing_impaired(-1),
-      visual_impaired(-1),
-      clean_effects(-1),
-      attached_pic(-1),
-      timed_thumbnails(-1),
-      captions(-1),
-      descriptions(-1),
-      metadata(-1),
-      dependent(-1),
-      still_image(-1) {}
+    : default_(-1), dub(-1), original(-1), comment(-1), lyrics(-1), karaoke(-1),
+      forced(-1), hearing_impaired(-1), visual_impaired(-1), clean_effects(-1),
+      attached_pic(-1), timed_thumbnails(-1), captions(-1), descriptions(-1),
+      metadata(-1), dependent(-1), still_image(-1) {}
 ProbeResultStreamDisposition::~ProbeResultStreamDisposition() {}
 
 ProbeResultStreamDisposition::ProbeResultStreamDisposition(
     nlohmann::json JSON) {
-  LOG_DEBUG(
-      "Starting "
-      "ProbeResultStreamDisposition...");
+  LOG_DEBUG("Starting ProbeResultStreamDisposition...");
   ProbeResultStreamDisposition::default_ = JSON["default"];
   ProbeResultStreamDisposition::dub = JSON["dub"];
   ProbeResultStreamDisposition::original = JSON["original"];
@@ -51,7 +36,5 @@ ProbeResultStreamDisposition::ProbeResultStreamDisposition(
   // ProbeResultStreamDisposition::metadata = JSON["metadata"];
   // ProbeResultStreamDisposition::dependent = JSON["dependent"];
   // ProbeResultStreamDisposition::still_image = JSON["still_image"];
-  LOG_DEBUG(
-      "Ended "
-      "ProbeResultStreamDisposition");
+  LOG_DEBUG("Ended ProbeResultStreamDisposition");
 }
