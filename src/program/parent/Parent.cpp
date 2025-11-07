@@ -34,21 +34,25 @@
 Parent::~Parent(void) {
   LOG_DEBUG("Deconstructing parent.");
   while (!this->pending.empty()) {
-    Child* child = this->pending.front();
+    Child *child = this->pending.front();
     this->pending.pop();
 
     LOG_DEBUG("Deleting child process in:",
-              Program::settings->childOptionsMap[child->id]->CWD);
+              Program::settings->childOptionsMap[child->id]->CWD,
+              "with uuid:", child->id);
 
+    child->end();
     delete child;
   }
   while (!this->converting.empty()) {
-    Child* child = this->converting.front();
+    Child *child = this->converting.front();
     this->converting.pop();
 
     LOG_DEBUG("Deleting child process in:",
-              Program::settings->childOptionsMap[child->id]->CWD);
+              Program::settings->childOptionsMap[child->id]->CWD,
+              "with uuid:", child->id);
 
+    child->end();
     delete child;
   }
 }
@@ -77,8 +81,8 @@ Parent::~Parent(void) {
 //   }
 // }
 
-void Parent::prepare(std::vector<std::string>& args) {
-  ParentOptions& parentOptions = *Program::settings->parentOptions;
+void Parent::prepare(std::vector<std::string> &args) {
+  ParentOptions &parentOptions = *Program::settings->parentOptions;
 
   parentOptions.prepare();
   parentOptions.parse(args);
@@ -96,12 +100,14 @@ void Parent::prepare(std::vector<std::string>& args) {
     std::string path = file.path().string();
     std::string filename = file.path().filename().string();
 
-    Child* child = new Child();
+    Child *child = new Child();
 
     std::vector<std::string> n_args = this->getArgs(file);
 
     child->prepare(n_args);
     this->pending.push(child);
+
+    this->setCompleted(true);
 
     // get args, init settings on child
 
@@ -112,7 +118,7 @@ void Parent::prepare(std::vector<std::string>& args) {
   };
 }
 
-void Parent::run(void) {}
+void Parent::run(void) { LOG("PARENT RUN"); }
 
 void Parent::end(void) {
   LOG_DEBUG("Ending runner.");
@@ -127,15 +133,14 @@ void Parent::setEndable(bool flag) {
 
 bool Parent::isEndable(void) { return this->endable; }
 
-std::vector<std::string> Parent::getArgs(
-    std::filesystem::directory_entry file) {
+std::vector<std::string>
+Parent::getArgs(std::filesystem::directory_entry file) {
   std::cout << file.path().parent_path() << " arguments: ";
   std::string input = "";
 
   std::getline(std::cin, input);
 
-  input.append(file.path().parent_path().string() + " ");
-  input.append("-lf json ");
+  input = file.path().parent_path().string() + " -lf json " + input;
 
   return ListUtils::splitv(input, " ");
 }
@@ -149,10 +154,10 @@ nlohmann::json Parent::toJSON(void) {
 
   // j["ChildProcesses"] = nlohmann::json::array();
 
-  std::queue<Child*> t_queue;
+  std::queue<Child *> t_queue;
 
   while (!this->pending.empty()) {
-    Child* child = this->pending.front();
+    Child *child = this->pending.front();
     this->pending.pop();
 
     LOG_DEBUG("parent json: ",
@@ -165,10 +170,10 @@ nlohmann::json Parent::toJSON(void) {
 
   this->pending = t_queue;
 
-  t_queue = std::queue<Child*>();
+  t_queue = std::queue<Child *>();
 
   while (!this->converting.empty()) {
-    Child* child = this->converting.front();
+    Child *child = this->converting.front();
     this->converting.pop();
 
     LOG_DEBUG("parent json: ",

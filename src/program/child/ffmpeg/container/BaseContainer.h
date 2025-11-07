@@ -125,11 +125,11 @@ public:
       if (validated != wanted_type) {
         LOG_DEBUG("Invalid audio codec for container", this->getName(),
                   _audio_codec->getName());
-        throw std::runtime_error("Invalid video codec: " +
+        throw std::runtime_error("Invalid audio codec: " +
                                  _audio_codec->getName());
       }
 
-      LOG_DEBUG("Setting video codec to", _audio_codec->getName());
+      LOG_DEBUG("Setting audio codec to", _audio_codec->getName());
     }
 
     for (auto codec : audio_codec) {

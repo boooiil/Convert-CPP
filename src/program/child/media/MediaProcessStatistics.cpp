@@ -16,8 +16,8 @@
 #include <vector>
 
 #include "../../../utils/ListUtils.h"
-#include "../../../utils/logging/Logger.h"
 #include "../../../utils/RegexUtils.h"
+#include "../../../utils/logging/Logger.h"
 #include "../../Program.h"
 #include "../../settings/arguments/video/Quality.h"
 #include "../../settings/enums/Activity.h"
@@ -27,13 +27,13 @@
 #include "MediaFormat.h"
 #include "MediaProcess.h"
 
+
 #ifdef _WIN32
 #define popen _popen
 #define pclose _pclose
 #endif
-MediaProcessStatistics::MediaProcessStatistics(Media* media)
-  : MediaProcess(media) {
-}
+MediaProcessStatistics::MediaProcessStatistics(Media *media)
+    : MediaProcess(media) {}
 
 MediaProcessStatistics::~MediaProcessStatistics() {
   MediaProcess::~MediaProcess();
@@ -49,7 +49,7 @@ void MediaProcessStatistics::start(std::string command) {
 
   // Open pipe to file
   std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.c_str(), "r"),
-    pclose);
+                                                pclose);
   if (!pipe) {
     throw std::runtime_error("popen() failed!");
   }
@@ -58,7 +58,7 @@ void MediaProcessStatistics::start(std::string command) {
 
   // Read from pipe
   while (fgets(buffer.data(), static_cast<int>(buffer.size()), pipe.get()) !=
-    nullptr) {
+         nullptr) {
     // MediaProcessStatistics::container.log.debug(
     //     {"RAW OUTPUT: ", buffer.data()});
     result += buffer.data();
@@ -74,7 +74,7 @@ void MediaProcessStatistics::start(std::string command) {
 void MediaProcessStatistics::parse(std::string data) {
   try {
     if (RegexUtils::isMatch(data, "not recognized") ||
-      RegexUtils::isMatch(data, "unknown command")) {
+        RegexUtils::isMatch(data, "unknown command")) {
       LOG_DEBUG("Could not find ffprobe, failing.", data);
       // TODO: add FAILED_MISSING_FFPROBE
       this->object->setActivity(Activity::FAILED);
@@ -88,12 +88,12 @@ void MediaProcessStatistics::parse(std::string data) {
     assert(this->object->probeResult->videoStreams.size() > 0);
 
     LOG_DEBUG("VIDEO STREAMS: ",
-      std::to_string(this->object->probeResult->videoStreams.size()));
+              std::to_string(this->object->probeResult->videoStreams.size()));
 
     ProbeResultStreamVideo prsv = this->object->probeResult->videoStreams[0];
 
     std::istringstream rateStream(
-      this->object->probeResult->videoStreams[0].r_frame_rate);
+        this->object->probeResult->videoStreams[0].r_frame_rate);
 
     int numerator, denominator;
     char slash;
@@ -107,46 +107,45 @@ void MediaProcessStatistics::parse(std::string data) {
     if (!prsv.tags.DURATION.empty()) {
       // TODO: calc duration??
       std::vector<std::string> timeParts =
-        ListUtils::splitv(prsv.tags.DURATION, std::string(":"));
+          ListUtils::splitv(prsv.tags.DURATION, std::string(":"));
 
       hours = std::stoi(timeParts[0]);
       minutes = std::stoi(timeParts[1]);
       seconds = std::stoi(timeParts[2]);
       duration = (hours * 60 * 60) + (minutes * 60) + seconds;
-    }
-    else {
+    } else {
       LOG_DEBUG("DURATION NOT FOUND");
-      LOG_DEBUG(
-        "Obtaining duration from format. This "
-        "could be inaccurate.");
+      LOG_DEBUG("Obtaining duration from format. This "
+                "could be inaccurate.");
 
       duration = (int)std::stof(this->object->probeResult->format.duration);
     }
 
     this->object->file->size =
-      std::stoull(this->object->probeResult->format.size);
+        std::stoull(this->object->probeResult->format.size);
     this->object->video->fps =
-      round((static_cast<float>(numerator) / denominator) * 100) / 100;
+        round((static_cast<float>(numerator) / denominator) * 100) / 100;
     this->object->video->width = prsv.width;
     this->object->video->height = prsv.height;
-    this->object->video->totalFrames =
-      static_cast<int>(std::ceil(duration * this->object->video->fps));
+    this->object->video->totalFrames = static_cast<unsigned long long>(
+        std::ceil(duration * this->object->video->fps));
 
-    //assert(!settings->argumentParser->quality.get().name.empty());
+    // assert(!settings->argumentParser->quality.get().name.empty());
 
-    ChildOptions& childOptions = *Program::settings->childOptionsMap[this->object->id];
-    ArgumentRegistry& argumentRegistry = *childOptions.argumentRegistry;
-    MediaFormat format = argumentRegistry.get_t<Quality>(Command::QUALITY)->get();
+    ChildOptions &childOptions =
+        *Program::settings->childOptionsMap[this->object->id];
+    ArgumentRegistry &argumentRegistry = *childOptions.argumentRegistry;
+    MediaFormat format =
+        argumentRegistry.get_t<Quality>(Command::QUALITY)->get();
 
     this->object->video->convertedWidth = std::to_string(format.width);
     this->object->video->convertedHeight = std::to_string(format.getResolution(
-      this->object->video->width, this->object->video->height, format.width));
+        this->object->video->width, this->object->video->height, format.width));
     this->object->video->convertedResolution =
-      this->object->video->convertedWidth + ":" +
-      this->object->video->convertedHeight;
+        this->object->video->convertedWidth + ":" +
+        this->object->video->convertedHeight;
     this->object->video->crf = format.crf;
-  }
-  catch (const std::exception& e) {
+  } catch (const std::exception &e) {
     LOG_DEBUG("ERROR: ", e.what());
     this->object->setActivity(Activity::FAILED_JSON_PARSE);
     MediaProcessStatistics::status = MediaProcess::Status::_ERROR;

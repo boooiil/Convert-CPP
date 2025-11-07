@@ -8,7 +8,7 @@
 #include "../../child/media/MediaProcess.h"
 #include "ChildProcess.h"
 
-ChildProcessConversion::ChildProcessConversion(ChildProcess* childProcess)
+ChildProcessConversion::ChildProcessConversion(ChildProcess *childProcess)
     : MediaProcess(childProcess) {}
 
 void ChildProcessConversion::parse(std::string data) {
@@ -19,7 +19,7 @@ void ChildProcessConversion::parse(std::string data) {
   try {
     nlohmann::json json = nlohmann::json::parse(data);
     this->object->fromJSON(json);
-  } catch (nlohmann::json::parse_error& e) {
+  } catch (nlohmann::json::parse_error &e) {
     throw e.what();
   }
 }

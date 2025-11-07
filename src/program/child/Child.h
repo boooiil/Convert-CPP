@@ -27,15 +27,13 @@ public:
   /// @brief Ends the child's conversion process.
   void end(void) override;
 
-  void setEndable(bool) override;
-  bool isEndable(void) override;
-
   void fromJSON(nlohmann::json) override;
 
   nlohmann::json toJSON(void) override;
 
 private:
   bool endable;
+  bool completed;
 };
 
 #endif // !CHILD_H

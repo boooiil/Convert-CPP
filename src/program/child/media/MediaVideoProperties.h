@@ -15,7 +15,7 @@
  * @brief Holds information about the media video properties.
  */
 class MediaVideoProperties {
- public:
+public:
   /**
    * @brief Construct a new Media Video Properties object.
    *
@@ -23,12 +23,12 @@ class MediaVideoProperties {
   MediaVideoProperties(void);
   ~MediaVideoProperties(void);
 
-  float fps;  /// @brief FPS of the media.
+  float fps; /// @brief FPS of the media.
 
-  int totalFrames;  /// @brief Total frames of the media.
-  int width;        /// @brief Width of the media.
-  int height;       /// @brief Height of the media.
-  int crf;          /// @brief CRF of the media.
+  unsigned long long totalFrames; /// @brief Total frames of the media.
+  int width;                      /// @brief Width of the media.
+  int height;                     /// @brief Height of the media.
+  int crf;                        /// @brief CRF of the media.
 
   /// @brief The desired resolution of the media for conversion.
   std::string convertedResolution;
@@ -44,4 +44,4 @@ class MediaVideoProperties {
   std::string crop;
 };
 
-#endif  // !MEDIA_VIDEO_PROPERTIES
+#endif // !MEDIA_VIDEO_PROPERTIES
