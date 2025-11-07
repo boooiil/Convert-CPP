@@ -1,4 +1,5 @@
 // EnumToStringFactory.cpp
 #include "EnumToStringFactory.h"
+#include "src/program/registry/EnumToStringRegistryMaster.h"
 
-std::unordered_map<std::type_index, EnumToStringRegistryBase*> EnumToStringFactory::registries;
+EnumToStringRegistryMaster EnumToStringFactory::registries;
