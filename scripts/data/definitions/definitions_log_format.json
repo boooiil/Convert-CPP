@@ -1,0 +1,67 @@
+{
+    "header": "LogFormat_N",
+    "enum": "LogFormat",
+    "log_format_invalid": {
+        "name": "log_format_invalid",
+        "aliases": [
+            "log_format_invalid",
+            "invalid_log_format"
+        ],
+        "short_description": "Invalid logging format.",
+        "long_description": "The specified logging format is invalid or not recognized by the system."
+    },
+    "log_format_default": {
+        "name": "default",
+        "aliases": [
+            "log_format_default",
+            "default_log_format"
+        ],
+        "short_description": "Default logging format.",
+        "long_description": "Uses the system's default logging format for output messages."
+    },
+    "log_format_debug": {
+        "name": "debug",
+        "aliases": [
+            "log_format_debug",
+            "debug_log_format"
+        ],
+        "short_description": "Debug logging format.",
+        "long_description": "Enables detailed debug logging for development and troubleshooting purposes."
+    },
+    "log_format_verbose": {
+        "name": "verbose",
+        "aliases": [
+            "log_format_verbose",
+            "verbose_log_format"
+        ],
+        "short_description": "Verbose logging format.",
+        "long_description": "Enables verbose logging, providing more detailed runtime information than default logging."
+    },
+    "log_format_json": {
+        "name": "json",
+        "aliases": [
+            "log_format_json",
+            "json_log_format"
+        ],
+        "short_description": "JSON logging format.",
+        "long_description": "Outputs logs in structured JSON format for machine-readable processing and analysis."
+    },
+    "log_format_json_debug": {
+        "name": "json_debug",
+        "aliases": [
+            "log_format_json_debug",
+            "json_debug_log_format"
+        ],
+        "short_description": "JSON Debug logging format.",
+        "long_description": "Outputs logs in JSON format with detailed debug information."
+    },
+    "log_format_json_verbose": {
+        "name": "json_verbose",
+        "aliases": [
+            "log_format_json_verbose",
+            "json_verbose_log_format"
+        ],
+        "short_description": "JSON Verbose logging format.",
+        "long_description": "Outputs logs in JSON format with verbose runtime information."
+    }
+}

@@ -1,0 +1,121 @@
+{
+    "header": "Encoders_N",
+    "enum": "Encoders",
+    "encoder_invalid": {
+        "name": "encoder_invalid",
+        "aliases": [
+            "encoder_invalid",
+            "invalid_encoder"
+        ],
+        "short_description": "Invalid encoder.",
+        "long_description": "The specified encoder is invalid or not recognized by the system."
+    },
+    "encoder_h264": {
+        "name": "h264",
+        "aliases": [
+            "encoder_h264",
+            "h264_encoder"
+        ],
+        "short_description": "H264 encoder.",
+        "long_description": "Encodes media using the H.264 codec, providing efficient compression with good quality."
+    },
+    "encoder_h264_amf": {
+        "name": "h264_amf",
+        "aliases": [
+            "encoder_h264_amf",
+            "h264_amf_encoder"
+        ],
+        "short_description": "H264 AMF encoder.",
+        "long_description": "Encodes media using the H.264 codec through AMD's Advanced Media Framework (AMF) hardware acceleration."
+    },
+    "encoder_h264_nvenc": {
+        "name": "h264_nvenc",
+        "aliases": [
+            "encoder_h264_nvenc",
+            "h264_nvenc_encoder"
+        ],
+        "short_description": "H264 NVEnc encoder.",
+        "long_description": "Encodes media using the H.264 codec through NVIDIA's NVENC hardware acceleration."
+    },
+    "encoder_h264_qsv": {
+        "name": "h264_qsv",
+        "aliases": [
+            "encoder_h264_qsv",
+            "h264_qsv_encoder"
+        ],
+        "short_description": "H264 QSV encoder.",
+        "long_description": "Encodes media using the H.264 codec through Intel's Quick Sync Video (QSV) hardware acceleration."
+    },
+    "encoder_hevc": {
+        "name": "hevc",
+        "aliases": [
+            "encoder_hevc",
+            "hevc_encoder"
+        ],
+        "short_description": "HEVC encoder.",
+        "long_description": "Encodes media using the HEVC (H.265) codec, offering improved compression efficiency over H.264."
+    },
+    "encoder_hevc_amf": {
+        "name": "hevc_amf",
+        "aliases": [
+            "encoder_hevc_amf",
+            "hevc_amf_encoder"
+        ],
+        "short_description": "HEVC AMF encoder.",
+        "long_description": "Encodes media using the HEVC codec through AMD's Advanced Media Framework (AMF) hardware acceleration."
+    },
+    "encoder_hevc_nvenc": {
+        "name": "hevc_nvenc",
+        "aliases": [
+            "encoder_hevc_nvenc",
+            "hevc_nvenc_encoder"
+        ],
+        "short_description": "HEVC NVEnc encoder.",
+        "long_description": "Encodes media using the HEVC codec through NVIDIA's NVENC hardware acceleration."
+    },
+    "encoder_hevc_qsv": {
+        "name": "hevc_qsv",
+        "aliases": [
+            "encoder_hevc_qsv",
+            "hevc_qsv_encoder"
+        ],
+        "short_description": "HEVC QSV encoder.",
+        "long_description": "Encodes media using the HEVC codec through Intel's Quick Sync Video (QSV) hardware acceleration."
+    },
+    "encoder_av1": {
+        "name": "av1",
+        "aliases": [
+            "encoder_av1",
+            "av1_encoder"
+        ],
+        "short_description": "AV1 encoder.",
+        "long_description": "Encodes media using the AV1 codec, an open and royalty-free video coding format offering high compression efficiency."
+    },
+    "encoder_av1_amf": {
+        "name": "av1_amf",
+        "aliases": [
+            "encoder_av1_amf",
+            "av1_amf_encoder"
+        ],
+        "short_description": "AV1 AMF encoder.",
+        "long_description": "Encodes media using the AV1 codec through AMD's Advanced Media Framework (AMF) hardware acceleration."
+    },
+    "encoder_av1_nvenc": {
+        "name": "av1_nvenc",
+        "aliases": [
+            "encoder_av1_nvenc",
+            "av1_nvenc_encoder"
+        ],
+        "short_description": "AV1 NVEnc encoder.",
+        "long_description": "Encodes media using the AV1 codec through NVIDIA's NVENC hardware acceleration."
+    },
+    "encoder_av1_qsv": {
+        "name": "av1_qsv",
+        "aliases": [
+            "encoder_av1_qsv",
+            "av1_qsv_encoder"
+        ],
+        "short_description": "AV1 QSV encoder.",
+        "long_description": "Encodes media using the AV1 codec through Intel's Quick Sync Video (QSV) hardware acceleration."
+    }
+}

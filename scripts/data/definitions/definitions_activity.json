@@ -1,0 +1,238 @@
+{
+    "header": "Activity_N",
+    "enum": "Activity",
+    "activity_invalid": {
+        "name": "activity_invalid",
+        "aliases": [
+            "activity_invalid",
+            "invalid_activity"
+        ],
+        "short_description": "Invalid activity.",
+        "long_description": "The current activity is invalid and cannot be processed further."
+    },
+    "activity_convert": {
+        "name": "convert",
+        "aliases": [
+            "activity_convert",
+            "convert_activity"
+        ],
+        "short_description": "Convert activity.",
+        "long_description": "The current media is in the process of being converted from one format to another."
+    },
+    "activity_failed": {
+        "name": "failed",
+        "aliases": [
+            "activity_failed",
+            "failed_activity"
+        ],
+        "short_description": "Generic failure.",
+        "long_description": "The current media process has encountered an error and has failed to complete successfully."
+    },
+    "activity_failed_codec": {
+        "name": "failed_codec",
+        "aliases": [
+            "activity_failed_codec",
+            "failed_codec_activity"
+        ],
+        "short_description": "Codec failure.",
+        "long_description": "The media process has failed because the codec used is not supported or invalid."
+    },
+    "activity_failed_container": {
+        "name": "failed_container",
+        "aliases": [
+            "activity_failed_container",
+            "failed_container_activity"
+        ],
+        "short_description": "Container failure.",
+        "long_description": "The media process has failed due to an invalid or unsupported container format."
+    },
+    "activity_failed_corrupt": {
+        "name": "failed_corrupt",
+        "aliases": [
+            "activity_failed_corrupt",
+            "failed_corrupt_activity"
+        ],
+        "short_description": "Corrupt file failure.",
+        "long_description": "The media process failed because the input file is corrupt and unreadable."
+    },
+    "activity_failed_file": {
+        "name": "failed_file",
+        "aliases": [
+            "activity_failed_file",
+            "failed_file_activity"
+        ],
+        "short_description": "File failure.",
+        "long_description": "The media process failed due to a file-related error."
+    },
+    "activity_failed_file_missing": {
+        "name": "failed_file_missing",
+        "aliases": [
+            "activity_failed_file_missing",
+            "failed_file_missing_activity"
+        ],
+        "short_description": "File missing failure.",
+        "long_description": "The media process failed because the required file is missing or inaccessible."
+    },
+    "activity_failed_file_permissions": {
+        "name": "failed_file_permissions",
+        "aliases": [
+            "activity_failed_file_permissions",
+            "failed_file_permissions_activity"
+        ],
+        "short_description": "File permissions failure.",
+        "long_description": "The media process failed because the system lacks the necessary permissions to access the file."
+    },
+    "activity_failed_file_not_recognized": {
+        "name": "failed_file_not_recognized",
+        "aliases": [
+            "activity_failed_file_not_recognized",
+            "failed_file_not_recognized_activity"
+        ],
+        "short_description": "File not recognized failure.",
+        "long_description": "The media process failed because the input file format is not recognized."
+    },
+    "activity_failed_hardware": {
+        "name": "failed_hardware",
+        "aliases": [
+            "activity_failed_hardware",
+            "failed_hardware_activity"
+        ],
+        "short_description": "Hardware failure.",
+        "long_description": "The media process failed due to a hardware-related error or malfunction."
+    },
+    "activity_failed_invalid_audio_channels": {
+        "name": "failed_invalid_audio_channels",
+        "aliases": [
+            "activity_failed_invalid_audio_channels",
+            "failed_invalid_audio_channels_activity"
+        ],
+        "short_description": "Invalid audio channels failure.",
+        "long_description": "The media process failed because the audio channel configuration is invalid."
+    },
+    "activity_failed_invalid_audio_streams": {
+        "name": "failed_invalid_audio_streams",
+        "aliases": [
+            "activity_failed_invalid_audio_streams",
+            "failed_invalid_audio_streams_activity"
+        ],
+        "short_description": "Invalid audio streams failure.",
+        "long_description": "The media process failed due to invalid or missing audio streams in the input file."
+    },
+    "activity_failed_invalid_duration_ss": {
+        "name": "failed_invalid_duration_ss",
+        "aliases": [
+            "activity_failed_invalid_duration_ss",
+            "failed_invalid_duration_ss_activity"
+        ],
+        "short_description": "Invalid duration SS failure.",
+        "long_description": "The media process failed because the specified source duration is invalid."
+    },
+    "activity_failed_invalid_duration_to": {
+        "name": "failed_invalid_duration_to",
+        "aliases": [
+            "activity_failed_invalid_duration_to",
+            "failed_invalid_duration_to_activity"
+        ],
+        "short_description": "Invalid duration TO failure.",
+        "long_description": "The media process failed because the specified target duration is invalid."
+    },
+    "activity_failed_invalid_encoder": {
+        "name": "failed_invalid_encoder",
+        "aliases": [
+            "activity_failed_invalid_encoder",
+            "failed_invalid_encoder_activity"
+        ],
+        "short_description": "Invalid encoder failure.",
+        "long_description": "The media process failed because the selected encoder is invalid or unsupported."
+    },
+    "activity_failed_json_parse": {
+        "name": "failed_json_parse",
+        "aliases": [
+            "activity_failed_json_parse",
+            "failed_json_parse_activity"
+        ],
+        "short_description": "JSON parse failure.",
+        "long_description": "The media process failed due to an error while parsing a JSON file."
+    },
+    "activity_failed_subtitle_encoding_invalid": {
+        "name": "failed_subtitle_encoding_invalid",
+        "aliases": [
+            "activity_failed_subtitle_encoding_invalid",
+            "failed_subtitle_encoding_invalid_activity"
+        ],
+        "short_description": "Subtitle encoding invalid.",
+        "long_description": "The media process failed because subtitle conversion between incompatible types was attempted. Only text-to-text or bitmap-to-bitmap conversions are supported."
+    },
+    "activity_failed_system": {
+        "name": "failed_system",
+        "aliases": [
+            "activity_failed_system",
+            "failed_system_activity"
+        ],
+        "short_description": "System failure.",
+        "long_description": "The media process failed due to a system-level error or unexpected condition."
+    },
+    "activity_finished": {
+        "name": "finished",
+        "aliases": [
+            "activity_finished",
+            "finished_activity"
+        ],
+        "short_description": "Finished activity.",
+        "long_description": "The current media process has successfully completed."
+    },
+    "activity_statistics": {
+        "name": "statistics",
+        "aliases": [
+            "activity_statistics",
+            "statistics_activity"
+        ],
+        "short_description": "Statistics activity.",
+        "long_description": "The current media process is collecting or reporting statistics."
+    },
+    "activity_waiting": {
+        "name": "waiting",
+        "aliases": [
+            "activity_waiting",
+            "waiting_activity"
+        ],
+        "short_description": "Waiting activity.",
+        "long_description": "The media process is waiting for the next task or event."
+    },
+    "activity_waiting_convert": {
+        "name": "waiting_convert",
+        "aliases": [
+            "activity_waiting_convert",
+            "waiting_convert_activity"
+        ],
+        "short_description": "Waiting for convert activity.",
+        "long_description": "The media process is waiting to begin the conversion task."
+    },
+    "activity_waiting_statistics": {
+        "name": "waiting_statistics",
+        "aliases": [
+            "activity_waiting_statistics",
+            "waiting_statistics_activity"
+        ],
+        "short_description": "Waiting for statistics activity.",
+        "long_description": "The media process is waiting for statistical data or results."
+    },
+    "activity_waiting_validate": {
+        "name": "waiting_validate",
+        "aliases": [
+            "activity_waiting_validate",
+            "waiting_validate_activity"
+        ],
+        "short_description": "Waiting for validate activity.",
+        "long_description": "The media process is waiting for validation to complete."
+    },
+    "activity_validate": {
+        "name": "validate",
+        "aliases": [
+            "activity_validate",
+            "validate_activity"
+        ],
+        "short_description": "Validate activity.",
+        "long_description": "The media process is currently validating data or file integrity."
+    }
+}

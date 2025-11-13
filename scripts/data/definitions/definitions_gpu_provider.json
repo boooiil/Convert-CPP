@@ -1,0 +1,40 @@
+{
+    "header": "GPUProviders_N",
+    "enum": "GPUProviders",
+    "gpu_invalid": {
+        "name": "gpu_invalid",
+        "aliases": [
+            "gpu_invalid",
+            "invalid_gpu"
+        ],
+        "short_description": "Invalid GPU provider.",
+        "long_description": "The specified GPU provider is invalid or not recognized by the system."
+    },
+    "gpu_nvidia": {
+        "name": "nvidia",
+        "aliases": [
+            "gpu_nvidia",
+            "nvidia_gpu"
+        ],
+        "short_description": "NVIDIA GPU provider.",
+        "long_description": "Uses an NVIDIA GPU for hardware-accelerated media processing and computation."
+    },
+    "gpu_amd": {
+        "name": "amd",
+        "aliases": [
+            "gpu_amd",
+            "amd_gpu"
+        ],
+        "short_description": "AMD GPU provider.",
+        "long_description": "Uses an AMD GPU for hardware-accelerated media processing and computation."
+    },
+    "gpu_intel": {
+        "name": "intel",
+        "aliases": [
+            "gpu_intel",
+            "intel_gpu"
+        ],
+        "short_description": "Intel GPU provider.",
+        "long_description": "Uses an Intel GPU for hardware-accelerated media processing and computation."
+    }
+}

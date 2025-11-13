@@ -1,0 +1,67 @@
+{
+    "header": "AudioCodec_N",
+    "enum": "AudioCodec",
+    "audio_invalid": {
+        "name": "audio_invalid",
+        "aliases": [
+            "audio_invalid",
+            "invalid_audio"
+        ],
+        "short_description": "Invalid audio codec.",
+        "long_description": "The specified audio codec is invalid or not recognized by the system."
+    },
+    "audio_aac": {
+        "name": "aac",
+        "aliases": [
+            "audio_aac",
+            "aac_audio"
+        ],
+        "short_description": "AAC audio codec.",
+        "long_description": "Encodes or decodes audio using the Advanced Audio Codec (AAC) format, widely used for high-quality audio compression."
+    },
+    "audio_mp3": {
+        "name": "mp3",
+        "aliases": [
+            "audio_mp3",
+            "mp3_audio"
+        ],
+        "short_description": "MP3 audio codec.",
+        "long_description": "Encodes or decodes audio using the MP3 format, a common lossy audio compression standard."
+    },
+    "audio_opus": {
+        "name": "opus",
+        "aliases": [
+            "audio_opus",
+            "opus_audio"
+        ],
+        "short_description": "Opus audio codec.",
+        "long_description": "Encodes or decodes audio using the Opus format, optimized for interactive speech and music transmission over the internet."
+    },
+    "audio_flac": {
+        "name": "flac",
+        "aliases": [
+            "audio_flac",
+            "flac_audio"
+        ],
+        "short_description": "FLAC audio codec.",
+        "long_description": "Encodes or decodes audio using the Free Lossless Audio Codec (FLAC), preserving the original audio quality without loss."
+    },
+    "audio_vorbis": {
+        "name": "vorbis",
+        "aliases": [
+            "audio_vorbis",
+            "vorbis_audio"
+        ],
+        "short_description": "Vorbis audio codec.",
+        "long_description": "Encodes or decodes audio using the Vorbis format, an open-source lossy audio compression format."
+    },
+    "audio_pcm": {
+        "name": "pcm",
+        "aliases": [
+            "audio_pcm",
+            "pcm_audio"
+        ],
+        "short_description": "PCM audio codec.",
+        "long_description": "Represents uncompressed Pulse Code Modulation (PCM) audio data for high-quality sound without compression."
+    }
+}

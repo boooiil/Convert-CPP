@@ -1,0 +1,76 @@
+{
+    "header": "SubtitleCodecs_N",
+    "enum": "SubtitleCodec",
+    "subtitle_invalid": {
+        "name": "subtitle_invalid",
+        "aliases": [
+            "subtitle_invalid",
+            "invalid_subtitle"
+        ],
+        "short_description": "Invalid subtitle codec.",
+        "long_description": "The specified subtitle codec is invalid or not recognized by the system."
+    },
+    "subtitle_srt": {
+        "name": "srt",
+        "aliases": [
+            "subtitle_srt",
+            "srt_subtitle"
+        ],
+        "short_description": "SRT subtitle codec.",
+        "long_description": "Uses the SubRip Subtitle (SRT) format for subtitle encoding and decoding."
+    },
+    "subtitle_ass": {
+        "name": "ass",
+        "aliases": [
+            "subtitle_ass",
+            "ass_subtitle"
+        ],
+        "short_description": "ASS subtitle codec.",
+        "long_description": "Uses the Advanced Substation Alpha (ASS) format for rich-text subtitles with styling and positioning."
+    },
+    "subtitle_ssa": {
+        "name": "ssa",
+        "aliases": [
+            "subtitle_ssa",
+            "ssa_subtitle"
+        ],
+        "short_description": "SSA subtitle codec.",
+        "long_description": "Uses the Substation Alpha (SSA) subtitle format, supporting basic styling and positioning."
+    },
+    "subtitle_subrip": {
+        "name": "subrip",
+        "aliases": [
+            "subtitle_subrip",
+            "subrip_subtitle"
+        ],
+        "short_description": "SUBRIP subtitle codec.",
+        "long_description": "Uses the SUBRIP subtitle format for simple, text-based subtitles."
+    },
+    "subtitle_dvb_sub": {
+        "name": "dvb_sub",
+        "aliases": [
+            "subtitle_dvb_sub",
+            "dvb_sub_subtitle"
+        ],
+        "short_description": "DVB subtitle codec.",
+        "long_description": "Uses the Digital Video Broadcasting (DVB) subtitle format for television broadcasts."
+    },
+    "subtitle_webvtt": {
+        "name": "webvtt",
+        "aliases": [
+            "subtitle_webvtt",
+            "webvtt_subtitle"
+        ],
+        "short_description": "WebVTT subtitle codec.",
+        "long_description": "Uses the Web Video Text Tracks (WebVTT) format for HTML5 video subtitles."
+    },
+    "subtitle_mov_text": {
+        "name": "mov_text",
+        "aliases": [
+            "subtitle_mov_text",
+            "mov_text_subtitle"
+        ],
+        "short_description": "MOV subtitle codec.",
+        "long_description": "Uses the QuickTime MOV text format for subtitles in MOV files."
+    }
+}

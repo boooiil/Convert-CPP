@@ -1,0 +1,58 @@
+{
+    "header": "Container_N",
+    "enum": "Container",
+    "container_invalid": {
+        "name": "container_invalid",
+        "aliases": [
+            "container_invalid",
+            "invalid_container"
+        ],
+        "short_description": "Invalid container.",
+        "long_description": "The specified container format is invalid or not recognized by the system."
+    },
+    "container_mkv": {
+        "name": "mkv",
+        "aliases": [
+            "container_mkv",
+            "mkv_container"
+        ],
+        "short_description": "MKV container.",
+        "long_description": "Uses the Matroska (MKV) container format, supporting multiple audio, video, and subtitle streams."
+    },
+    "container_mp4": {
+        "name": "mp4",
+        "aliases": [
+            "container_mp4",
+            "mp4_container"
+        ],
+        "short_description": "MP4 container.",
+        "long_description": "Uses the MPEG-4 Part 14 (MP4) container format, commonly used for video and audio streaming."
+    },
+    "container_avi": {
+        "name": "avi",
+        "aliases": [
+            "container_avi",
+            "avi_container"
+        ],
+        "short_description": "AVI container.",
+        "long_description": "Uses the Audio Video Interleave (AVI) container format, supporting audio and video streams but with limited modern codec support."
+    },
+    "container_mov": {
+        "name": "mov",
+        "aliases": [
+            "container_mov",
+            "mov_container"
+        ],
+        "short_description": "MOV container.",
+        "long_description": "Uses the QuickTime (MOV) container format, commonly used for Apple media applications."
+    },
+    "container_mp3": {
+        "name": "mp3",
+        "aliases": [
+            "container_mp3",
+            "mp3_container"
+        ],
+        "short_description": "MP3 container.",
+        "long_description": "Uses the MPEG Audio Layer III (MP3) container format, primarily for audio-only files."
+    }
+}

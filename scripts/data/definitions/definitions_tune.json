@@ -1,0 +1,157 @@
+{
+    "header": "Tunes_N",
+    "enum": "Tunes",
+    "tune_invalid": {
+        "name": "tune_invalid",
+        "aliases": [
+            "tune_invalid",
+            "invalid_tune"
+        ],
+        "short_description": "Invalid tune.",
+        "long_description": "The specified encoding tune is invalid or not recognized by the system."
+    },
+    "tune_fast": {
+        "name": "fast",
+        "aliases": [
+            "tune_fast",
+            "fast_tune"
+        ],
+        "short_description": "Fast tune.",
+        "long_description": "Optimizes encoding for speed over quality, reducing processing time."
+    },
+    "tune_balanced": {
+        "name": "balanced",
+        "aliases": [
+            "tune_balanced",
+            "balanced_tune"
+        ],
+        "short_description": "Balanced tune.",
+        "long_description": "Provides a balance between encoding speed and output quality."
+    },
+    "tune_high_quality": {
+        "name": "high_quality",
+        "aliases": [
+            "tune_high_quality",
+            "high_quality_tune"
+        ],
+        "short_description": "High Quality tune.",
+        "long_description": "Optimizes encoding for maximum output quality, potentially increasing processing time."
+    },
+    "tune_low_latency": {
+        "name": "low_latency",
+        "aliases": [
+            "tune_low_latency",
+            "low_latency_tune"
+        ],
+        "short_description": "Low Latency tune.",
+        "long_description": "Optimizes encoding to minimize latency, suitable for real-time streaming."
+    },
+    "tune_zero_latency": {
+        "name": "zero_latency",
+        "aliases": [
+            "tune_zero_latency",
+            "zero_latency_tune"
+        ],
+        "short_description": "Zero Latency tune.",
+        "long_description": "Minimizes encoding delay to achieve near-instantaneous output."
+    },
+    "tune_lossless": {
+        "name": "lossless",
+        "aliases": [
+            "tune_lossless",
+            "lossless_tune"
+        ],
+        "short_description": "Lossless tune.",
+        "long_description": "Encodes media without any quality loss, preserving the original data."
+    },
+    "tune_proxy": {
+        "name": "proxy",
+        "aliases": [
+            "tune_proxy",
+            "proxy_tune"
+        ],
+        "short_description": "Proxy tune.",
+        "long_description": "Generates lower-quality, lower-bitrate files suitable for previews or offline editing."
+    },
+    "tune_animation": {
+        "name": "animation",
+        "aliases": [
+            "tune_animation",
+            "animation_tune"
+        ],
+        "short_description": "Animation tune.",
+        "long_description": "Optimizes encoding for animated content, improving color and frame handling."
+    },
+    "tune_film": {
+        "name": "film",
+        "aliases": [
+            "tune_film",
+            "film_tune"
+        ],
+        "short_description": "Film tune.",
+        "long_description": "Optimizes encoding for film content, preserving detail and dynamic range."
+    },
+    "tune_grain": {
+        "name": "grain",
+        "aliases": [
+            "tune_grain",
+            "grain_tune"
+        ],
+        "short_description": "Grain tune.",
+        "long_description": "Preserves film grain and fine details during encoding."
+    },
+    "tune_still_image": {
+        "name": "still_image",
+        "aliases": [
+            "tune_still_image",
+            "still_image_tune"
+        ],
+        "short_description": "Still Image tune.",
+        "long_description": "Optimizes encoding for still images or low-motion content."
+    },
+    "tune_psnr": {
+        "name": "psnr",
+        "aliases": [
+            "tune_psnr",
+            "psnr_tune"
+        ],
+        "short_description": "PSNR tune.",
+        "long_description": "Optimizes encoding to maximize Peak Signal-to-Noise Ratio (PSNR), prioritizing fidelity."
+    },
+    "tune_ssim": {
+        "name": "ssim",
+        "aliases": [
+            "tune_ssim",
+            "ssim_tune"
+        ],
+        "short_description": "SSIM tune.",
+        "long_description": "Optimizes encoding to maximize Structural Similarity Index (SSIM), improving perceived visual quality."
+    },
+    "tune_texture_compression": {
+        "name": "texture_compression",
+        "aliases": [
+            "tune_texture_compression",
+            "texture_compression_tune"
+        ],
+        "short_description": "Texture Compression tune.",
+        "long_description": "Optimizes encoding for texture-rich content, preserving details in patterns and surfaces."
+    },
+    "tune_zero_latency_low_latency": {
+        "name": "zero_latency_low_latency",
+        "aliases": [
+            "tune_zero_latency_low_latency",
+            "zero_latency_low_latency_tune"
+        ],
+        "short_description": "Zero Latency Low Latency tune.",
+        "long_description": "Combines zero latency and low latency optimizations for minimal encoding delay."
+    },
+    "tune_default": {
+        "name": "default",
+        "aliases": [
+            "tune_default",
+            "default_tune"
+        ],
+        "short_description": "Default tune.",
+        "long_description": "Applies the system's default encoding settings."
+    }
+}

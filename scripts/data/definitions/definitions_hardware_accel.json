@@ -1,0 +1,49 @@
+{
+    "header": "HWAccelerators_N",
+    "enum": "HWAccelerators",
+    "hwaccel_invalid": {
+        "name": "hwaccel_invalid",
+        "aliases": [
+            "hwaccel_invalid",
+            "invalid_hwaccel"
+        ],
+        "short_description": "Invalid hardware accelerator.",
+        "long_description": "The specified hardware accelerator is invalid or not recognized by the system."
+    },
+    "hwaccel_amd": {
+        "name": "amf",
+        "aliases": [
+            "hwaccel_amd",
+            "amf_hwaccel"
+        ],
+        "short_description": "AMD hardware accelerator.",
+        "long_description": "Uses AMD's Advanced Media Framework (AMF) for hardware-accelerated media encoding and decoding."
+    },
+    "hwaccel_nvidia": {
+        "name": "cuda",
+        "aliases": [
+            "hwaccel_nvidia",
+            "cuda_hwaccel"
+        ],
+        "short_description": "NVIDIA hardware accelerator.",
+        "long_description": "Uses NVIDIA's CUDA and NVENC/NVDEC technologies for hardware-accelerated media processing."
+    },
+    "hwaccel_intel": {
+        "name": "qsv",
+        "aliases": [
+            "hwaccel_intel",
+            "qsv_hwaccel"
+        ],
+        "short_description": "Intel hardware accelerator.",
+        "long_description": "Uses Intel's Quick Sync Video (QSV) for hardware-accelerated encoding and decoding."
+    },
+    "hwaccel_vulkan": {
+        "name": "vulkan",
+        "aliases": [
+            "hwaccel_vulkan",
+            "vulkan_hwaccel"
+        ],
+        "short_description": "Vulkan hardware accelerator.",
+        "long_description": "Uses the Vulkan API for cross-platform GPU-accelerated media processing and computation."
+    }
+}
