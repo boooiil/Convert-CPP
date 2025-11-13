@@ -11,11 +11,10 @@
 #include "../parent/Parent.h"
 #include "../parent/display/ParentDisplay.h"
 #include "../settings/Help.h"
-#include "../settings/arguments/EnumArgument.h"
 #include "../settings/arguments/FlagArgument.h"
 #include "../settings/arguments/IntegerArgument.h"
-#include "../settings/enums/LoggingOptions.h"
 #include "nlohmann/json.hpp"
+#include "src/program/settings/enums/LogFormat_N.h"
 
 NTicker::NTicker() : endable(true) {
   this->display = nullptr;
@@ -26,10 +25,10 @@ void NTicker::determineNextAction(std::vector<std::string> &args) {
   ArgumentRegistry *program_arg_reg =
       Program::settings->programOptions->argumentRegistry;
 
-  if (program_arg_reg->get_t<FlagArgument>(Command::HELP)->get()) {
+  if (program_arg_reg->get_t<FlagArgument>(Command_N::HELP)->get()) {
     Help::printHelp();
     Program::stopFlag = true;
-  } else if (program_arg_reg->get_t<FlagArgument>(Command::INFO)->get()) {
+  } else if (program_arg_reg->get_t<FlagArgument>(Command_N::INFO)->get()) {
     // print information
     this->runner->prepare(args);
     this->display->printInformation(this, this->runner);
@@ -67,7 +66,7 @@ void NTicker::prepare(std::vector<std::string> &args) {
   ArgumentRegistry *program_arg_reg =
       Program::settings->programOptions->argumentRegistry;
 
-  if (program_arg_reg->get_t<FlagArgument>(Command::PARENT)->get()) {
+  if (program_arg_reg->get_t<FlagArgument>(Command_N::PARENT)->get()) {
     LOG_DEBUG("Running as parent.");
     this->display = new ParentDisplay();
     this->runner = new Parent();
@@ -84,7 +83,7 @@ void NTicker::run() {
   ArgumentRegistry *program_arg_reg =
       Program::settings->programOptions->argumentRegistry;
 
-  if (program_arg_reg->get_t<FlagArgument>(Command::INFO)->get()) {
+  if (program_arg_reg->get_t<FlagArgument>(Command_N::INFO)->get()) {
     this->display->printInformation(this, this->runner);
     return;
   }
@@ -98,21 +97,22 @@ void NTicker::run() {
       break;
     }
 
-    LoggingOptions log_option =
+    LogFormat_N::LogFormat log_option =
         program_arg_reg
-            ->get_t<EnumArgument<LoggingOptions>>(Command::LOGGINGOPTIONS)
+            ->get_t<EnumArgument<LogFormat_N::LogFormat>>(
+                Command_N::LOGGINGOPTIONS)
             ->get();
 
     switch (log_option) {
-    case LoggingOptions::DEBUG:
-    case LoggingOptions::JSON_DEBUG:
+    case LogFormat_N::DEBUG:
+    case LogFormat_N::JSON_DEBUG:
       this->display->printDebug();
       break;
-    case LoggingOptions::VERBOSE:
-    case LoggingOptions::JSON_VERBOSE:
+    case LogFormat_N::VERBOSE:
+    case LogFormat_N::JSON_VERBOSE:
       this->display->printDebug();
       break;
-    case LoggingOptions::JSON:
+    case LogFormat_N::JSON:
       this->display->printJSON();
       break;
     default:
@@ -122,7 +122,7 @@ void NTicker::run() {
 
     std::this_thread::sleep_for(
         std::chrono::milliseconds((int)*program_arg_reg->get_t<IntegerArgument>(
-            Command::DISPLAYREFRESH)));
+            Command_N::DISPLAYREFRESH)));
   }
   // if (Program::settings->argumentParser->isParent) {
   //   // parent display
@@ -156,14 +156,6 @@ void NTicker::end() {
     delete this->runner;
   }
 }
-
-void NTicker::setEndable(bool flag) {
-  LOG_DEBUG("Parent has been set as endable:",
-            this->endable ? "True" : "False");
-  this->endable = flag;
-}
-
-bool NTicker::isEndable() { return this->endable; }
 
 void NTicker::fromJSON(nlohmann::json) {
   // read json information

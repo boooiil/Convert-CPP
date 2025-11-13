@@ -4,8 +4,8 @@
 #include <string>
 
 #include "../../generics/JSONSerializable.h"
-#include "../enums/Encoders.h"
-#include "../enums/HWAccelerators.h"
+#include "../enums/Encoders_N.h"
+#include "../enums/HWAccelerators_N.h"
 #include "nlohmann/json_fwd.hpp"
 #include "src/program/registry/ArgumentRegistry.h"
 
@@ -14,8 +14,8 @@ public:
   ChildOptions(void);
   ~ChildOptions(void);
 
-  Encoders runningEncoder;
-  HWAccelerators runningHWAccel;
+  Encoders_N::Encoders runningEncoder;
+  HWAccelerators_N::HWAccelerators runningHWAccel;
 
   // TODO dtor deletion
   ArgumentRegistry *argumentRegistry;

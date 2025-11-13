@@ -19,7 +19,7 @@ void ParentOptions::prepare(void) {
   // Prepare the options
   // amount
 
-  argumentRegistry->add(Command::AMOUNT,
+  argumentRegistry->add(Command_N::AMOUNT,
                         std::make_unique<IntegerArgument>(
                             "Amount of media to process", "-a", "--amount", 1));
 }

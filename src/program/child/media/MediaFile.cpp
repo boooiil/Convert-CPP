@@ -10,10 +10,8 @@
 #include "../../../utils/StringUtils.h"
 #include "../../../utils/logging/Logger.h"
 #include "../../settings/arguments/video/Quality.h"
-#include "src/program/settings/arguments/EnumArgument.h"
-#include "src/program/settings/enums/Command.h"
-#include "src/program/settings/enums/Container.h"
-#include "src/program/settings/enums/EnumToStringFactory.h"
+#include "src/program/settings/enums/Command_N.h"
+#include "src/program/settings/enums/Container_N.h"
 
 MediaFile::MediaFile()
     : cwd(""), originalFileNameExt(""), originalFullPath(""),
@@ -116,7 +114,8 @@ void MediaFile::resolveConversionPaths(std::string provided_series,
   ArgumentRegistry &argumentRegistry =
       *Program::settings->childOptionsMap[this->media_id]->argumentRegistry;
 
-  MediaFormat format = argumentRegistry.get_t<Quality>(Command::QUALITY)->get();
+  MediaFormat format =
+      argumentRegistry.get_t<Quality>(Command_N::QUALITY)->get();
 
   std::string season_number = "";
   std::string program_quality = format.name;
@@ -133,11 +132,10 @@ void MediaFile::resolveConversionPaths(std::string provided_series,
                                   provided_episode + " [" + program_quality +
                                   "]";
 
-  std::string wanted_container =
-      EnumToStringFactory::get<Container>(
-          argumentRegistry.get_t<EnumArgument<Container>>(Command::CONTAINER)
-              ->get())
-          .getName();
+  std::string wanted_container = Container_N::definition(
+      argumentRegistry
+          .get_t<EnumArgument<Container_N::Container>>(Command_N::CONTAINER)
+          ->get());
 
   this->conversionName = compiled_filename;
   this->conversionNameExt = compiled_filename + "." + wanted_container;

@@ -20,13 +20,12 @@
 #include "../../../utils/logging/Logger.h"
 #include "../../Program.h"
 #include "../../settings/arguments/video/Quality.h"
-#include "../../settings/enums/Activity.h"
+#include "../../settings/enums/Activity_N.h"
 #include "../ffmpeg/probe/ProbeResult.h"
 #include "../ffmpeg/probe/ProbeResultStreamVideo.h"
 #include "Media.h"
 #include "MediaFormat.h"
 #include "MediaProcess.h"
-
 
 #ifdef _WIN32
 #define popen _popen
@@ -77,7 +76,7 @@ void MediaProcessStatistics::parse(std::string data) {
         RegexUtils::isMatch(data, "unknown command")) {
       LOG_DEBUG("Could not find ffprobe, failing.", data);
       // TODO: add FAILED_MISSING_FFPROBE
-      this->object->setActivity(Activity::FAILED);
+      this->object->setActivity(Activity_N::FAILED);
       return;
     }
 
@@ -136,7 +135,7 @@ void MediaProcessStatistics::parse(std::string data) {
         *Program::settings->childOptionsMap[this->object->id];
     ArgumentRegistry &argumentRegistry = *childOptions.argumentRegistry;
     MediaFormat format =
-        argumentRegistry.get_t<Quality>(Command::QUALITY)->get();
+        argumentRegistry.get_t<Quality>(Command_N::QUALITY)->get();
 
     this->object->video->convertedWidth = std::to_string(format.width);
     this->object->video->convertedHeight = std::to_string(format.getResolution(
@@ -147,7 +146,7 @@ void MediaProcessStatistics::parse(std::string data) {
     this->object->video->crf = format.crf;
   } catch (const std::exception &e) {
     LOG_DEBUG("ERROR: ", e.what());
-    this->object->setActivity(Activity::FAILED_JSON_PARSE);
+    this->object->setActivity(Activity_N::FAILED_JSON_PARSE);
     MediaProcessStatistics::status = MediaProcess::Status::_ERROR;
     return;
   }

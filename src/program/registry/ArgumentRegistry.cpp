@@ -1,7 +1,7 @@
 #include "ArgumentRegistry.h"
 #include "Registry.h"
 #include "src/program/settings/arguments/FlagArgument.h"
-#include "src/program/settings/enums/Command.h"
+#include "src/program/settings/enums/Command_N.h"
 #include "src/utils/ListUtils.h"
 #include "src/utils/StringUtils.h"
 
@@ -16,7 +16,7 @@ void ArgumentRegistry::parse(std::vector<std::string> args) {
 
   LOG_DEBUG("Parsing supplied arguments: " + ListUtils::join(args, ", "));
 
-  Registry<std::string, Command> flag_registry = flagRegistry();
+  Registry<std::string, Command_N::Command> flag_registry = flagRegistry();
 
   // skip the first argument (the program name)
   for (int i = 1; i < args.size(); i++) {
@@ -31,7 +31,7 @@ void ArgumentRegistry::parse(std::vector<std::string> args) {
       continue;
     }
 
-    Command *command = flag_registry.get(option);
+    Command_N::Command *command = flag_registry.get(option);
 
     // check if the argument has been registered
     GenericArgument *argument = this->get(*command);
@@ -64,14 +64,15 @@ void ArgumentRegistry::parse(std::vector<std::string> args) {
   }
 }
 
-Registry<std::string, Command> ArgumentRegistry::flagRegistry(void) {
-  Registry<std::string, Command> result;
+Registry<std::string, Command_N::Command> ArgumentRegistry::flagRegistry(void) {
+  Registry<std::string, Command_N::Command> result;
 
   for (const auto &argument : keySet()) {
     GenericArgument *arg = get(argument);
 
-    result.add(arg->getFlag(), std::make_unique<Command>(argument));
-    result.add(arg->getLongFlag(), std::make_unique<Command>(argument));
+    result.add(arg->getFlag(), std::make_unique<Command_N::Command>(argument));
+    result.add(arg->getLongFlag(),
+               std::make_unique<Command_N::Command>(argument));
   }
 
   return result;

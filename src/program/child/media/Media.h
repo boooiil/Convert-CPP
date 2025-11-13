@@ -15,7 +15,7 @@
 #include <string>
 
 #include "../../generics/JSONSerializable.h"
-#include "../../settings/enums/Activity.h"
+#include "../../settings/enums/Activity_N.h"
 #include "../ffmpeg/FFmpegArgumentBuilder.h"
 #include "../ffmpeg/probe/ProbeResult.h"
 #include "MediaFile.h"
@@ -61,7 +61,7 @@ public:
    *
    * @param[in] activity - Activity type.
    */
-  void setActivity(Activity activity);
+  void setActivity(Activity_N::Activity activity);
 
   /**
    * @brief Do the statistics process.
@@ -95,9 +95,9 @@ public:
   /**
    * @brief Get the activity type.
    *
-   * @return Activity::ActivityType - Activity type.
+   * @return Activity_N::Activity - Activity type.
    */
-  Activity getActivity(void);
+  Activity_N::Activity getActivity(void);
 
   /**
    * @brief Check if the current media is processing.
@@ -194,7 +194,7 @@ public:
 
 private:
   /// @brief activity type
-  Activity activity;
+  Activity_N::Activity activity;
 };
 
 #endif // !MEDIA

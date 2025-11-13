@@ -15,8 +15,7 @@
 #include "../settings/Settings.h"
 #include "../settings/arguments/FlagArgument.h"
 #include "../settings/arguments/IntegerArgument.h"
-#include "../settings/enums/Activity.h"
-#include "../settings/enums/EnumToStringFactory.h"
+#include "../settings/enums/Activity_N.h"
 #include "media/Media.h"
 
 std::vector<std::thread> workerThreads;
@@ -55,7 +54,7 @@ void Child::prepare(std::vector<std::string> &args) {
     media->file->rename();
 
     if (!std::filesystem::exists(media->file->conversionFolderPath) &&
-        !childOptions.argumentRegistry->get_t<FlagArgument>(Command::INFO)
+        !childOptions.argumentRegistry->get_t<FlagArgument>(Command_N::INFO)
              ->get()) {
       LOG_DEBUG("Creating directory: ", media->file->conversionFolderPath);
       std::filesystem::create_directory(media->file->conversionFolderPath);
@@ -100,7 +99,7 @@ void Child::run(void) {
   ChildOptions &childOptions = *Program::settings->childOptionsMap[this->id];
 
   IntegerArgument *setAmount =
-      childOptions.argumentRegistry->get_t<IntegerArgument>(Command::AMOUNT);
+      childOptions.argumentRegistry->get_t<IntegerArgument>(Command_N::AMOUNT);
 
   LOG_DEBUG("C:" + std::to_string(currentAmount), "W:" + setAmount->toString(),
             "T:" +
@@ -114,7 +113,7 @@ void Child::run(void) {
     // then exit the program
     if (!media->isWaiting()) {
       LOG_DEBUG("Media is not waiting:", media->file->originalFileNameExt,
-                EnumToStringFactory::get(media->getActivity()).getName());
+                Activity_N::definition(media->getActivity()));
       if (currentAmount == 0) {
         this->setEndable(true);
         this->setCompleted(true);
@@ -122,8 +121,8 @@ void Child::run(void) {
       }
     } else {
       LOG_DEBUG("Queued media for encoding:", media->file->originalFileNameExt,
-                EnumToStringFactory::get(media->getActivity()).getName());
-      media->setActivity(Activity::WAITING_STATISTICS);
+                Activity_N::definition(media->getActivity()));
+      media->setActivity(Activity_N::WAITING_STATISTICS);
 
       media->started = TimeUtils::getEpoch();
 
@@ -161,11 +160,11 @@ void Child::run(void) {
     Media *media = this->converting.front();
 
     LOG_DEBUG(media->file->originalFileNameExt,
-              EnumToStringFactory::get(media->getActivity()).getName());
+              Activity_N::definition(media->getActivity()));
 
     if (!media->isProcessing()) {
       LOG_DEBUG("Media is not processing:", media->file->originalFileNameExt,
-                EnumToStringFactory::get(media->getActivity()).getName());
+                Activity_N::definition(media->getActivity()));
 
       if (media->isWaitingToStatistics()) {
         LOG_DEBUG("Media is waiting for statistics:",
@@ -276,8 +275,7 @@ nlohmann::json Child::toJSON() {
     nlohmann::json mediaVideoDebug;
     nlohmann::json mediaWorkingDebug;
 
-    mediaDebug["activity"] =
-        EnumToStringFactory::get(media->getActivity()).getName();
+    mediaDebug["activity"] = Activity_N::definition(media->getActivity());
     mediaDebug["started"] = media->started;
     mediaDebug["ended"] = media->ended;
 
@@ -341,8 +339,7 @@ nlohmann::json Child::toJSON() {
     nlohmann::json mediaVideoDebug;
     nlohmann::json mediaWorkingDebug;
 
-    mediaDebug["activity"] =
-        EnumToStringFactory::get(media->getActivity()).getName();
+    mediaDebug["activity"] = Activity_N::definition(media->getActivity());
     mediaDebug["started"] = media->started;
     mediaDebug["ended"] = media->ended;
 

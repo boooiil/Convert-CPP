@@ -4,13 +4,13 @@
 #include <set>
 #include <vector>
 
-#include "../../../settings/enums/Encoders.h"
-#include "../../../settings/enums/Tunes.h"
+#include "../../../settings/enums/Encoders_N.h"
+#include "../../../settings/enums/Tunes_N.h"
 
 class BaseVideoCodec {
 public:
   BaseVideoCodec(std::string runningPreset, std::string runningLevel,
-                 Tunes runningTune)
+                 Tunes_N::Tunes runningTune)
       : runningPreset(runningPreset), runningLevel(runningLevel),
         runningTune(runningTune) {};
   virtual ~BaseVideoCodec() {}
@@ -20,7 +20,9 @@ public:
    *
    * @return Encoders
    */
-  virtual auto getType() -> Encoders { return Encoders::INVALID; };
+  virtual auto getType() -> Encoders_N::Encoders {
+    return Encoders_N::INVALID;
+  };
   virtual auto getName() -> std::string { return "BaseVideoCodec"; };
   virtual auto getDisplayName() -> std::string { return "Base Video Codec"; };
   virtual auto getAliases() -> std::set<std::string> { return {}; };
@@ -49,10 +51,10 @@ public:
                     &BaseVideoCodec::fallbackLevel);
   }
 
-  virtual auto supportedTunes() -> std::vector<Tunes> = 0;
-  virtual auto fallbackTune() -> Tunes = 0;
+  virtual auto supportedTunes() -> std::vector<Tunes_N::Tunes> = 0;
+  virtual auto fallbackTune() -> Tunes_N::Tunes = 0;
 
-  auto getTune(Tunes &tune) -> const Tunes {
+  auto getTune(Tunes_N::Tunes &tune) -> const Tunes_N::Tunes {
     return getParam(tune, &BaseVideoCodec::supportedTunes,
                     &BaseVideoCodec::fallbackTune);
   }
@@ -71,8 +73,10 @@ public:
     this->runningLevel = getLevel(level);
   }
 
-  virtual auto getRunningTune() -> const Tunes & { return this->runningTune; }
-  virtual void setRunningTune(Tunes tune) {
+  virtual auto getRunningTune() -> const Tunes_N::Tunes & {
+    return this->runningTune;
+  }
+  virtual void setRunningTune(Tunes_N::Tunes tune) {
     this->runningTune = getTune(tune);
   };
 
@@ -92,7 +96,7 @@ private:
 
   std::string runningPreset;
   std::string runningLevel;
-  Tunes runningTune;
+  Tunes_N::Tunes runningTune;
 };
 
 #endif // BASE_VIDEO_CODEC_H

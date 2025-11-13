@@ -7,11 +7,11 @@
 #include <string>
 #include <vector>
 
-#include "../../settings/enums/Encoders.h"
-#include "../../settings/enums/HWAccelerators.h"
-#include "../../settings/enums/Tunes.h"
-#include "../enums/GPUProviders.h"
-#include "../enums/Platform.h"
+#include "../../settings/enums/Encoders_N.h"
+#include "../../settings/enums/HWAccelerators_N.h"
+#include "../../settings/enums/Tunes_N.h"
+#include "../enums/GPUProviders_N.h"
+#include "../enums/Platform_N.h"
 #include "src/program/registry/ArgumentRegistry.h"
 
 class ProgramOptions : public JSONSerializable {
@@ -24,23 +24,23 @@ public:
   std::vector<std::string> i_args;
 
   /// @brief The current operating system of the user's machine
-  Platform platform;
+  Platform_N::Platform platform;
   /// @brief List of supported encoders by the program.
-  std::vector<Encoders> supportedEncoders;
+  std::vector<Encoders_N::Encoders> supportedEncoders;
   /// @brief List of supported hardware accelerators by the program.
-  std::vector<HWAccelerators> supportedHWAccel;
+  std::vector<HWAccelerators_N::HWAccelerators> supportedHWAccel;
   /// @brief List of regular expressions matching tunes.
   /// @brief The matching tunes can be used as an index
   /// @brief in the tuneAssociations list.
   std::vector<std::regex> tuneRegex;
   /// @brief List of tunes.
-  std::vector<Tunes> tuneAssociations;
+  std::vector<Tunes_N::Tunes> tuneAssociations;
 
   // TODO: change this to a map vvvv
   /// @brief The current GPU of the user's machine
-  std::vector<GPUProviders> GPU_Providers;
+  std::vector<GPUProviders_N::GPUProviders> GPU_Providers;
   /// @brief The preferred GPU provider for the user.
-  GPUProviders preferredGPUProvider;
+  GPUProviders_N::GPUProviders preferredGPUProvider;
 
   void prepare(void);
   void parse(std::vector<std::string> args);

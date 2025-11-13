@@ -5,14 +5,12 @@
 #include <string>
 
 #include "../../../utils/logging/Logger.h"
-#include "../../settings/enums/Activity.h"
+#include "../../settings/enums/Activity_N.h"
 #include "ChildProcessConversion.h"
-#include "src/program/settings/enums/EnumToStringFactory.h"
-#include "src/utils/StringUtils.h"
 
 ChildProcess::ChildProcess(std::string path, std::string filename)
-    : path(path), filename(filename), pid(-1), endable(true), ended(0),
-      started(0), activity(Activity::WAITING) {}
+    : pid(-1), started(0), ended(0), path(path), filename(filename),
+      activity(Activity_N::WAITING), endable(true) {}
 
 ChildProcess::~ChildProcess(void) {}
 
@@ -33,7 +31,7 @@ ChildProcess::~ChildProcess(void) {}
  *
  */
 
-Activity ChildProcess::getActivity() { return this->activity; }
+Activity_N::Activity ChildProcess::getActivity() { return this->activity; }
 
 void ChildProcess::getArgs(void) {
   std::cout << this->path << " arguments: ";
@@ -43,30 +41,27 @@ void ChildProcess::getArgs(void) {
 }
 
 const bool ChildProcess::isProcessing() {
-  return ChildProcess::activity == Activity::STATISTICS ||
-         ChildProcess::activity == Activity::CONVERT ||
-         ChildProcess::activity == Activity::VALIDATE;
+  return Activity_N::isProcessing(this->activity);
 }
 
 const bool ChildProcess::hasFailed() {
-  return StringUtils::contains(
-      EnumToStringFactory::get(ChildProcess::activity).getName(), "failed");
+  return Activity_N::isFailed(this->activity);
 }
 
 const bool ChildProcess::hasFinished() {
-  return this->activity == Activity::FINISHED;
+  return this->activity == Activity_N::FINISHED;
 }
 
 const bool ChildProcess::isWaiting() {
-  return this->activity == Activity::WAITING;
+  return this->activity == Activity_N::WAITING;
 }
 
 const bool ChildProcess::isWaitingToConvert() {
-  return this->activity == Activity::WAITING_CONVERT;
+  return this->activity == Activity_N::WAITING_CONVERT;
 }
 
 void ChildProcess::doConversion(void) {
-  this->activity = Activity::CONVERT;
+  this->activity = Activity_N::CONVERT;
 
   LOG_DEBUG("Running conversion for:", this->path);
 

@@ -10,8 +10,8 @@
 #include "../../Program.h"
 #include "../../settings/Settings.h"
 #include "../../settings/arguments/FlagArgument.h"
-#include "../../settings/enums/Activity.h"
-#include "../../settings/enums/Encoders.h"
+#include "../../settings/enums/Activity_N.h"
+#include "../../settings/enums/Encoders_N.h"
 #include "Media.h"
 #include "MediaProcess.h"
 
@@ -43,24 +43,24 @@ void MediaProcessConversion::parse(std::string data) {
     // if the user wants to use hardware encoding (nvenc, amf, qsv)
 
     FlagArgument &hweFlag = *childOptions.argumentRegistry->get_t<FlagArgument>(
-        Command::HARDWAREENCODE);
+        Command_N::HARDWAREENCODE);
 
     if (hweFlag) {
-      this->object->setActivity(Activity::FAILED_HARDWARE);
+      this->object->setActivity(Activity_N::FAILED_HARDWARE);
       return;
     }
 
     switch (childOptions.runningEncoder) {
-    case Encoders::AV1_AMF:
-    case Encoders::AV1_NVENC:
-    case Encoders::AV1_QSV:
-    case Encoders::H264_AMF:
-    case Encoders::H264_NVENC:
-    case Encoders::H264_QSV:
-    case Encoders::HEVC_AMF:
-    case Encoders::HEVC_NVENC:
-    case Encoders::HEVC_QSV:
-      this->object->setActivity(Activity::FAILED_HARDWARE);
+    case Encoders_N::AV1_AMF:
+    case Encoders_N::AV1_NVENC:
+    case Encoders_N::AV1_QSV:
+    case Encoders_N::H264_AMF:
+    case Encoders_N::H264_NVENC:
+    case Encoders_N::H264_QSV:
+    case Encoders_N::HEVC_AMF:
+    case Encoders_N::HEVC_NVENC:
+    case Encoders_N::HEVC_QSV:
+      this->object->setActivity(Activity_N::FAILED_HARDWARE);
       break;
     default:
       throw std::runtime_error(
@@ -71,25 +71,25 @@ void MediaProcessConversion::parse(std::string data) {
 
   // If the file is already encoded, set the process status to validating
   else if (RegexUtils::isMatch(data, "already exists", std::regex::icase)) {
-    this->object->setActivity(Activity::WAITING_VALIDATE);
+    this->object->setActivity(Activity_N::WAITING_VALIDATE);
   } else if (RegexUtils::isMatch(data, "no such file", std::regex::icase)) {
-    this->object->setActivity(Activity::FAILED_FILE_MISSING);
+    this->object->setActivity(Activity_N::FAILED_FILE_MISSING);
   } else if (RegexUtils::isMatch(data, "matches no streams",
                                  std::regex::icase)) {
-    this->object->setActivity(Activity::FAILED_INVALID_AUDIO_STREAMS);
+    this->object->setActivity(Activity_N::FAILED_INVALID_AUDIO_STREAMS);
   } else if (RegexUtils::isMatch(data, "Invalid duration for option ss")) {
-    this->object->setActivity(Activity::FAILED_INVALID_DURATION_SS);
+    this->object->setActivity(Activity_N::FAILED_INVALID_DURATION_SS);
   } else if (RegexUtils::isMatch(data, "Invalid duration for option to")) {
-    this->object->setActivity(Activity::FAILED_INVALID_DURATION_TO);
+    this->object->setActivity(Activity_N::FAILED_INVALID_DURATION_TO);
   } else if (RegexUtils::isMatch(data, "Unknown encoder")) {
-    this->object->setActivity(Activity::FAILED_INVALID_ENCODER);
+    this->object->setActivity(Activity_N::FAILED_INVALID_ENCODER);
   } else if (StringUtils::contains(data, "Rematrix is needed between") ||
              StringUtils::contains(data, "Failed to configure output pad") ||
              StringUtils::contains(data, "Error reinitializing filters")) {
-    this->object->setActivity(Activity::FAILED_INVALID_AUDIO_CHANNELS);
+    this->object->setActivity(Activity_N::FAILED_INVALID_AUDIO_CHANNELS);
   } else if (StringUtils::contains(data,
                                    "from text to text or bitmap to bitmap")) {
-    this->object->setActivity(Activity::FAILED_SUBTITLE_ENCODING_INVALID);
+    this->object->setActivity(Activity_N::FAILED_SUBTITLE_ENCODING_INVALID);
   }
 
   else if (RegexUtils::isMatch(data, "frame=\\s*(\\d+)")) {

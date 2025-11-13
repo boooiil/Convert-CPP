@@ -11,9 +11,7 @@
 #include "../utils/logging/Logger.h"
 #include "generics/JSONSerializableRunner.h"
 #include "settings/Settings.h"
-#include "settings/arguments/EnumArgument.h"
-#include "settings/enums/EnumToStringFactory.h"
-#include "settings/enums/LoggingOptions.h"
+#include "settings/enums/LogFormat_N.h"
 #include "ticker/NTicker.h"
 
 JSONSerializableRunner *Program::ticker = nullptr;
@@ -29,24 +27,24 @@ Program::~Program(void) {
 
 void Program::prepare(std::vector<std::string> &args) {
   // Program::log = new Log();
-  EnumToStringFactory::init();
 
   Program::settings = new Settings();
   Program::settings->programOptions->prepare();
   Program::settings->programOptions->parse(args);
 
   switch (Program::settings->programOptions->argumentRegistry
-              ->get_t<EnumArgument<LoggingOptions>>(Command::LOGGINGOPTIONS)
+              ->get_t<EnumArgument<LogFormat_N::LogFormat>>(
+                  Command_N::LOGGINGOPTIONS)
               ->get()) {
-  case LoggingOptions::DEBUG:
-  case LoggingOptions::JSON_DEBUG:
+  case LogFormat_N::DEBUG:
+  case LogFormat_N::JSON_DEBUG:
     Logger::debug_flag = true;
     Logger::verbose_flag = false;
     std::cout << "Attach debugger then press enter to continue...";
     std::cin.get();
     break;
-  case LoggingOptions::VERBOSE:
-  case LoggingOptions::JSON_VERBOSE:
+  case LogFormat_N::VERBOSE:
+  case LogFormat_N::JSON_VERBOSE:
     Logger::debug_flag = true;
     Logger::verbose_flag = true;
     std::cout << "Attach debugger then press enter to continue...";
@@ -118,7 +116,6 @@ void Program::end(void) {
     delete Program::settings;
   }
 
-  EnumToStringFactory::end();
   // TODO: end needs to exit program
   // add ticker
 }

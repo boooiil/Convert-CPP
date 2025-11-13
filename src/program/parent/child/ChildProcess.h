@@ -3,15 +3,12 @@
 
 #include <nlohmann/json_fwd.hpp>
 #include <string>
-#include <vector>
 
 #include "../../child/media/Media.h"
-#include "../../generics/JSONSerializableRunner.h"
-#include "../../settings/enums/Activity.h"
-#include "../../settings/enums/StringEnumDataHolder.h"
+#include "../../settings/enums/Activity_N.h"
 
 class ChildProcess : public Media {
- public:
+public:
   ChildProcess(std::string path, std::string filename);
   ~ChildProcess(void);
 
@@ -30,9 +27,9 @@ class ChildProcess : public Media {
   /**
    * @brief Get the activity type.
    *
-   * @return Activity::ActivityType - Activity type.
+   * @return Activity_N::Activity - Activity type.
    */
-  Activity getActivity(void);
+  Activity_N::Activity getActivity(void);
 
   /**
    * @brief Check if the current media is processing.
@@ -80,9 +77,9 @@ class ChildProcess : public Media {
    */
   nlohmann::json toJSON(void) override;
 
- private:
-  Activity activity;
+private:
+  Activity_N::Activity activity;
   bool endable;
 };
 
-#endif  // !CHILD_PROCESS_H
+#endif // !CHILD_PROCESS_H

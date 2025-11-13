@@ -10,15 +10,17 @@
 #include "../arguments/TimeStringVectorArgument.h"
 #include "../arguments/VectorArgument.h"
 #include "../arguments/video/Quality.h"
-#include "../enums/Encoders.h"
-#include "../enums/HWAccelerators.h"
-#include "../enums/Tunes.h"
+#include "../enums/Encoders_N.h"
+#include "../enums/HWAccelerators_N.h"
+#include "../enums/Tunes_N.h"
 #include "nlohmann/json.hpp"
+#include "src/program/definitions/DefinitionRegistry.h"
 #include "src/program/settings/arguments/GenericArgument.h"
+#include "src/program/settings/enums/Container_N.h"
 
 ChildOptions::ChildOptions(void)
-    : runningEncoder(Encoders::INVALID),
-      runningHWAccel(HWAccelerators::INVALID),
+    : runningEncoder(Encoders_N::INVALID),
+      runningHWAccel(HWAccelerators_N::INVALID),
       argumentRegistry(new ArgumentRegistry()) {}
 
 ChildOptions::~ChildOptions(void) {
@@ -34,76 +36,77 @@ ChildOptions::~ChildOptions(void) {
 void ChildOptions::prepare(void) {
   LOG_DEBUG("Preparing ChildOptions...");
 
-  argumentRegistry->add(Command::AMOUNT,
+  argumentRegistry->add(Command_N::AMOUNT,
                         std::make_unique<IntegerArgument>(
                             "Amount of files to process", "-a", "--amount", 1));
-  argumentRegistry->add(Command::AUDIOCHANNELS,
+  argumentRegistry->add(Command_N::AUDIOCHANNELS,
                         std::make_unique<VectorArgument<int>>(
                             "Number of audio channels to use", "-ac",
                             "--audiochannels", std::vector<int>()));
-  argumentRegistry->add(Command::AUDIOCODEC,
+  argumentRegistry->add(Command_N::AUDIOCODEC,
                         std::make_unique<VectorArgument<std::string>>(
                             "Audio codecs to use per stream mapping", "-aco",
                             "--audiocodec", std::vector<std::string>()));
-  argumentRegistry->add(Command::AUDIOSTREAMS,
+  argumentRegistry->add(Command_N::AUDIOSTREAMS,
                         std::make_unique<VectorArgument<int>>(
                             "Index of audio streams to include", "-as",
                             "--audiostreams", std::vector<int>()));
-  argumentRegistry->add(Command::BITRATE, std::make_unique<FlagArgument>(
-                                              "Use bitrate instead of CRF",
-                                              "-b", "--bitrate", false));
+  argumentRegistry->add(Command_N::BITRATE, std::make_unique<FlagArgument>(
+                                                "Use bitrate instead of CRF",
+                                                "-b", "--bitrate", false));
   argumentRegistry->add(
-      Command::CROP,
+      Command_N::CROP,
       std::make_unique<FlagArgument>("Crop the video to the specified ratio",
                                      "-c", "--crop", false));
-  argumentRegistry->add(Command::CONSTRAIN,
+  argumentRegistry->add(Command_N::CONSTRAIN,
                         std::make_unique<FlagArgument>(
                             "Constrain the bitrate to the specified value",
                             "-co", "--constrain", false));
   argumentRegistry->add(
-      Command::CONTAINER,
-      std::make_unique<EnumArgument<Container>>("Container to use", "-con",
-                                                "--container", Container::MKV));
-  argumentRegistry->add(Command::CRF, std::make_unique<IntegerArgument>(
-                                          "Constant Rate Factor (CRF) value",
-                                          "-crf", "--crf", -1));
+      Command_N::CONTAINER,
+      std::make_unique<EnumArgument<Container_N::Container>>(
+          "Container to use", "-con", "--container", Container_N::MKV));
+  argumentRegistry->add(Command_N::CRF, std::make_unique<IntegerArgument>(
+                                            "Constant Rate Factor (CRF) value",
+                                            "-crf", "--crf", -1));
   argumentRegistry->add(
-      Command::ENCODER,
-      std::make_unique<EnumArgument<Encoders>>("Encoder to use", "-e",
-                                               "--encoder", Encoders::HEVC));
-  argumentRegistry->add(Command::HARDWAREACCEL,
-                        std::make_unique<EnumArgument<HWAccelerators>>(
-                            "Hardware accelerator to use", "-hwa", "--hwaccel",
-                            HWAccelerators::INVALID));
+      Command_N::ENCODER,
+      std::make_unique<EnumArgument<Encoders_N::Encoders>>(
+          "Encoder to use", "-e", "--encoder", Encoders_N::HEVC));
   argumentRegistry->add(
-      Command::HARDWAREDECODE,
+      Command_N::HARDWAREACCEL,
+      std::make_unique<EnumArgument<HWAccelerators_N::HWAccelerators>>(
+          "Hardware accelerator to use", "-hwa", "--hwaccel",
+          HWAccelerators_N::INVALID));
+  argumentRegistry->add(
+      Command_N::HARDWAREDECODE,
       std::make_unique<FlagArgument>("Use hardware decoding if available",
                                      "-hwd", "--hardwaredecode", true));
   argumentRegistry->add(
-      Command::HARDWAREENCODE,
+      Command_N::HARDWAREENCODE,
       std::make_unique<FlagArgument>("Use hardware encoding if available",
                                      "-hwe", "--hardwareencode", false));
   argumentRegistry->add(
-      Command::INFO,
+      Command_N::INFO,
       std::make_unique<FlagArgument>("Print information about the input file",
                                      "-i", "--info", false));
-  argumentRegistry->add(Command::OVERWRITE, std::make_unique<FlagArgument>(
-                                                "Overwrite existing files",
-                                                "-o", "--overwrite", false));
+  argumentRegistry->add(Command_N::OVERWRITE, std::make_unique<FlagArgument>(
+                                                  "Overwrite existing files",
+                                                  "-o", "--overwrite", false));
   argumentRegistry->add(
-      Command::QUALITY,
+      Command_N::QUALITY,
       std::make_unique<Quality>("Quality value", "-q", "--quality",
                                 MediaDefinedFormat::formats.at("720p")));
-  argumentRegistry->add(Command::START,
+  argumentRegistry->add(Command_N::START,
                         std::make_unique<TimeStringArgument>(
                             "Start time for processing", "-ss", "--start", ""));
-  argumentRegistry->add(Command::TRIM,
+  argumentRegistry->add(Command_N::TRIM,
                         std::make_unique<TimeStringVectorArgument>(
                             "Trim the video to the specified duration", "-tr",
                             "--trim", std::vector<std::string>()));
-  argumentRegistry->add(Command::TUNE,
-                        std::make_unique<EnumArgument<Tunes>>(
-                            "Tune to use", "-t", "--tune", Tunes::DEFAULT));
+  argumentRegistry->add(Command_N::TUNE,
+                        std::make_unique<EnumArgument<Tunes_N::Tunes>>(
+                            "Tune to use", "-t", "--tune", Tunes_N::DEFAULT));
 }
 
 void ChildOptions::parse(std::vector<std::string> &args) {
@@ -113,17 +116,16 @@ void ChildOptions::parse(std::vector<std::string> &args) {
 
 void ChildOptions::validate(void) {
 
-  GenericArgument *encoderArg = this->argumentRegistry->get(Command::ENCODER);
-  GenericArgument *tunesArg = this->argumentRegistry->get(Command::TUNE);
+  GenericArgument *encoderArg = this->argumentRegistry->get(Command_N::ENCODER);
+  GenericArgument *tunesArg = this->argumentRegistry->get(Command_N::TUNE);
 
-  EnumArgument<Encoders> *enumArgEncoder =
-      dynamic_cast<EnumArgument<Encoders> *>(encoderArg);
+  EnumArgument<Encoders_N::Encoders> *enumArgEncoder =
+      dynamic_cast<EnumArgument<Encoders_N::Encoders> *>(encoderArg);
 
-  EnumArgument<Tunes> *enumArgTunes =
-      dynamic_cast<EnumArgument<Tunes> *>(tunesArg);
-
-  if (enumArgEncoder && enumArgEncoder->get() == Encoders::INVALID) {
-    this->runningEncoder = Encoders::HEVC;
+  EnumArgument<Tunes_N::Tunes> *enumArgTunes =
+      dynamic_cast<EnumArgument<Tunes_N::Tunes> *>(tunesArg);
+  if (enumArgEncoder && enumArgEncoder->get() == Encoders_N::INVALID) {
+    this->runningEncoder = Encoders_N::HEVC;
   } else {
     this->runningEncoder = enumArgEncoder->get();
   }
@@ -134,29 +136,29 @@ void ChildOptions::validate(void) {
   }
 
   switch (enumArgEncoder->get()) {
-  case Encoders::AV1:
-  case Encoders::AV1_AMF:
-  case Encoders::AV1_NVENC:
-  case Encoders::AV1_QSV:
-    enumArgTunes->set(Tunes::DEFAULT);
+  case Encoders_N::AV1:
+  case Encoders_N::AV1_AMF:
+  case Encoders_N::AV1_NVENC:
+  case Encoders_N::AV1_QSV:
+    enumArgTunes->set(Tunes_N::DEFAULT);
     break;
   default:
     break;
   }
 
   LOG_DEBUG("Running Encoder:",
-            EnumToStringFactory::get(this->runningEncoder).getName());
+            DefinitionRegistry::defFromEnum(enumArgEncoder->get()));
 
   // hevc does not support film tune
   // i'm sure av1 does not as well
-  if (enumArgTunes->get() == Tunes::FILM) {
+  if (enumArgTunes->get() == Tunes_N::FILM) {
     switch (enumArgEncoder->get()) {
-    case Encoders::HEVC:
-    case Encoders::HEVC_AMF:
-    case Encoders::HEVC_NVENC:
-    case Encoders::HEVC_QSV:
+    case Encoders_N::HEVC:
+    case Encoders_N::HEVC_AMF:
+    case Encoders_N::HEVC_NVENC:
+    case Encoders_N::HEVC_QSV:
       LOG_DEBUG("HEVC does not support film tune.");
-      enumArgTunes->set(Tunes::DEFAULT);
+      enumArgTunes->set(Tunes_N::DEFAULT);
       break;
     default:
       break;
@@ -164,7 +166,7 @@ void ChildOptions::validate(void) {
   }
 
   LOG_DEBUG("Running Tune:",
-            EnumToStringFactory::get(enumArgTunes->get()).getName());
+            DefinitionRegistry::defFromEnum(enumArgTunes->get()));
 }
 
 void ChildOptions::fromJSON(const nlohmann::json json) { (void)json; };
@@ -175,9 +177,9 @@ nlohmann::json ChildOptions::toJSON() {
   ChildOptions["arguments"] = this->argumentRegistry->toJSON();
 
   ChildOptions["runningEncoder"] =
-      EnumToStringFactory::get(this->runningEncoder).getName();
+      DefinitionRegistry::defFromEnum(this->runningEncoder);
   ChildOptions["runningHWAccel"] =
-      EnumToStringFactory::get(this->runningHWAccel).getName();
+      DefinitionRegistry::defFromEnum(this->runningHWAccel);
 
   return ChildOptions;
 }

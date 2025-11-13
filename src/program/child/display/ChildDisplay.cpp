@@ -17,15 +17,19 @@
 #include "../../settings/arguments/FlagArgument.h"
 #include "../../settings/arguments/IntegerArgument.h"
 #include "../../settings/arguments/video/Quality.h"
-#include "../../settings/enums/Encoders.h"
-#include "../../settings/enums/EnumToStringFactory.h"
-#include "../../settings/enums/LoggingOptions.h"
+#include "../../settings/enums/Encoders_N.h"
+#include "../../settings/enums/LogFormat_N.h"
 #include "../../ticker/NTicker.h"
 #include "../Child.h"
 #include "../ffmpeg/probe/ProbeResultStreamAudio.h"
 #include "../ffmpeg/probe/ProbeResultStreamSubtitle.h"
 #include "../ffmpeg/probe/ProbeResultStreamVideo.h"
 #include "../media/Media.h"
+#include "src/program/definitions/DefinitionRegistry.h"
+#include "src/program/settings/enums/Command_N.h"
+#include "src/program/settings/enums/Container_N.h"
+#include "src/program/settings/enums/Encoders_N.h"
+#include "src/program/settings/enums/Tunes_N.h"
 
 // TODO: appending to string rebuilds each time
 //  CONT: we should do a sstream
@@ -54,33 +58,34 @@ void ChildDisplay::print() {
 
   std::string encoder = StringUtils::bracket(
       "TARGET ENC",
-      EnumToStringFactory::get(
-          argumentRegistry.get_t<BaseArgument<Encoders>>(Command::ENCODER)
+      DefinitionRegistry::defFromEnum(
+          argumentRegistry
+              .get_t<BaseArgument<Encoders_N::Encoders>>(Command_N::ENCODER)
               ->get()));
 
   std::string runningEncoder = StringUtils::bracket(
-      "ENC", EnumToStringFactory::get(childOptions.runningEncoder));
+      "ENC", DefinitionRegistry::defFromEnum(childOptions.runningEncoder));
 
   std::string runningDecoder = StringUtils::bracket(
-      "ACC", EnumToStringFactory::get(childOptions.runningHWAccel));
+      "ACC", DefinitionRegistry::defFromEnum(childOptions.runningHWAccel));
 
   std::string resolution = StringUtils::bracket(
-      "RES", argumentRegistry.get_t<Quality>(Command::QUALITY)->get().name);
+      "RES", argumentRegistry.get_t<Quality>(Command_N::QUALITY)->get().name);
 
   std::string tune = StringUtils::bracket(
       "TUNE",
-      EnumToStringFactory::get(
-          argumentRegistry.get_t<BaseArgument<Tunes>>(Command::TUNE)->get()));
+      Tunes_N::definition(argumentRegistry.get_t<EnumArgument<Tunes_N::Tunes>>(
+          Command_N::TUNE)));
 
   std::string amount = StringUtils::bracket(
       "AMOUNT",
-      argumentRegistry.get_t<IntegerArgument>(Command::AMOUNT)->toString());
+      argumentRegistry.get_t<IntegerArgument>(Command_N::AMOUNT)->toString());
 
   std::string container = StringUtils::bracket(
       "CONTAINER",
-      EnumToStringFactory::get<Container>(
-          argumentRegistry.get_t<EnumArgument<Container>>(Command::CONTAINER)
-              ->get()));
+      Container_N::definition(
+          argumentRegistry.get_t<EnumArgument<Container_N::Container>>(
+              Command_N::CONTAINER)));
 
   // std::string a = ArgumentRegistry::get_t<IntegerArgument>("-a");
 
@@ -95,17 +100,18 @@ void ChildDisplay::print() {
                        runningDecoder + " " + resolution + " " + tune + " " +
                        amount + " " + container;
 
-  if (argumentRegistry.get_t<FlagArgument>(Command::CONSTRAIN)->get()) {
+  if (argumentRegistry.get_t<FlagArgument>(Command_N::CONSTRAIN)->get()) {
     header += " " + constrain;
   }
 
   if (Program::settings->programOptions->argumentRegistry
-          ->get_t<EnumArgument<LoggingOptions>>(Command::LOGGINGOPTIONS)
-          ->get() == LoggingOptions::DEBUG) {
+          ->get_t<EnumArgument<LogFormat_N::LogFormat>>(
+              Command_N::LOGGINGOPTIONS)
+          ->get() == LogFormat_N::DEBUG) {
     header += " " + debug;
   }
 
-  if (argumentRegistry.get_t<FlagArgument>(Command::CROP)->get()) {
+  if (argumentRegistry.get_t<FlagArgument>(Command_N::CROP)->get()) {
     header += " " + crop;
   }
 
@@ -136,7 +142,7 @@ void ChildDisplay::print() {
         "FILE", StringUtils::truncateString(media->file->conversionName, 25));
 
     std::string activity = StringUtils::bracket(
-        "ACT", EnumToStringFactory::get(media->getActivity()));
+        "ACT", DefinitionRegistry::defFromEnum(media->getActivity()));
 
     std::string progress = StringUtils::bracket(
         "PROG", std::to_string(media->percentCompleted()) + "%");
@@ -154,7 +160,8 @@ void ChildDisplay::print() {
     sendStr += fileName + " " + activity + " " + started + " " + progress +
                " " + cq + " " + bitrate + " " + speed + " " + eta + "\n";
     // Program::log->sendBuffer(
-    //     bufferLen, fileName + " " + activity + " " + started + " " + percent
+    //     bufferLen, fileName + " " + activity + " " + started + " " +
+    //     percent
     //     + " " + cq + " " + bitrate + " " + speed + " " + eta);
 
     t_queue.push(media);
@@ -171,7 +178,7 @@ void ChildDisplay::print() {
         "FILE", StringUtils::truncateString(media->file->conversionName, 25));
 
     std::string activity = StringUtils::bracket(
-        "ACT", EnumToStringFactory::get(media->getActivity()));
+        "ACT", DefinitionRegistry::defFromEnum(media->getActivity()));
 
     if (media->hasFinished()) {
 
@@ -187,9 +194,10 @@ void ChildDisplay::print() {
 
       sendStr += fileName + " " + activity + " " + reduced + " " + ended + " " +
                  elapsed + "\n";
-      // Program::log->sendBuffer(bufferLen, fileName + " " + activity + " " +
-      //                                         reduced + " " + ended + " " +
-      //                                         elapsed);
+      // Program::log->sendBuffer(bufferLen, fileName + " " + activity + " "
+      // +
+      //                                         reduced + " " + ended + " "
+      //                                         + elapsed);
     } else {
       sendStr += fileName + " " + activity + "\n";
       // Program::log->sendBuffer(bufferLen, fileName + " " + activity);

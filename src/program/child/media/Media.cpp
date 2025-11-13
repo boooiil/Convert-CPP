@@ -13,7 +13,7 @@
 
 #include "../../../utils/ListUtils.h"
 #include "../../../utils/logging/Logger.h"
-#include "../../settings/enums/Activity.h"
+#include "../../settings/enums/Activity_N.h"
 #include "../ffmpeg/FFmpegArgumentBuilder.h"
 #include "MediaFile.h"
 #include "MediaProcessConversion.h"
@@ -22,12 +22,12 @@
 #include "MediaVideoProperties.h"
 #include "MediaWorkingProperties.h"
 #include "src/program/Program.h"
-#include "src/program/settings/enums/EnumToStringFactory.h"
+#include "src/program/definitions/DefinitionRegistry.h"
 
 Media::Media()
     : started(0), ended(0), probeResult(nullptr), file(new MediaFile()),
       video(new MediaVideoProperties()), working(new MediaWorkingProperties()),
-      ffmpegArguments(nullptr), activity(Activity::WAITING) {
+      ffmpegArguments(nullptr), activity(Activity_N::WAITING) {
   std::random_device rd;  // Seed for random number generator
   std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
   uuids::uuid_random_generator generator(
@@ -39,7 +39,7 @@ Media::Media(uuids::uuid id, std::string name, std::string path)
     : id(id), started(0), ended(0), probeResult(nullptr),
       file(new MediaFile(id, name, path)), video(new MediaVideoProperties()),
       working(new MediaWorkingProperties()), ffmpegArguments(nullptr),
-      activity(Activity::WAITING) {}
+      activity(Activity_N::WAITING) {}
 
 Media::~Media() {
   LOG_DEBUG("Deconstructing media: ", this->id);
@@ -59,70 +59,44 @@ Media::~Media() {
     delete ffmpegArguments;
 }
 
-Activity Media::getActivity() { return Media::activity; }
+Activity_N::Activity Media::getActivity() { return this->activity; }
 
 const bool Media::isProcessing() {
-  return Media::activity == Activity::STATISTICS ||
-         Media::activity == Activity::CONVERT ||
-         Media::activity == Activity::VALIDATE;
+  return Activity_N::isProcessing(this->activity);
 }
 
-const bool Media::hasFailed() {
-  switch (Media::activity) {
-  case Activity::FAILED:
-  case Activity::FAILED_CODEC:
-  case Activity::FAILED_CONTAINER:
-  case Activity::FAILED_CORRUPT:
-  case Activity::FAILED_FILE:
-  case Activity::FAILED_FILE_MISSING:
-  case Activity::FAILED_FILE_NOT_RECOGNIZED:
-  case Activity::FAILED_FILE_PERMISSIONS:
-  case Activity::FAILED_HARDWARE:
-  case Activity::FAILED_INVALID_AUDIO_CHANNELS:
-  case Activity::FAILED_INVALID_AUDIO_STREAMS:
-  case Activity::FAILED_INVALID_DURATION_SS:
-  case Activity::FAILED_INVALID_DURATION_TO:
-  case Activity::FAILED_INVALID_ENCODER:
-  case Activity::FAILED_JSON_PARSE:
-  case Activity::FAILED_SYSTEM:
-    return true;
-    break;
-  default:
-    return false;
-    break;
-  }
-}
+const bool Media::hasFailed() { return Activity_N::isFailed(this->activity); }
 
 const bool Media::hasFinished() {
-  return Media::activity == Activity::FINISHED;
+  return this->activity == Activity_N::FINISHED;
 }
 
-const bool Media::isWaiting() { return Media::activity == Activity::WAITING; }
+const bool Media::isWaiting() { return this->activity == Activity_N::WAITING; }
 
 const bool Media::isWaitingToStatistics() {
-  return Media::activity == Activity::WAITING_STATISTICS;
+  return this->activity == Activity_N::WAITING_STATISTICS;
 }
 
 const bool Media::isWaitingToConvert() {
-  return Media::activity == Activity::WAITING_CONVERT;
+  return this->activity == Activity_N::WAITING_CONVERT;
 }
 
 const bool Media::isWaitingToValidate() {
-  return Media::activity == Activity::WAITING_VALIDATE;
+  return this->activity == Activity_N::WAITING_VALIDATE;
 }
 
-void Media::setActivity(Activity provided_activity) {
-  Media::activity = provided_activity;
+void Media::setActivity(Activity_N::Activity provided_activity) {
+  this->activity = provided_activity;
 }
 
 void Media::doStatistics() {
   if (Program::stopFlag == true) {
     LOG_DEBUG("Stopping statistics due to stop flag.");
-    this->setActivity(Activity::FINISHED);
+    this->setActivity(Activity_N::FINISHED);
     return;
   }
 
-  this->setActivity(Activity::STATISTICS);
+  this->setActivity(Activity_N::STATISTICS);
 
   LOG_DEBUG("Starting statistics for: ", this->file->originalFileNameExt);
 
@@ -135,23 +109,23 @@ void Media::doStatistics() {
     return;
   }
 
-  this->setActivity(Activity::WAITING_CONVERT);
+  this->setActivity(Activity_N::WAITING_CONVERT);
 }
 void Media::doConversion() {
   if (Program::stopFlag == true) {
     LOG_DEBUG("Stopping conversion due to stop flag.");
-    this->setActivity(Activity::FAILED_SYSTEM);
+    this->setActivity(Activity_N::FAILED_SYSTEM);
     return;
   }
 
-  this->setActivity(Activity::CONVERT);
+  this->setActivity(Activity_N::CONVERT);
 
   LOG_DEBUG("Starting conversion for: ", this->file->originalFileNameExt);
 
   MediaProcessConversion conversion(this);
 
   conversion.start("ffmpeg " +
-                   ListUtils::join(Media::ffmpegArguments->build(), " "));
+                   ListUtils::join(this->ffmpegArguments->build(), " "));
 
   if (this->hasFailed()) {
     return;
@@ -160,24 +134,24 @@ void Media::doConversion() {
   if (!std::filesystem::exists(this->file->conversionFilePath)) {
     LOG_DEBUG("Converted file does not exist: ",
               this->file->conversionFilePath);
-    this->setActivity(Activity::FAILED_FILE_MISSING);
+    this->setActivity(Activity_N::FAILED_FILE_MISSING);
     return;
   } else {
     this->file->newSize =
         std::filesystem::file_size(this->file->conversionFilePath);
   }
 
-  this->setActivity(Activity::WAITING_VALIDATE);
+  this->setActivity(Activity_N::WAITING_VALIDATE);
 }
 void Media::doValidation() {
 
   if (Program::stopFlag == true) {
     LOG_DEBUG("Stopping validation due to stop flag.");
-    this->setActivity(Activity::FAILED_SYSTEM);
+    this->setActivity(Activity_N::FAILED_SYSTEM);
     return;
   }
 
-  this->setActivity(Activity::VALIDATE);
+  this->setActivity(Activity_N::VALIDATE);
 
   LOG_DEBUG("Starting validation for: ", this->file->originalFileNameExt);
 
@@ -189,7 +163,7 @@ void Media::doValidation() {
     return;
   }
 
-  this->setActivity(Activity::FINISHED);
+  this->setActivity(Activity_N::FINISHED);
 }
 
 void Media::buildFFmpegArguments(bool isValidate) {
@@ -248,7 +222,8 @@ void Media::fromJSON(nlohmann::json json) {
 
   std::string j_activity = json["activity"];
 
-  this->activity = EnumToStringFactory::fromName<Activity>(j_activity);
+  this->activity =
+      DefinitionRegistry::enumFromDefName<Activity_N::Activity>(j_activity);
   this->ended = json["ended"];
   this->started = json["started"];
   // this->ffmpegArguments = json["ffmpegArguments"];
