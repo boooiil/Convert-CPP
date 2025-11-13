@@ -39,7 +39,7 @@ def generate(source: str, destination: str):
         aliases = ", ".join([f'"{alias}"' for alias in value['aliases']])
         supportedPresets = ", ".join([f'"{preset}"' for preset in value['supportedPresets']])
         supportedLevels = ", ".join([f'"{level}"' for level in value['supportedLevels']])
-        supportedTunes = ", ".join([f'Tunes::{tune}' for tune in value['supportedTunes']])
+        supportedTunes = ", ".join([f'Tunes_N::{tune}' for tune in value['supportedTunes']])
 
         body: str = f"""#ifndef VIDEO_CODEC_{class_name}_GENERATED_H
 #define VIDEO_CODEC_{class_name}_GENERATED_H
@@ -53,7 +53,7 @@ class VideoCodec_{class_name}_Generated : public BaseVideoCodec {{
  public:
     VideoCodec_{class_name}_Generated(std::string runningPreset = "{defaults['runningPreset']}",
                      std::string runningLevel = "{defaults['runningLevel']}",
-                     Tunes runningTune = Tunes::{defaults['runningTune']}):
+                     Tunes_N::Tunes runningTune = Tunes_N::{defaults['runningTune']}):
                      BaseVideoCodec(runningPreset, runningLevel, runningTune) {{}};
     
     auto getName() -> std::string override {{ return "{value['name']}"; }};
@@ -63,11 +63,11 @@ class VideoCodec_{class_name}_Generated : public BaseVideoCodec {{
     auto controlRateFlag() -> std::string override {{ return "{value['controlRateFlag']}"; }};
     auto supportedPresets() -> std::vector<std::string> override {{ return {{{supportedPresets}}}; }};
     auto supportedLevels() -> std::vector<std::string> override {{ return {{{supportedLevels}}}; }};
-    auto supportedTunes() -> std::vector<Tunes> override {{ return {{{supportedTunes}}}; }};
+    auto supportedTunes() -> std::vector<Tunes_N::Tunes> override {{ return {{{supportedTunes}}}; }};
     
     auto fallbackPreset() -> std::string override {{ return "{defaults['runningPreset']}"; }};
     auto fallbackLevel() -> std::string override {{ return "{defaults['runningLevel']}"; }};
-    auto fallbackTune() -> Tunes override {{ return Tunes::{defaults['runningTune']}; }};
+    auto fallbackTune() -> Tunes_N::Tunes override {{ return Tunes_N::{defaults['runningTune']}; }};
 }};
 
 #endif // VIDEO_CODEC_{class_name}_GENERATED_H
