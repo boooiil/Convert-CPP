@@ -76,6 +76,7 @@ else
 endif
 
 generate:
+	python scripts/populate_definitions.py ./
 	python scripts/populate_ffmpeg_types.py ./
 	node scripts/compile_meson.js
 	@$(MAKE) -s validate_meson_builddir
