@@ -12,7 +12,7 @@ print("args:", sys.argv)
 
 root: str = sys.argv[1]
 ffmpeg_path = os.path.join(root, "src", "program", "child", "ffmpeg")
-data_path = os.path.join(root, "scripts", "data")
+data_path = os.path.join(root, "scripts", "data", "ffmpeg_codecs")
 
 # Generate Audio Codecs
 audioCodecs = audio_codec.generate(
