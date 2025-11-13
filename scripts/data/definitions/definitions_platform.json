@@ -10,15 +10,6 @@
         "short_description": "Invalid platform.",
         "long_description": "The specified platform is invalid or not recognized by the system."
     },
-    "platform_linux": {
-        "name": "linux",
-        "aliases": [
-            "platform_linux",
-            "linux_platform"
-        ],
-        "short_description": "Linux platform.",
-        "long_description": "Represents the Linux operating system platform."
-    },
     "platform_windows": {
         "name": "windows",
         "aliases": [
@@ -28,14 +19,14 @@
         "short_description": "Windows platform.",
         "long_description": "Represents the Microsoft Windows operating system platform."
     },
-    "platform_macos": {
-        "name": "macos",
+    "platform_linux": {
+        "name": "linux",
         "aliases": [
-            "platform_macos",
-            "macos_platform"
+            "platform_linux",
+            "linux_platform"
         ],
-        "short_description": "MacOS platform.",
-        "long_description": "Represents the Apple MacOS operating system platform."
+        "short_description": "Linux platform.",
+        "long_description": "Represents the Linux operating system platform."
     },
     "platform_linux_like": {
         "name": "linux_like",
@@ -45,5 +36,14 @@
         ],
         "short_description": "Linux Like platform.",
         "long_description": "Represents platforms similar to Linux, including Unix-like systems."
+    },
+    "platform_macos": {
+        "name": "macos",
+        "aliases": [
+            "platform_macos",
+            "macos_platform"
+        ],
+        "short_description": "MacOS platform.",
+        "long_description": "Represents the Apple MacOS operating system platform."
     }
 }

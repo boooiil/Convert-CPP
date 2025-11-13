@@ -10,24 +10,6 @@
         "short_description": "Invalid container.",
         "long_description": "The specified container format is invalid or not recognized by the system."
     },
-    "container_mkv": {
-        "name": "mkv",
-        "aliases": [
-            "container_mkv",
-            "mkv_container"
-        ],
-        "short_description": "MKV container.",
-        "long_description": "Uses the Matroska (MKV) container format, supporting multiple audio, video, and subtitle streams."
-    },
-    "container_mp4": {
-        "name": "mp4",
-        "aliases": [
-            "container_mp4",
-            "mp4_container"
-        ],
-        "short_description": "MP4 container.",
-        "long_description": "Uses the MPEG-4 Part 14 (MP4) container format, commonly used for video and audio streaming."
-    },
     "container_avi": {
         "name": "avi",
         "aliases": [
@@ -36,6 +18,15 @@
         ],
         "short_description": "AVI container.",
         "long_description": "Uses the Audio Video Interleave (AVI) container format, supporting audio and video streams but with limited modern codec support."
+    },
+    "container_mkv": {
+        "name": "mkv",
+        "aliases": [
+            "container_mkv",
+            "mkv_container"
+        ],
+        "short_description": "MKV container.",
+        "long_description": "Uses the Matroska (MKV) container format, supporting multiple audio, video, and subtitle streams."
     },
     "container_mov": {
         "name": "mov",
@@ -54,5 +45,14 @@
         ],
         "short_description": "MP3 container.",
         "long_description": "Uses the MPEG Audio Layer III (MP3) container format, primarily for audio-only files."
+    },
+    "container_mp4": {
+        "name": "mp4",
+        "aliases": [
+            "container_mp4",
+            "mp4_container"
+        ],
+        "short_description": "MP4 container.",
+        "long_description": "Uses the MPEG-4 Part 14 (MP4) container format, commonly used for video and audio streaming."
     }
 }

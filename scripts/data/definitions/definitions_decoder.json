@@ -10,6 +10,32 @@
         "short_description": "Invalid decoder.",
         "long_description": "The specified decoder is invalid or not recognized by the system."
     },
+    "decoder_none": {
+        "name": "decoder_none",
+        "aliases": [
+            "none_decoder"
+        ],
+        "short_description": "No decoder.",
+        "long_description": "Indicates that no decoder is selected or used."
+    },
+    "decoder_av1_cuvid": {
+        "name": "av1_cuvid",
+        "aliases": [
+            "decoder_av1_cuvid",
+            "av1_cuvid_decoder"
+        ],
+        "short_description": "AV1 CUVID decoder.",
+        "long_description": "Decodes AV1 media using NVIDIA's CUVID (CUDA Video Decoder) hardware acceleration."
+    },
+    "decoder_av1_qsv": {
+        "name": "av1_qsv",
+        "aliases": [
+            "decoder_av1_qsv",
+            "av1_qsv_decoder"
+        ],
+        "short_description": "AV1 QSV decoder.",
+        "long_description": "Decodes AV1 media using Intel's Quick Sync Video (QSV) hardware acceleration."
+    },
     "decoder_h264_cuvid": {
         "name": "h264_cuvid",
         "aliases": [
@@ -45,23 +71,5 @@
         ],
         "short_description": "HEVC QSV decoder.",
         "long_description": "Decodes HEVC (H.265) media using Intel's Quick Sync Video (QSV) hardware acceleration."
-    },
-    "decoder_av1_cuvid": {
-        "name": "av1_cuvid",
-        "aliases": [
-            "decoder_av1_cuvid",
-            "av1_cuvid_decoder"
-        ],
-        "short_description": "AV1 CUVID decoder.",
-        "long_description": "Decodes AV1 media using NVIDIA's CUVID (CUDA Video Decoder) hardware acceleration."
-    },
-    "decoder_av1_qsv": {
-        "name": "av1_qsv",
-        "aliases": [
-            "decoder_av1_qsv",
-            "av1_qsv_decoder"
-        ],
-        "short_description": "AV1 QSV decoder.",
-        "long_description": "Decodes AV1 media using Intel's Quick Sync Video (QSV) hardware acceleration."
     }
 }

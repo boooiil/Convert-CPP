@@ -19,6 +19,26 @@
         "short_description": "AAC audio codec.",
         "long_description": "Encodes or decodes audio using the Advanced Audio Codec (AAC) format, widely used for high-quality audio compression."
     },
+    "audio_ac3": {
+        "name": "ac3",
+        "aliases": [
+            "audio_ac3",
+            "ac3_audio",
+            "dolby_digital"
+        ],
+        "short_description": "Dolby Digital audio codec.",
+        "long_description": "Encodes or decodes audio using the Dolby Digital format, commonly used for surround sound audio in DVDs and Blu-ray discs."
+    },
+    "audio_eac3": {
+        "name": "eac3",
+        "aliases": [
+            "audio_eac3",
+            "eac3_audio",
+            "dolby_digital_plus"
+        ],
+        "short_description": "Dolby Digital Plus audio codec.",
+        "long_description": "Encodes or decodes audio using the Dolby Digital Plus format, an enhanced version of Dolby Digital for improved audio quality and efficiency."
+    },
     "audio_mp3": {
         "name": "mp3",
         "aliases": [
@@ -27,15 +47,6 @@
         ],
         "short_description": "MP3 audio codec.",
         "long_description": "Encodes or decodes audio using the MP3 format, a common lossy audio compression standard."
-    },
-    "audio_opus": {
-        "name": "opus",
-        "aliases": [
-            "audio_opus",
-            "opus_audio"
-        ],
-        "short_description": "Opus audio codec.",
-        "long_description": "Encodes or decodes audio using the Opus format, optimized for interactive speech and music transmission over the internet."
     },
     "audio_flac": {
         "name": "flac",
@@ -46,6 +57,16 @@
         "short_description": "FLAC audio codec.",
         "long_description": "Encodes or decodes audio using the Free Lossless Audio Codec (FLAC), preserving the original audio quality without loss."
     },
+    "audio_truehd": {
+        "name": "truehd",
+        "aliases": [
+            "audio_truehd",
+            "truehd_audio",
+            "dolby_truehd"
+        ],
+        "short_description": "Dolby TrueHD audio codec.",
+        "long_description": "Encodes or decodes audio using the Dolby TrueHD format, a lossless multi-channel audio codec used in high-definition home entertainment."
+    },
     "audio_vorbis": {
         "name": "vorbis",
         "aliases": [
@@ -55,13 +76,13 @@
         "short_description": "Vorbis audio codec.",
         "long_description": "Encodes or decodes audio using the Vorbis format, an open-source lossy audio compression format."
     },
-    "audio_pcm": {
-        "name": "pcm",
+    "audio_opus": {
+        "name": "opus",
         "aliases": [
-            "audio_pcm",
-            "pcm_audio"
+            "audio_opus",
+            "opus_audio"
         ],
-        "short_description": "PCM audio codec.",
-        "long_description": "Represents uncompressed Pulse Code Modulation (PCM) audio data for high-quality sound without compression."
+        "short_description": "Opus audio codec.",
+        "long_description": "Encodes or decodes audio using the Opus format, optimized for interactive speech and music transmission over the internet."
     }
 }

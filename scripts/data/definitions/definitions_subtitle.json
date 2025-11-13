@@ -10,14 +10,14 @@
         "short_description": "Invalid subtitle codec.",
         "long_description": "The specified subtitle codec is invalid or not recognized by the system."
     },
-    "subtitle_srt": {
-        "name": "srt",
+    "subtitle_none": {
+        "name": "subtitle_none",
         "aliases": [
-            "subtitle_srt",
-            "srt_subtitle"
+            "subtitle_none",
+            "none_subtitle"
         ],
-        "short_description": "SRT subtitle codec.",
-        "long_description": "Uses the SubRip Subtitle (SRT) format for subtitle encoding and decoding."
+        "short_description": "No subtitle codec.",
+        "long_description": "Indicates that no subtitle codec is selected or used."
     },
     "subtitle_ass": {
         "name": "ass",
@@ -27,6 +27,15 @@
         ],
         "short_description": "ASS subtitle codec.",
         "long_description": "Uses the Advanced Substation Alpha (ASS) format for rich-text subtitles with styling and positioning."
+    },
+    "subtitle_srt": {
+        "name": "srt",
+        "aliases": [
+            "subtitle_srt",
+            "srt_subtitle"
+        ],
+        "short_description": "SRT subtitle codec.",
+        "long_description": "Uses the SubRip Subtitle (SRT) format for subtitle encoding and decoding."
     },
     "subtitle_ssa": {
         "name": "ssa",

@@ -10,6 +10,15 @@
         "short_description": "Invalid hardware accelerator.",
         "long_description": "The specified hardware accelerator is invalid or not recognized by the system."
     },
+    "hwaccel_none": {
+        "name": "none",
+        "aliases": [
+            "hwaccel_none",
+            "none_hwaccel"
+        ],
+        "short_description": "No hardware accelerator.",
+        "long_description": "Disables hardware acceleration, using software encoding and decoding."
+    },
     "hwaccel_amd": {
         "name": "amf",
         "aliases": [
