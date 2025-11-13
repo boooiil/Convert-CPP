@@ -14,6 +14,7 @@
 #include "../../settings/enums/Encoders_N.h"
 #include "Media.h"
 #include "MediaProcess.h"
+#include "src/utils/logging/Logger.h"
 
 MediaProcessConversion::MediaProcessConversion(Media *media)
     : MediaProcess(media) {}
@@ -35,20 +36,28 @@ void MediaProcessConversion::parse(std::string data) {
   // 4. Encode fails to find an nvidia device
   if (RegexUtils::isMatch(data, "openencodesessionex failed: out of memory",
                           std::regex::icase) ||
-      RegexUtils::isMatch(data, "no capable devices found",
+      RegexUtils::isMatch(data, "-capable device is detected",
                           std::regex::icase) ||
       RegexUtils::isMatch(data, "cannot load nvcuda.dll", std::regex::icase) ||
       RegexUtils::isMatch(data, "device type cuda needed for codec",
                           std::regex::icase)) {
     // if the user wants to use hardware encoding (nvenc, amf, qsv)
+    LOG_DEBUG(
+        "User selected hardware encoding but no compatible device was found.");
+    LOG_DEBUG("Wanted encoder:",
+              Encoders_N::definition(childOptions.runningEncoder));
 
-    FlagArgument &hweFlag = *childOptions.argumentRegistry->get_t<FlagArgument>(
-        Command_N::HARDWAREENCODE);
+    // this does not make sense to keep
+    // if the user specified a hw encoder then it should be assumed that
+    // they want hardware encoding.
+    // FlagArgument &hweFlag =
+    // *childOptions.argumentRegistry->get_t<FlagArgument>(
+    //     Command_N::HARDWAREENCODE);
 
-    if (hweFlag) {
-      this->object->setActivity(Activity_N::FAILED_HARDWARE);
-      return;
-    }
+    // if (hweFlag) {
+    //   this->object->setActivity(Activity_N::FAILED_HARDWARE);
+    //   return;
+    // }
 
     switch (childOptions.runningEncoder) {
     case Encoders_N::AV1_AMF:
