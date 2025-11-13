@@ -19,8 +19,7 @@
 #include "src/program/settings/enums/Container_N.h"
 
 ChildOptions::ChildOptions(void)
-    : runningEncoder(Encoders_N::INVALID),
-      runningHWAccel(HWAccelerators_N::INVALID),
+    : runningEncoder(Encoders_N::HEVC), runningHWAccel(HWAccelerators_N::NONE),
       argumentRegistry(new ArgumentRegistry()) {}
 
 ChildOptions::~ChildOptions(void) {
@@ -147,6 +146,9 @@ void ChildOptions::validate(void) {
   }
 
   LOG_DEBUG("Running Encoder:",
+            DefinitionRegistry::defFromEnum(enumArgEncoder->get()));
+
+  LOG_DEBUG("Running HWAccel:",
             DefinitionRegistry::defFromEnum(enumArgEncoder->get()));
 
   // hevc does not support film tune
