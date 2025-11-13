@@ -10,6 +10,7 @@ public:
   enum HWAccelerators {
     INVALID = 0,
 
+    NONE,
     AMD,
     NVIDIA,
     INTEL,
@@ -19,6 +20,8 @@ public:
   static const Definition &definition(HWAccelerators hwaccel) {
 
     switch (hwaccel) {
+    case NONE:
+      return DefinitionRegistry::get("hwaccel_none");
     case AMD:
       return DefinitionRegistry::get("hwaccel_amd");
     case NVIDIA:
