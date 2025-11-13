@@ -9,7 +9,8 @@
 # Directories
 !scripts/
 !scripts/*
-!scripts/data/*
+!scripts/data/**
+!scripts/definitions/**
 !scripts/ffmpeg_codecs/*
 !subprojects/
 !subprojects/*.wrap
@@ -17,6 +18,9 @@
 !src/**
 
 # Ignore all generated files
-**/meson.build
-**/ffmpeg/*/*_Generated.h
-**/ffmpeg/*/*Factory.cpp
+/**/scripts/**/__pycache__/**
+src/**/meson.build
+src/**/ffmpeg/*/*_Generated.h
+src/**/ffmpeg/*/*Factory.cpp
+src/**/definitions/*_Generated.h
+src/**/definitions/*Registry.cpp
