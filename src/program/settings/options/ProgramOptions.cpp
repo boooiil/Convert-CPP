@@ -225,7 +225,7 @@ void ProgramOptions::prepare(void) {
       Command_N::HARDWAREACCEL,
       std::make_unique<EnumArgument<HWAccelerators_N::HWAccelerators>>(
           "Hardware accelerator to use", "-hwa", "--hwaccel",
-          HWAccelerators_N::HWAccelerators::INVALID));
+          HWAccelerators_N::HWAccelerators::NONE));
   argumentRegistry->add(
       Command_N::HARDWAREDECODE,
       std::make_unique<FlagArgument>("Use hardware decoding if available",
