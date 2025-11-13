@@ -23,20 +23,17 @@
 #include <cstdio>
 #endif
 #include "../../../utils/logging/Logger.h"
-#include "../../settings/Settings.h"
 
- /**
-  * @brief Handle execution of commands on the system and track their status.
-  */
-template <typename T>
-class MediaProcess {
+/**
+ * @brief Handle execution of commands on the system and track their status.
+ */
+template <typename T> class MediaProcess {
 public:
   /**
    * @brief Construct a new Media Process object.
    */
-  MediaProcess(T* _object)
-    : object(_object), status(MediaProcess::Status::WAIT), stop_req(false) {
-  }
+  MediaProcess(T *_object)
+      : object(_object), status(MediaProcess::Status::WAIT), stop_req(false) {}
 
   ~MediaProcess() { LOG_DEBUG("DESTRUCTOR CALLED"); }
 
@@ -61,7 +58,7 @@ public:
 
     // Open pipe to file
     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.c_str(), "r"),
-      pclose);
+                                                  pclose);
     if (!pipe) {
       throw std::runtime_error("popen() failed!");
     }
@@ -79,7 +76,7 @@ public:
       if (ch == 10 || ch == 13) {
         // parse the data using overriden func
         parse(result);
-        result.clear();  // Clear the result for the next line
+        result.clear(); // Clear the result for the next line
       }
 
       if (stop_req) {
@@ -159,11 +156,11 @@ public:
   Status getStatus(void) const { return this->status; }
 
 protected:
-  T* object;
-  Status status;  /// @brief Status of the process.
+  T *object;
+  Status status; /// @brief Status of the process.
 
 private:
-  bool stop_req;  /// @brief Stop request.
+  bool stop_req; /// @brief Stop request.
 };
 
-#endif  // !MEDIA_PROCESS
+#endif // !MEDIA_PROCESS
