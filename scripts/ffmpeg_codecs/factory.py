@@ -6,7 +6,7 @@ def generate(
         data: list[str], 
         destination: str):
     """
-    Generates a factory header file in the destination directory.
+    Generates a factory implementation file in the destination directory.
 
     Args:
         header_prefix (str): The prefix for the header guard.
