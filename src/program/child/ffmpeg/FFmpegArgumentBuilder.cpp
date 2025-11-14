@@ -244,6 +244,8 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
 
   result.push_back("-i \"" + media->file->originalFullPath + "\"");
 
+  result.push_back("-metadata title=\"" + media->file->conversionName + "\"");
+
   result.push_back("-map 0:v:0");
 
   for (auto codec : container->getAudioCodecs()) {
