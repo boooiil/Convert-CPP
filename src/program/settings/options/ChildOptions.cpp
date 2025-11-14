@@ -145,11 +145,10 @@ void ChildOptions::validate(void) {
     break;
   }
 
-  LOG_DEBUG("Running Encoder:",
-            DefinitionRegistry::defFromEnum(enumArgEncoder->get()));
+  LOG_DEBUG("Running Encoder:", Encoders_N::definition(this->runningEncoder));
 
   LOG_DEBUG("Running HWAccel:",
-            DefinitionRegistry::defFromEnum(enumArgEncoder->get()));
+            HWAccelerators_N::definition(this->runningHWAccel));
 
   // hevc does not support film tune
   // i'm sure av1 does not as well
