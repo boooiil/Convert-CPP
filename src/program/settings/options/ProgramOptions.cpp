@@ -54,11 +54,12 @@ ProgramOptions::~ProgramOptions(void) {
 };
 
 void ProgramOptions::gatherSystemDetails(void) {
+  std::string result;
+
 #ifdef _WIN32
   this->platform = Platform_N::WINDOWS;
 
   std::array<char, 128> buffer;
-  std::string result;
 
   // Open pipe to file
   std::unique_ptr<FILE, decltype(&pclose)> pipe(
@@ -78,6 +79,29 @@ void ProgramOptions::gatherSystemDetails(void) {
 
   LOG_DEBUG("GPU Provider Raw:", result);
 
+#elif __linux__
+  platform = Platform_N::_LINUX;
+
+  std::array<char, 128> buffer;
+
+  // Open pipe to file
+  std::unique_ptr<FILE, decltype(&pclose)> pipe(popen("lspci | grep VGA", "r"),
+                                                pclose);
+  if (!pipe) {
+    throw std::runtime_error("popen() failed!");
+  }
+
+  // Read from pipe
+  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+    result += buffer.data();
+  }
+
+  LOG_DEBUG("GPU Provider Raw:", result);
+
+#else
+  throw std::runtime_error("Unsupported platform!");
+#endif
+
   // nvidia
   if (RegexUtils::isMatch(result, "nvidia", std::regex_constants::icase)) {
     this->GPU_Providers.push_back(GPUProviders_N::NVIDIA);
@@ -94,46 +118,6 @@ void ProgramOptions::gatherSystemDetails(void) {
   if (this->GPU_Providers.empty()) {
     this->GPU_Providers.push_back(GPUProviders_N::INVALID);
   }
-#elif __linux__
-  platform = Platform::_LINUX;
-
-  std::array<char, 128> buffer;
-  std::string result;
-
-  // Open pipe to file
-  std::unique_ptr<FILE, decltype(&pclose)> pipe(popen("lspci | grep VGA", "r"),
-                                                pclose);
-  if (!pipe) {
-    throw std::runtime_error("popen() failed!");
-  }
-
-  // Read from pipe
-  while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-    result += buffer.data();
-  }
-
-  LOG_DEBUG("GPU Provider Raw:", result);
-
-  // nvidia
-  if (RegexUtils::isMatch(result, "nvidia", std::regex_constants::icase)) {
-    this->GPU_Providers.push_back(GPUProviders::NVIDIA);
-  }
-  // intel
-  if (RegexUtils::isMatch(result, "intel", std::regex_constants::icase)) {
-    this->GPU_Providers.push_back(GPUProviders::INTEL);
-  }
-  // amd
-  if (RegexUtils::isMatch(result, "amd", std::regex_constants::icase)) {
-    this->GPU_Providers.push_back(GPUProviders::AMD);
-  }
-  // unknown
-  if (this->GPU_Providers.empty()) {
-    this->GPU_Providers.push_back(GPUProviders::INVALID);
-  }
-
-#else
-  throw std::runtime_error("Unsupported platform!");
-#endif
 
   if (ListUtils::contains(this->GPU_Providers, GPUProviders_N::NVIDIA)) {
     this->preferredGPUProvider = GPUProviders_N::NVIDIA;
