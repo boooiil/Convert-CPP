@@ -9,7 +9,6 @@
 #include "../../../utils/logging/Logger.h"
 #include "../../Program.h"
 #include "../../settings/Settings.h"
-#include "../../settings/arguments/FlagArgument.h"
 #include "../../settings/enums/Activity_N.h"
 #include "../../settings/enums/Encoders_N.h"
 #include "Media.h"
