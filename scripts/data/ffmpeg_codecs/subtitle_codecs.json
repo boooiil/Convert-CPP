@@ -5,26 +5,17 @@
         "displayName": "Advanced SubStation Alpha",
         "aliases": [
             "ass"
-        ]
+        ],
+        "isImage": false
     },
-    "dvb_sub": {
+    "srt": {
         "defaults": {},
-        "name": "dvb_sub",
-        "displayName": "DVB Subtitle",
+        "name": "srt",
+        "displayName": "Advanced SubStation Alpha",
         "aliases": [
-            "dvb_sub"
-        ]
-    },
-    "mov_text": {
-        "defaults": {},
-        "name": "mov_text",
-        "displayName": "MOV Text Subtitle",
-        "aliases": [
-            "mov_text",
-            "mp4_sub",
-            "subrip",
             "srt"
-        ]
+        ],
+        "isImage": false
     },
     "ssa": {
         "defaults": {},
@@ -32,7 +23,26 @@
         "displayName": "SubStation Alpha",
         "aliases": [
             "ssa"
-        ]
+        ],
+        "isImage": false
+    },
+    "subrip": {
+        "defaults": {},
+        "name": "subrip",
+        "displayName": "SubStation Alpha",
+        "aliases": [
+            "subrip"
+        ],
+        "isImage": false
+    },
+    "dvb_sub": {
+        "defaults": {},
+        "name": "dvb_sub",
+        "displayName": "DVB Subtitle",
+        "aliases": [
+            "dvb_sub"
+        ],
+        "isImage": true
     },
     "webvtt": {
         "defaults": {},
@@ -41,6 +51,18 @@
         "aliases": [
             "webvtt",
             "vtt"
-        ]
+        ],
+        "isImage": false
+    },
+    "mov_text": {
+        "defaults": {},
+        "name": "mov_text",
+        "displayName": "MOV Text Subtitle",
+        "aliases": [
+            "mov_text",
+            "mp4_sub",
+            "subrip"
+        ],
+        "isImage": false
     }
 }
