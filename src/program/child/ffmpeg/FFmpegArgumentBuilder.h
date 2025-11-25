@@ -6,7 +6,10 @@
 #include <string>
 #include <vector>
 
+#include "audio/BaseAudioCodec.h"
 #include "container/BaseContainer.h"
+#include "src/program/registry/ArgumentRegistry.h"
+#include "src/program/settings/arguments/VectorArgument.h"
 
 /* Builder created -> builder.build() */
 
@@ -16,6 +19,14 @@ class FFmpegArgumentBuilder {
 public:
   FFmpegArgumentBuilder(Media *media);
   ~FFmpegArgumentBuilder();
+
+  void assertAudio(VectorArgument<int> &);
+  void assertSubtitle(VectorArgument<int> &);
+
+  std::vector<BaseAudioCodec *> generateAudioCodecs(VectorArgument<int> &,
+                                                    ArgumentRegistry &);
+  std::vector<BaseSubtitleCodec *> generateSubtitleCodecs(VectorArgument<int> &,
+                                                          ArgumentRegistry &);
 
   // if container supports video codec, use
   // else stop program

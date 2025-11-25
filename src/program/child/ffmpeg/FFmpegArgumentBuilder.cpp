@@ -48,18 +48,18 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
   VectorArgument<int> *audioStreams =
       argumentRegistry.get_t<VectorArgument<int>>(Command_N::AUDIOSTREAMS);
 
+  VectorArgument<int> *subtitleStreams =
+      argumentRegistry.get_t<VectorArgument<int>>(Command_N::SUBTITLESTREAMS);
+
   // TODO: either use enums for codecs or strings for everything
 
   auto videoCodec =
       VideoCodecFactory::create(Encoders_N::definition(wanted_enc));
   auto audioCodecs = std::vector<BaseAudioCodec *>();
+  auto subtitleCodecs = std::vector<BaseSubtitleCodec *>();
 
   this->container =
       ContainerFactory::create(Container_N::definition(wanted_container));
-
-  // TODO: make this user adjustable
-  auto subtitleCodec =
-      SubtitleCodecFactory::create(container->fallbackSubtitleCodec());
 
   LOG_DEBUG("Container ptr: {}", static_cast<void *>(container));
   // this is the new way since i added index to the
@@ -67,16 +67,34 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
   // all audio codecs should be mapped to the streams
   // regardless if the user specified a mapping.
 
-#pragma region AUDIO ASSERTIONS
+  assertAudio(*audioStreams);
+  assertSubtitle(*subtitleStreams);
+
+  this->container->setSubtitleCodec(
+      generateSubtitleCodecs(*subtitleStreams, argumentRegistry));
+  this->container->setAudioCodec(
+      generateAudioCodecs(*audioStreams, argumentRegistry));
+  this->container->setVideoCodec(videoCodec);
+}
+
+FFmpegArgumentBuilder::~FFmpegArgumentBuilder() {
+  LOG_DEBUG("Deconstructing...");
+  if (container != nullptr) {
+    LOG_DEBUG("Deleting Container.");
+    delete container;
+  }
+}
+
+void FFmpegArgumentBuilder::assertAudio(VectorArgument<int> &streams) {
 
   // wanted index total
   int w_index_total = 0;
   // exist index total
   int e_index_total = 0;
 
-  for (int i = 0; i < audioStreams->get().size(); i++) {
-    LOG_DEBUG("WANTED AS INDEX: ", audioStreams->get()[i]);
-    w_index_total += audioStreams->get()[i];
+  for (int i = 0; i < streams.get().size(); i++) {
+    LOG_DEBUG("WANTED AS INDEX: ", streams.get()[i]);
+    w_index_total += streams.get()[i];
   }
 
   for (int i = 0; i < media->probeResult->audioStreams.size(); i++) {
@@ -98,11 +116,47 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
     // throw std::invalid_argument(
     //     "Wanted audio indexes exceed existing audio streams.");
   }
+}
 
-#pragma endregion
+void FFmpegArgumentBuilder::assertSubtitle(VectorArgument<int> &streams) {
 
-#pragma region AUDIO SETTINGS
+  // wanted index total
+  int w_sindex_total = 0;
+  // exist index total
+  int e_sindex_total = 0;
 
+  for (int i = 0; i < streams.get().size(); i++) {
+    LOG_DEBUG("WANTED SST INDEX: ", streams.get()[i]);
+    w_sindex_total += streams.get()[i];
+  }
+
+  for (int i = 0; i < media->probeResult->subtitleStreams.size(); i++) {
+    LOG_DEBUG("EXISTING SST INDEX: ", i);
+    e_sindex_total += i;
+  }
+
+  LOG_DEBUG("W_S:", w_sindex_total, "E_S:", e_sindex_total);
+
+  // need to assert that the subtitle codecs
+  //
+
+  if (w_sindex_total > e_sindex_total) {
+    LOG_DEBUG(
+        "WANTED SUBTITLE STREAM INDEX TOTAL IS GREATER THAN EXISTING INDEX "
+        "TOTAL");
+    LOG_DEBUG("WANTED SUBTITLE STREAM INDEX TOTAL: ", w_sindex_total);
+    LOG_DEBUG("EXISTING SUBTITLE STREAM INDEX TOTAL: ", e_sindex_total);
+    LOG(LogColor::fgRed(
+        "Wanted subtitle stream indexes exceed existing subtitle streams."));
+    Program::stopFlag = true;
+    // throw std::invalid_argument(
+    //     "Wanted subtitle stream indexes exceed existing subtitle streams.");
+  }
+}
+
+std::vector<BaseAudioCodec *>
+FFmpegArgumentBuilder::generateAudioCodecs(VectorArgument<int> &streams,
+                                           ArgumentRegistry &argumentRegistry) {
   // cases:
   // 1. audio streams (vec<int>) match audio codecs (vec<AudioCodec>)
   // - use provided codecs
@@ -113,6 +167,8 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
   // - ignore
   // 4. audio streams are empty
   // - copy streams
+
+  std::vector<BaseAudioCodec *> audioCodecs;
 
   std::vector<std::string> wanted_codecs =
       argumentRegistry
@@ -132,10 +188,10 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
 
     // skip if stream index isnt in the
     // desired list
-    if (!audioStreams->get().empty()) {
+    if (!streams.get().empty()) {
       // and if the audio stream is not in the list
       // skip the audio stream
-      if (!ListUtils::contains(audioStreams->get(), i)) {
+      if (!ListUtils::contains(streams.get(), i)) {
         LOG_DEBUG("Skipping audio stream", i, "for not being in the list.");
         continue;
       }
@@ -203,19 +259,103 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
     // push to audio codecs
     audioCodecs.push_back(audioCodec);
   }
-#pragma endregion AUDIO SETTINGS
 
-  this->container->setSubtitleCodec(subtitleCodec);
-  this->container->setAudioCodec(audioCodecs);
-  this->container->setVideoCodec(videoCodec);
+  return audioCodecs;
 }
 
-FFmpegArgumentBuilder::~FFmpegArgumentBuilder() {
-  LOG_DEBUG("Deconstructing...");
-  if (container != nullptr) {
-    LOG_DEBUG("Deleting Container.");
-    delete container;
+std::vector<BaseSubtitleCodec *> FFmpegArgumentBuilder::generateSubtitleCodecs(
+    VectorArgument<int> &streams, ArgumentRegistry &argumentRegistry) {
+  // Implementation for generating subtitle codecs
+  std::vector<BaseSubtitleCodec *> subtitleCodecs;
+
+  std::vector<std::string> wanted_codecs =
+      argumentRegistry
+          .get_t<VectorArgument<std::string>>(Command_N::SUBTITLECODECS)
+          ->get();
+
+  for (int i = 0; i < media->probeResult->subtitleStreams.size(); i++) {
+    BaseSubtitleCodec *subtitleCodec = nullptr;
+    std::string media_subtitle_codec =
+        media->probeResult->subtitleStreams[i].codec_name;
+
+    // skip if stream index isnt in the
+    // desired list
+    if (!streams.get().empty()) {
+      // and if the subtitle stream is not in the list
+      if (!ListUtils::contains(streams.get(), i)) {
+        LOG_DEBUG("Skipping subtitle stream", i, "for not being in the list.");
+        continue;
+      }
+    }
+
+    LOG_DEBUG("Subtitle stream", i, "is in the list.");
+
+    // existing codec
+    auto ec = SubtitleCodecFactory::create(
+        media->probeResult->subtitleStreams[i].codec_name);
+
+    // if there are more subtitle codecs than streams
+    if (wanted_codecs.size() > i) {
+      LOG_DEBUG("Subtitle index [", i, "] is using codec (", wanted_codecs[i],
+                ")");
+
+      auto wc = SubtitleCodecFactory::create(wanted_codecs[i]);
+
+      if ((!ec->isImage() && wc->isImage()) ||
+          (ec->isImage() && !wc->isImage())) {
+        LOG(LogColor::fgRed("Cannot convert subtitle (" + ec->getName() +
+                            ") to (" + wc->getName() + ")."));
+        LOG(LogColor::fgRed(ec->getName() + " was a " +
+                            (ec->isImage() ? "image" : "text") +
+                            " format but " + wc->getName() + " is a " +
+                            (wc->isImage() ? "image" : "text") + " format."));
+        Program::stopFlag = true;
+        delete wc;
+        delete ec;
+        return subtitleCodecs;
+      }
+
+      subtitleCodec = wc;
+
+    }
+    // else use the last codec in the list
+    else if (!wanted_codecs.empty()) {
+      LOG_DEBUG("Subtitle index [", i, "] exceeded codecs, using last codec (",
+                wanted_codecs[wanted_codecs.size() - 1], ")");
+
+      auto wc = subtitleCodecs[subtitleCodecs.size() - 1];
+
+      if ((!ec->isImage() && wc->isImage()) ||
+          (ec->isImage() && !wc->isImage())) {
+        LOG(LogColor::fgRed("Cannot convert subtitle (" + ec->getName() +
+                            ") to (" + wc->getName() + ")."));
+        LOG(LogColor::fgRed(ec->getName() + " was a " +
+                            (ec->isImage() ? "image" : "text") +
+                            " format but " + wc->getName() + " is a " +
+                            (wc->isImage() ? "image" : "text") + " format."));
+        Program::stopFlag = true;
+        delete wc;
+        delete ec;
+        return subtitleCodecs;
+      }
+
+      subtitleCodec = SubtitleCodecFactory::create(wc->getName());
+
+    }
+    // else copy the codec
+    else {
+      LOG_DEBUG("Subtitle index [", i, "] marked for copy codec.");
+      subtitleCodec = SubtitleCodecFactory::create(media_subtitle_codec);
+    }
+
+    subtitleCodec->setIndex(subtitleCodecs.size());
+    subtitleCodec->setMapIndex(i);
+
+    subtitleCodecs.push_back(subtitleCodec);
+    delete ec;
   }
+
+  return subtitleCodecs;
 }
 
 void FFmpegArgumentBuilder::validate() { return; }
@@ -279,7 +419,20 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
                      "\"");
   }
 
-  result.push_back("-map 0:s?");
+  for (auto codec : container->getSubtitleCodecs()) {
+    std::string codec_name = codec->getName();
+
+    int ss_index = codec->getIndex();
+    int ss_map_index = codec->getMapIndex();
+
+    LOG_DEBUG("Subtitle index [", ss_index, "] mapped at [", ss_map_index,
+              "] using codec (", codec_name, ")");
+
+    result.push_back("-map 0:s:" + std::to_string(ss_map_index));
+
+    result.push_back("-c:s:" + std::to_string(ss_index) + " " + codec_name);
+  }
+
   result.push_back("-map 0:t?");
 
   // attachments?
@@ -339,9 +492,6 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
   //     this.ffmpeg_argument.push("-c:s copy")
 
   // }
-
-  std::string subtitle_name = this->container->getSubtitleCodec()->getName();
-  result.push_back("-c:s " + subtitle_name);
 
   if (argumentRegistry.get_t<BaseArgument<Tunes_N::Tunes>>(Command_N::TUNE)
           ->get() != Tunes_N::DEFAULT) {
