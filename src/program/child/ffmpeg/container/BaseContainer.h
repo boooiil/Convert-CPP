@@ -2,6 +2,7 @@
 #define BASE_CONTAINER_H
 
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -45,9 +46,16 @@ public:
       }
       audio_codec.clear();
     }
-    if (subtitle_codec != nullptr) {
+    if (!subtitle_codec.empty()) {
       LOG_DEBUG("Deleting Subtitle Codec.");
-      delete subtitle_codec;
+      for (auto codec : subtitle_codec) {
+        delete codec;
+      }
+      subtitle_codec.clear();
+    }
+    if (subtitle_codec_text != nullptr) {
+      LOG_DEBUG("Deleting Subtitle Codec.");
+      delete subtitle_codec_text;
     }
     if (video_codec != nullptr) {
       LOG_DEBUG("Deleting Video Codec.");
@@ -62,10 +70,27 @@ public:
   virtual std::vector<std::string> supportedVideoCodecs() = 0;
   virtual std::string fallbackVideoCodec() = 0;
 
+  virtual std::vector<std::string> supportedAudioCodecs() = 0;
+  virtual std::string fallbackAudioCodec() = 0;
+
+  virtual std::vector<std::string> supportedSubtitleCodecs() = 0;
+  virtual std::string fallbackSubtitleCodec() = 0;
+
   virtual const std::string getVideoCodec(std::string encoder) {
     return getParam(encoder, &BaseContainer::supportedVideoCodecs,
                     &BaseContainer::fallbackVideoCodec);
   }
+
+  virtual const std::string getAudioCodec(std::string _audio_codec) {
+    return getParam(_audio_codec, &BaseContainer::supportedAudioCodecs,
+                    &BaseContainer::fallbackAudioCodec);
+  }
+
+  virtual const std::string getSubtitleCodec(std::string _subtitle_codec) {
+    return getParam(_subtitle_codec, &BaseContainer::supportedSubtitleCodecs,
+                    &BaseContainer::fallbackSubtitleCodec);
+  }
+
   virtual const void setVideoCodec(BaseVideoCodec *_video_codec) {
     // use default video codec if null
     if (_video_codec == nullptr) {
@@ -88,24 +113,6 @@ public:
     video_codec = _video_codec;
   }
 
-  /**
-   * @brief List of supported audio codecs supported by this video codec.
-   *
-   * @return std::vector<std::string>
-   */
-  virtual std::vector<std::string> supportedAudioCodecs() = 0;
-
-  /**
-   * @brief The fallback audio codec to use if the primary one is not available.
-   *
-   * @return Encoders
-   */
-  virtual std::string fallbackAudioCodec() = 0;
-
-  virtual const std::string getAudioCodec(std::string _audio_codec) {
-    return getParam(_audio_codec, &BaseContainer::supportedAudioCodecs,
-                    &BaseContainer::fallbackAudioCodec);
-  }
   virtual const void
   setAudioCodec(std::vector<BaseAudioCodec *> _audio_codecs) {
     // use default video codec if null
@@ -139,43 +146,36 @@ public:
     audio_codec = _audio_codecs;
   }
 
-  /**
-   * @brief List of supported subtitle codecs supported by this video codec.
-   *
-   * @return std::vector<Encoders>
-   */
-  virtual std::vector<std::string> supportedSubtitleCodecs() = 0;
-
-  /**
-   * @brief The fallback subtitle codec to use if the primary one is not
-   * available.
-   *
-   * @return Encoders
-   */
-  virtual std::string fallbackSubtitleCodec() = 0;
-
-  virtual const std::string getSubtitleCodec(std::string _subtitle_codec) {
-    return getParam(_subtitle_codec, &BaseContainer::supportedSubtitleCodecs,
-                    &BaseContainer::fallbackSubtitleCodec);
-  }
-  virtual const void setSubtitleCodec(BaseSubtitleCodec *_subtitle_codec) {
+  virtual const void
+  setSubtitleCodec(std::vector<BaseSubtitleCodec *> _subtitle_codecs) {
     // use default video codec if null
-    if (_subtitle_codec == nullptr) {
-      throw std::runtime_error("Null subtitle codec provided");
+    if (_subtitle_codecs.empty()) {
+      return;
     }
 
-    std::string wanted_type = _subtitle_codec->getName();
-    std::string validated = getSubtitleCodec(wanted_type);
+    for (auto _subtitle_codec : _subtitle_codecs) {
+      if (_subtitle_codec == nullptr) {
+        throw std::runtime_error("Null subtitle codec provided.");
+      }
 
-    if (validated != wanted_type) {
-      LOG_DEBUG("Invalid subtitle codec for container", this->getName(),
-                _subtitle_codec->getName());
-      throw std::runtime_error("Invalid subtitle codec: " +
-                               _subtitle_codec->getName());
+      std::string wanted_type = _subtitle_codec->getName();
+      std::string validated = getSubtitleCodec(wanted_type);
+
+      if (validated != wanted_type) {
+        LOG_DEBUG("Invalid subtitle codec for container", this->getName(),
+                  _subtitle_codec->getName());
+        throw std::runtime_error("Invalid subtitle codec: " +
+                                 _subtitle_codec->getName());
+      }
+
+      LOG_DEBUG("Setting subtitle codec to", _subtitle_codec->getName());
     }
 
-    delete subtitle_codec;
-    this->subtitle_codec = _subtitle_codec;
+    for (auto codec : subtitle_codec) {
+      delete codec;
+    }
+
+    this->subtitle_codec = _subtitle_codecs;
   }
 
   auto getAudioCodecs() -> std::vector<BaseAudioCodec *> & {
@@ -184,7 +184,9 @@ public:
 
   auto getVideoCodec() -> BaseVideoCodec * { return video_codec; }
 
-  auto getSubtitleCodec() -> BaseSubtitleCodec * { return subtitle_codec; }
+  auto getSubtitleCodecs() -> std::vector<BaseSubtitleCodec *> & {
+    return subtitle_codec;
+  }
 
 private:
   template <typename T, typename C>
@@ -201,8 +203,9 @@ private:
   }
 
   std::vector<BaseAudioCodec *> audio_codec = {};
+  std::vector<BaseSubtitleCodec *> subtitle_codec = {};
   BaseVideoCodec *video_codec = nullptr;
-  BaseSubtitleCodec *subtitle_codec = nullptr;
+  BaseSubtitleCodec *subtitle_codec_text = nullptr;
 };
 
 #endif // BASE_CONTAINER_H
