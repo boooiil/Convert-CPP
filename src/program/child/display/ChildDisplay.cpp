@@ -240,6 +240,12 @@ void ChildDisplay::printInformationTyped(NTicker *ticker, Child *child) {
 
   LOG_DEBUG("Printing Information");
 
+#ifdef _WIN32
+  system("cls");
+#else
+  system("clear");
+#endif
+
   LOG(LogColor::fgBlack("Black"), LogColor::fgRed("Red"),
       LogColor::fgGreen("Green"), LogColor::fgGray("Gray"),
       LogColor::fgYellow("Yellow"), LogColor::fgBlue("Blue"),
