@@ -88,7 +88,7 @@ class AudioCodec_{class_name}_Generated : public BaseAudioCodec {{
                 with open(os.path.join(destination, f"AudioCodec_{class_name}_Generated.h"), "w") as out_file:
                     out_file.write(body)
                 print(f"Audio Codec: {value['name']}... Updated.")
-            else:
-                print(f"Audio Codec: {value['name']}... Skipped (up to date).")
+            #else:
+            #    print(f"Audio Codec: {value['name']}... Skipped (up to date).")
 
     return data

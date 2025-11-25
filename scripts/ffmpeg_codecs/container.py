@@ -104,7 +104,7 @@ public:
                 with open(os.path.join(destination, f"Container_{class_name}_Generated.h"), "w") as out_file:
                     out_file.write(body)
                 print(f"Container: {value['name']}... Updated.")
-            else:
-                print(f"Container: {value['name']}... Skipped (up to date).")
+            #else:
+            #    print(f"Container: {value['name']}... Skipped (up to date).")
 
     return data

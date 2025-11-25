@@ -17,4 +17,4 @@ factory.generate(
       destination
 )
 
-print("OK.")
+print("Definitons OK.")

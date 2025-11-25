@@ -11,6 +11,7 @@ class SubtitleCodec(TypedDict):
     name: str
     displayName: str
     aliases: List[str]
+    isImage: bool
 
 SubtitleCodecs = Dict[str, SubtitleCodec]
 
@@ -45,6 +46,7 @@ class SubtitleCodec_{class_name}_Generated : public BaseSubtitleCodec {{
     auto getName() -> std::string override {{ return "{value['name']}"; }};
     auto getDisplayName() -> std::string override {{ return "{value['displayName']}"; }};
     auto getAliases() -> std::set<std::string> override {{ return {{{aliases}}}; }};
+    auto isImage() -> bool override {{ return {str(value['isImage']).lower()}; }};
 }};
 #endif // SUBTITLE_CODEC_{class_name}_GENERATED_H"""
 
@@ -61,7 +63,7 @@ class SubtitleCodec_{class_name}_Generated : public BaseSubtitleCodec {{
                 with open(os.path.join(destination, f"SubtitleCodec_{class_name}_Generated.h"), "w") as out_file:
                     out_file.write(body)
                 print(f"Subtitle Codec: {value['name']}... Updated.")
-            else:
-                print(f"Subtitle Codec: {value['name']}... Skipped (up to date).")
+            #else:
+            #    print(f"Subtitle Codec: {value['name']}... Skipped (up to date).")
 
     return data

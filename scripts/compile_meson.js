@@ -38,7 +38,7 @@ function readDirectoryRecursive(directory) {
     if (existsSync(root + 'meson.build') && statSync(root + 'meson.build').isFile()) {
         var existing = require('fs').readFileSync(root + 'meson.build', 'utf-8');
         if (existing === built) {
-            console.log(`${root}meson.build... Skipped (up to date).`);
+            //console.log(`${root}meson.build... Skipped (up to date).`);
             return;
         }
         else {
@@ -53,4 +53,4 @@ function readDirectoryRecursive(directory) {
 }
 
 readDirectoryRecursive('src/')
-console.log('OK.');
+console.log('Meson OK.');

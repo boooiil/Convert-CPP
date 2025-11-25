@@ -79,5 +79,5 @@ auto {class_prefix}Factory::initialize() -> void {{
             with open(os.path.join(destination, f"{class_prefix}Factory.cpp"), "w") as out_file:
                 out_file.write(body)
             print(f"{class_prefix}Factory.cpp... Updated.")
-        else:
-            print(f"{class_prefix}Factory.cpp... Skipped (up to date).")
+        #else:
+        #    print(f"{class_prefix}Factory.cpp... Skipped (up to date).")

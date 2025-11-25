@@ -86,7 +86,7 @@ class VideoCodec_{class_name}_Generated : public BaseVideoCodec {{
                 with open(os.path.join(destination, f"VideoCodec_{class_name}_Generated.h"), "w") as out_file:
                     out_file.write(body)
                 print(f"Video Codec: {value['name']}... Updated.")
-            else:
-                print(f"Video Codec: {value['name']}... Skipped (up to date).")
+            #else:
+            #    print(f"Video Codec: {value['name']}... Skipped (up to date).")
 
     return data

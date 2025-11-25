@@ -7,8 +7,8 @@ from ffmpeg_codecs import audio_codec, container, video_codec, subtitle_codec, f
 # import subtitle_codec
 # import factory
 
-print("CWD:", os.getcwd())
-print("args:", sys.argv)
+#print("CWD:", os.getcwd())
+#print("args:", sys.argv)
 
 root: str = sys.argv[1]
 ffmpeg_path = os.path.join(root, "src", "program", "child", "ffmpeg")
@@ -66,4 +66,4 @@ factory.generate(
     os.path.join(ffmpeg_path, "subtitle")
 )
 
-print("OK.")
+print("Types OK.")

@@ -54,8 +54,8 @@ auto DefinitionRegistry::initialize() -> void {{
             with open(os.path.join(destination, f"DefinitionRegistry.cpp"), "w") as out_file:
                 out_file.write(body)
             print(f"DefinitionRegistry.cpp... Updated.")
-        else:
-            print(f"DefinitionRegistry.cpp... Skipped (up to date).")
+        #else:
+        #    print(f"DefinitionRegistry.cpp... Skipped (up to date).")
 
 
 

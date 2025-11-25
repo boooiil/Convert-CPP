@@ -100,8 +100,8 @@ class Definition_{class_name}_Generated : public Definition {{
               with open(os.path.join(destination, f"Definition_{class_name}_Generated.h"), "w") as out_file:
                 out_file.write(body)
               print(f"Definition_{class_name}_Generated.h... Updated.")
-            else:
-              print(f"Definition_{class_name}_Generated.h... Skipped (up to date).")
+            #else:
+            #  print(f"Definition_{class_name}_Generated.h... Skipped (up to date).")
       
     return flat
 
