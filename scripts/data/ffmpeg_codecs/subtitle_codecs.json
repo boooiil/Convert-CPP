@@ -60,8 +60,7 @@
         "displayName": "MOV Text Subtitle",
         "aliases": [
             "mov_text",
-            "mp4_sub",
-            "subrip"
+            "mp4_sub"
         ],
         "isImage": false
     }
