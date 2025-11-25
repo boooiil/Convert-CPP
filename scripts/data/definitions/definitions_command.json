@@ -1,0 +1,229 @@
+{
+    "header": "Command_N",
+    "enum": "Command",
+    "command_invalid": {
+        "name": "command_invalid",
+        "aliases": [
+            "command_invalid",
+            "invalid_command"
+        ],
+        "short_description": "Invalid command.",
+        "long_description": "The specified command is invalid or not recognized."
+    },
+    "command_amount": {
+        "name": "amount",
+        "aliases": [
+            "command_amount",
+            "amount_command"
+        ],
+        "short_description": "Amount command.",
+        "long_description": "Controls or specifies a general amount value."
+    },
+    "command_audiochannels": {
+        "name": "audiochannels",
+        "aliases": [
+            "command_audiochannels",
+            "audiochannels_command"
+        ],
+        "short_description": "Audio channels command.",
+        "long_description": "Specifies or adjusts the number of audio channels."
+    },
+    "command_audiocodec": {
+        "name": "audiocodec",
+        "aliases": [
+            "command_audiocodec",
+            "audiocodec_command"
+        ],
+        "short_description": "Audio codec command.",
+        "long_description": "Specifies which audio codec should be used."
+    },
+    "command_audiostreams": {
+        "name": "audiostreams",
+        "aliases": [
+            "command_audiostreams",
+            "audiostreams_command"
+        ],
+        "short_description": "Audio streams command.",
+        "long_description": "Controls or selects audio streams in the media."
+    },
+    "command_bitrate": {
+        "name": "bitrate",
+        "aliases": [
+            "command_bitrate",
+            "bitrate_command"
+        ],
+        "short_description": "Bitrate command.",
+        "long_description": "Configures bitrate for media encoding or processing."
+    },
+    "command_crop": {
+        "name": "crop",
+        "aliases": [
+            "command_crop",
+            "crop_command"
+        ],
+        "short_description": "Crop command.",
+        "long_description": "Applies cropping parameters to video content."
+    },
+    "command_constrain": {
+        "name": "constrain",
+        "aliases": [
+            "command_constrain",
+            "constrain_command"
+        ],
+        "short_description": "Constrain command.",
+        "long_description": "Applies constraints on encoding or processing parameters."
+    },
+    "command_container": {
+        "name": "container",
+        "aliases": [
+            "command_container",
+            "container_command"
+        ],
+        "short_description": "Container command.",
+        "long_description": "Specifies the output container format."
+    },
+    "command_crf": {
+        "name": "crf",
+        "aliases": [
+            "command_crf",
+            "crf_command"
+        ],
+        "short_description": "CRF command.",
+        "long_description": "Sets the Constant Rate Factor (CRF) for quality control."
+    },
+    "command_displayrefresh": {
+        "name": "displayrefresh",
+        "aliases": [
+            "command_displayrefresh",
+            "displayrefresh_command"
+        ],
+        "short_description": "Display refresh command.",
+        "long_description": "Specifies or adjusts the display refresh rate."
+    },
+    "command_encoder": {
+        "name": "encoder",
+        "aliases": [
+            "command_encoder",
+            "encoder_command"
+        ],
+        "short_description": "Encoder command.",
+        "long_description": "Specifies the encoder to be used for processing media."
+    },
+    "command_help": {
+        "name": "help",
+        "aliases": [
+            "command_help",
+            "help_command"
+        ],
+        "short_description": "Help command.",
+        "long_description": "Displays help information for available commands."
+    },
+    "command_hardwareaccel": {
+        "name": "hardwareaccel",
+        "aliases": [
+            "command_hardwareaccel",
+            "hardwareaccel_command"
+        ],
+        "short_description": "Hardware acceleration command.",
+        "long_description": "Configures hardware acceleration settings."
+    },
+    "command_hardwaredecode": {
+        "name": "hardwaredecode",
+        "aliases": [
+            "command_hardwaredecode",
+            "hardwaredecode_command"
+        ],
+        "short_description": "Hardware decode command.",
+        "long_description": "Specifies hardware-accelerated decoding options."
+    },
+    "command_hardwareencode": {
+        "name": "hardwareencode",
+        "aliases": [
+            "command_hardwareencode",
+            "hardwareencode_command"
+        ],
+        "short_description": "Hardware encode command.",
+        "long_description": "Specifies hardware-accelerated encoding options."
+    },
+    "command_info": {
+        "name": "info",
+        "aliases": [
+            "command_info",
+            "info_command"
+        ],
+        "short_description": "Info command.",
+        "long_description": "Displays detailed information about media or configuration."
+    },
+    "command_loggingoptions": {
+        "name": "loggingoptions",
+        "aliases": [
+            "command_loggingoptions",
+            "loggingoptions_command"
+        ],
+        "short_description": "Logging options command.",
+        "long_description": "Controls the format or verbosity of logging output."
+    },
+    "command_overwrite": {
+        "name": "overwrite",
+        "aliases": [
+            "command_overwrite",
+            "overwrite_command"
+        ],
+        "short_description": "Overwrite command.",
+        "long_description": "Controls whether output files may be overwritten."
+    },
+    "command_parent": {
+        "name": "parent",
+        "aliases": [
+            "command_parent",
+            "parent_command"
+        ],
+        "short_description": "Parent command.",
+        "long_description": "Accesses parent-level configuration or functionality."
+    },
+    "command_quality": {
+        "name": "quality",
+        "aliases": [
+            "command_quality",
+            "quality_command"
+        ],
+        "short_description": "Quality command.",
+        "long_description": "Controls general quality settings for encoding."
+    },
+    "command_start": {
+        "name": "start",
+        "aliases": [
+            "command_start",
+            "start_command"
+        ],
+        "short_description": "Start command.",
+        "long_description": "Begins processing or initiates execution of a task."
+    },
+    "command_subtitle": {
+        "name": "subtitle",
+        "aliases": [
+            "command_subtitle",
+            "subtitle_command"
+        ],
+        "short_description": "Subtitle command.",
+        "long_description": "Manages subtitle streams or settings in the media."
+    },
+    "command_trim": {
+        "name": "trim",
+        "aliases": [
+            "command_trim",
+            "trim_command"
+        ],
+        "short_description": "Trim command.",
+        "long_description": "Cuts or trims media to specified durations."
+    },
+    "command_tune": {
+        "name": "tune",
+        "aliases": [
+            "command_tune",
+            "tune_command"
+        ],
+        "short_description": "Tune command.",
+        "long_description": "Applies tuning presets to optimize encoding for specific content types."
+    }
+}
