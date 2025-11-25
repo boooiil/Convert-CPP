@@ -99,6 +99,14 @@ void ChildOptions::prepare(void) {
   argumentRegistry->add(Command_N::START,
                         std::make_unique<TimeStringArgument>(
                             "Start time for processing", "-ss", "--start", ""));
+  argumentRegistry->add(Command_N::SUBTITLECODECS,
+                        std::make_unique<VectorArgument<std::string>>(
+                            "Subtitle codecs to use per stream mapping", "-sco",
+                            "--subtitlecodecs", std::vector<std::string>()));
+  argumentRegistry->add(Command_N::SUBTITLESTREAMS,
+                        std::make_unique<VectorArgument<int>>(
+                            "Index of subtitle streams to include", "-sst",
+                            "--subtitlestreams", std::vector<int>()));
   argumentRegistry->add(Command_N::TRIM,
                         std::make_unique<TimeStringVectorArgument>(
                             "Trim the video to the specified duration", "-tr",

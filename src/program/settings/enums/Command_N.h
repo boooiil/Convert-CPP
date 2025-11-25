@@ -8,29 +8,33 @@
 class Command_N {
 public:
   enum Command {
-    AMOUNT,         // IntegerArgument
-    AUDIOCHANNELS,  // IntegerArgument
-    AUDIOCODEC,     // VectorArgument<std::string>
-    AUDIOSTREAMS,   // VectorArgument<int>
-    BITRATE,        // IntegerArgument
-    CROP,           // FlagArgument
-    CONSTRAIN,      // FlagArgument
-    CONTAINER,      // EnumStringArgument<Container>
-    CRF,            // IntegerArgument
-    DISPLAYREFRESH, // IntegerArgument
-    ENCODER,        // EnumStringArgument<Encoders>
-    HELP,           // FlagArgument
-    HARDWAREACCEL,  // EnumStringArgument<HWAccelerators>,
-    HARDWAREDECODE, // FlagArgument
-    HARDWAREENCODE, // FlagArgument
-    INFO,           // FlagArgument
-    LOGGINGOPTIONS, // EnumStringArgument<LoggingFormat>,
-    OVERWRITE,      // FlagArgument
-    PARENT,         // FlagArgument
-    QUALITY,        // QualityArgument
-    START,          // TimeStringArgument
-    TRIM,           // TimeStringArgument
-    TUNE,           // EnumStringArgument<Tunes>
+    INVALID = 0,
+
+    AMOUNT,          // IntegerArgument
+    AUDIOCHANNELS,   // IntegerArgument
+    AUDIOCODEC,      // VectorArgument<std::string>
+    AUDIOSTREAMS,    // VectorArgument<int>
+    BITRATE,         // IntegerArgument
+    CROP,            // FlagArgument
+    CONSTRAIN,       // FlagArgument
+    CONTAINER,       // EnumStringArgument<Container>
+    CRF,             // IntegerArgument
+    DISPLAYREFRESH,  // IntegerArgument
+    ENCODER,         // EnumStringArgument<Encoders>
+    HELP,            // FlagArgument
+    HARDWAREACCEL,   // EnumStringArgument<HWAccelerators>,
+    HARDWAREDECODE,  // FlagArgument
+    HARDWAREENCODE,  // FlagArgument
+    INFO,            // FlagArgument
+    LOGGINGOPTIONS,  // EnumStringArgument<LoggingFormat>,
+    OVERWRITE,       // FlagArgument
+    PARENT,          // FlagArgument
+    QUALITY,         // QualityArgument
+    START,           // TimeStringArgument
+    SUBTITLECODECS,  // VectorArgument<std::string>
+    SUBTITLESTREAMS, // VectorArgument<int>
+    TRIM,            // TimeStringArgument
+    TUNE,            // EnumStringArgument<Tunes>
   };
 
   static const Definition &definition(Command command) {
