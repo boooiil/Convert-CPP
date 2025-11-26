@@ -11,6 +11,7 @@ public:
 
     NONE,
     ASS,
+    HDMV_PGS_SUBTITLE,
     SRT,
     SSA,
     SUBRIP,
@@ -26,6 +27,8 @@ public:
       return DefinitionRegistry::get("subtitle_none");
     case ASS:
       return DefinitionRegistry::get("subtitle_ass");
+    case HDMV_PGS_SUBTITLE:
+      return DefinitionRegistry::get("subtitle_hdmv_pgs_subtitle");
     case SRT:
       return DefinitionRegistry::get("subtitle_srt");
     case SSA:
