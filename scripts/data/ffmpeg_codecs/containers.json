@@ -25,6 +25,7 @@
         ],
         "supportedSubtitleCodecs": [
             "ass",
+            "hdmv_pgs_subtitle",
             "dvb_sub",
             "mov_text",
             "srt",
