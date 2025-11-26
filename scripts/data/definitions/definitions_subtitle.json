@@ -28,6 +28,15 @@
         "short_description": "ASS subtitle codec.",
         "long_description": "Uses the Advanced Substation Alpha (ASS) format for rich-text subtitles with styling and positioning."
     },
+    "subtitle_hdmv_pgs_subtitle": {
+        "name": "hdmv_pgs_subtitle",
+        "aliases": [
+            "subtitle_hdmv_pgs_subtitle",
+            "hdmv_pgs_subtitle_subtitle"
+        ],
+        "short_description": "HDMV PGS subtitle codec.",
+        "long_description": "Uses the HDMV PGS subtitle format for image-based subtitles."
+    },
     "subtitle_srt": {
         "name": "srt",
         "aliases": [
