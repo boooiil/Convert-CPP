@@ -420,17 +420,17 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
   }
 
   for (auto codec : container->getSubtitleCodecs()) {
-    std::string codec_name = codec->getName();
 
     int ss_index = codec->getIndex();
     int ss_map_index = codec->getMapIndex();
 
     LOG_DEBUG("Subtitle index [", ss_index, "] mapped at [", ss_map_index,
-              "] using codec (", codec_name, ")");
+              "] using codec (", codec->getName(), ")");
 
     result.push_back("-map 0:s:" + std::to_string(ss_map_index));
 
-    result.push_back("-c:s:" + std::to_string(ss_index) + " " + codec_name);
+    result.push_back("-c:s:" + std::to_string(ss_index) + " " +
+                     codec->getArg());
   }
 
   result.push_back("-map 0:t?");

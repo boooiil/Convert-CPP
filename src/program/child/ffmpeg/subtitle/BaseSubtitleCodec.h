@@ -11,6 +11,7 @@ public:
   virtual auto getDisplayName() -> std::string {
     return "Base Subtitle Codec";
   };
+  virtual auto getArg() -> std::string { return ""; };
   virtual auto getAliases() -> std::set<std::string> { return {}; };
   virtual auto isImage() -> bool { return false; };
 
