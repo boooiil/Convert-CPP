@@ -2,15 +2,27 @@
     "ass": {
         "defaults": {},
         "name": "ass",
+        "arg": "ass",
         "displayName": "Advanced SubStation Alpha",
         "aliases": [
             "ass"
         ],
         "isImage": false
     },
+    "hdmv_pgs_subtitle": {
+        "defaults": {},
+        "name": "hdmv_pgs_subtitle",
+        "arg": "copy",
+        "displayName": "HDMV PGS Subtitle",
+        "aliases": [
+            "hdmv_pgs_subtitle"
+        ],
+        "isImage": true
+    },
     "srt": {
         "defaults": {},
         "name": "srt",
+        "arg": "srt",
         "displayName": "Advanced SubStation Alpha",
         "aliases": [
             "srt"
@@ -20,6 +32,7 @@
     "ssa": {
         "defaults": {},
         "name": "ssa",
+        "arg": "ssa",
         "displayName": "SubStation Alpha",
         "aliases": [
             "ssa"
@@ -29,6 +42,7 @@
     "subrip": {
         "defaults": {},
         "name": "subrip",
+        "arg": "subrip",
         "displayName": "SubStation Alpha",
         "aliases": [
             "subrip"
@@ -38,6 +52,7 @@
     "dvb_sub": {
         "defaults": {},
         "name": "dvb_sub",
+        "arg": "dvb_sub",
         "displayName": "DVB Subtitle",
         "aliases": [
             "dvb_sub"
@@ -47,6 +62,7 @@
     "webvtt": {
         "defaults": {},
         "name": "webvtt",
+        "arg": "webvtt",
         "displayName": "WebVTT",
         "aliases": [
             "webvtt",
@@ -57,6 +73,7 @@
     "mov_text": {
         "defaults": {},
         "name": "mov_text",
+        "arg": "mov_text",
         "displayName": "MOV Text Subtitle",
         "aliases": [
             "mov_text",

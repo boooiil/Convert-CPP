@@ -10,6 +10,7 @@ class SubtitleCodec(TypedDict):
     defaults: SubtitleCodecDefaults
     name: str
     displayName: str
+    arg: str
     aliases: List[str]
     isImage: bool
 
@@ -45,6 +46,7 @@ class SubtitleCodec_{class_name}_Generated : public BaseSubtitleCodec {{
     
     auto getName() -> std::string override {{ return "{value['name']}"; }};
     auto getDisplayName() -> std::string override {{ return "{value['displayName']}"; }};
+    auto getArg() -> std::string override {{ return "{value['arg']}"; }};
     auto getAliases() -> std::set<std::string> override {{ return {{{aliases}}}; }};
     auto isImage() -> bool override {{ return {str(value['isImage']).lower()}; }};
 }};
