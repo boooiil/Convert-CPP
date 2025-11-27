@@ -10,10 +10,9 @@
 
 class Quality : public BaseArgument<MediaFormat> {
 public:
-  Quality(std::string _helpMessage, std::string _flag,
-    std::string _longFlag, MediaFormat data) :
-    BaseArgument(_helpMessage, _flag, _longFlag, data) {
-  }
+  Quality(std::string _helpMessage, std::string _flag, std::string _longFlag,
+          MediaFormat data)
+      : BaseArgument(_helpMessage, _flag, _longFlag, data) {}
 
   ~Quality(void) {}
 
@@ -21,22 +20,23 @@ public:
     // search if the provided string is a valid quality format
     if (MediaDefinedFormat::formats.contains(argument)) {
       this->value = MediaDefinedFormat::formats.at(argument);
-    }
-    else if (RegexUtils::isMatch(argument, "[0-9]+p")) {
+    } else if (RegexUtils::isMatch(argument, "[0-9]+p")) {
 
       std::string numberPart = argument.substr(0, argument.size() - 1);
 
       // Check if all characters in numberPart are digits
       for (char c : numberPart) {
         if (!std::isdigit(c)) {
-          throw std::invalid_argument("Invalid quality format: " + argument + ". Not all numbers.");
+          throw std::invalid_argument("Invalid quality format: " + argument +
+                                      ". Not all numbers.");
         }
       }
 
-      MediaFormat custom = MediaFormat(argument, 24, 1.0f, 0.8f, 1.2f, 0, 0, std::string(""), std::string(""));
+      MediaFormat custom = MediaFormat(argument, 24, 1.0f, 0.8f, 1.2f, 0, 0,
+                                       std::string(""), std::string(""));
       custom.fromCustom(std::stoi(numberPart));
-    }
-    else {
+      this->value = custom;
+    } else {
       this->setErrored(true);
     }
   }
@@ -45,4 +45,4 @@ public:
   const bool hasData(void) const override { return !this->value.name.empty(); }
 };
 
-#endif  // QUALITY_H
+#endif // QUALITY_H
