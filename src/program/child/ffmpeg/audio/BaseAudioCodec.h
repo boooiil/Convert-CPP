@@ -12,52 +12,59 @@ public:
       : runningChannel(channel), runningSampleRate(sampleRate),
         runningBitDepth(bitDepth) {};
 
-  virtual auto getName() -> std::string { return "BaseAudioCodec"; };
-  virtual auto getDisplayName() -> std::string { return "Base Audio Codec"; };
-  virtual auto getAliases() -> std::set<std::string> { return {}; };
+  virtual auto getName() const -> const std::string {
+    return "BaseAudioCodec";
+  };
+  virtual auto getDisplayName() const -> const std::string {
+    return "Base Audio Codec";
+  };
+  virtual auto getAliases() const -> const std::set<std::string> { return {}; };
+  virtual auto supportedChannels() const -> const std::vector<int> = 0;
+  virtual auto fallbackChannel() const -> const int = 0;
 
-  virtual auto supportedChannels() -> std::vector<int> = 0;
-  virtual auto fallbackChannel() -> int = 0;
-
-  virtual auto getChannel(int channel) -> const int {
+  virtual auto getChannel(const int &channel) const -> const int {
     return getParam(channel, &BaseAudioCodec::supportedChannels,
                     &BaseAudioCodec::fallbackChannel);
   }
 
-  virtual auto supportedSampleRates() -> std::vector<int> = 0;
-  virtual auto fallbackSampleRate() -> int = 0;
+  virtual auto supportedSampleRates() const -> const std::vector<int> = 0;
+  virtual auto fallbackSampleRate() const -> const int = 0;
 
-  virtual auto getSampleRate(int sampleRate) -> const int {
+  virtual auto getSampleRate(const int &sampleRate) const -> const int {
     return getParam(sampleRate, &BaseAudioCodec::supportedSampleRates,
                     &BaseAudioCodec::fallbackSampleRate);
   }
 
-  virtual auto supportedBitDepths() -> std::vector<int> = 0;
-  virtual auto fallbackBitDepth() -> int = 0;
+  virtual auto supportedBitDepths() const -> const std::vector<int> = 0;
+  virtual auto fallbackBitDepth() const -> const int = 0;
 
-  virtual auto getBitDepth(int bitDepth) -> const int {
+  virtual auto getBitDepth(const int &bitDepth) const -> const int {
     return getParam(bitDepth, &BaseAudioCodec::supportedBitDepths,
                     &BaseAudioCodec::fallbackBitDepth);
   }
 
-  auto setChannel(int channel) -> void {
+  auto setChannel(const int &channel) -> void {
     this->runningChannel = getChannel(channel);
   };
-  auto setSampleRate(int sampleRate) -> void {
+  auto setSampleRate(const int &sampleRate) -> void {
     this->runningSampleRate = getSampleRate(sampleRate);
   };
-  auto setBitDepth(int bitDepth) -> void {
+  auto setBitDepth(const int &bitDepth) -> void {
     this->runningBitDepth = getBitDepth(bitDepth);
   };
-  auto setIndex(int index) -> void { this->index = index; };
-  auto setMapIndex(int mapIndex) -> void { this->mapIndex = mapIndex; };
+  auto setIndex(const int &index) -> void { this->index = index; };
+  auto setMapIndex(const int &mapIndex) -> void { this->mapIndex = mapIndex; };
 
-  auto getRunningChannel() -> const int { return this->runningChannel; };
-  auto getRunningSampleRate() -> const int { return this->runningSampleRate; };
-  auto getRunningBitDepth() -> const int { return this->runningBitDepth; };
-  auto getIndex() -> const int { return this->index; };
-  auto getMapIndex() -> const int { return this->mapIndex; };
-  auto getChannelLayout() -> std::string {
+  auto getRunningChannel() const -> const int { return this->runningChannel; };
+  auto getRunningSampleRate() const -> const int {
+    return this->runningSampleRate;
+  };
+  auto getRunningBitDepth() const -> const int {
+    return this->runningBitDepth;
+  };
+  auto getIndex() const -> const int { return this->index; };
+  auto getMapIndex() const -> const int { return this->mapIndex; };
+  auto getChannelLayout() const -> const std::string {
     // Return a string representation of the channel layout
     switch (this->runningChannel) {
     case 1:
@@ -87,8 +94,8 @@ public:
 
 private:
   template <typename T, typename C>
-  auto getParam(T search, std::vector<T> (C::*provider)(), T (C::*fallback)())
-      -> const T {
+  auto getParam(const T &search, const std::vector<T> (C::*provider)() const,
+                const T (C::*fallback)() const) const -> const T {
     auto params = (this->*provider)();
 
     for (auto &p : params) {

@@ -7,19 +7,21 @@
 class BaseSubtitleCodec {
 public:
   virtual ~BaseSubtitleCodec() = default;
-  virtual auto getName() -> std::string { return "BaseSubtitleCodec"; };
-  virtual auto getDisplayName() -> std::string {
+  virtual auto getName() const -> const std::string {
+    return "BaseSubtitleCodec";
+  };
+  virtual auto getDisplayName() const -> const std::string {
     return "Base Subtitle Codec";
   };
-  virtual auto getArg() -> std::string { return ""; };
-  virtual auto getAliases() -> std::set<std::string> { return {}; };
-  virtual auto isImage() -> bool { return false; };
+  virtual auto getArg() const -> const std::string { return ""; };
+  virtual auto getAliases() const -> const std::set<std::string> { return {}; };
+  virtual auto isImage() const -> const bool { return false; };
 
-  void setIndex(int idx) { this->index = idx; }
-  int getIndex() { return this->index; }
+  void setIndex(const int &idx) { this->index = idx; }
+  const int getIndex() const { return this->index; }
 
-  void setMapIndex(int idx) { this->mapIndex = idx; }
-  int getMapIndex() { return this->mapIndex; }
+  void setMapIndex(const int &idx) { this->mapIndex = idx; }
+  const int getMapIndex() const { return this->mapIndex; }
 
 private:
   int index;

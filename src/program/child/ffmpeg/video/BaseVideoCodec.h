@@ -20,70 +20,74 @@ public:
    *
    * @return Encoders
    */
-  virtual auto getType() -> Encoders_N::Encoders {
+  virtual auto getType() const -> const Encoders_N::Encoders {
     return Encoders_N::INVALID;
   };
-  virtual auto getName() -> std::string { return "BaseVideoCodec"; };
-  virtual auto getDisplayName() -> std::string { return "Base Video Codec"; };
-  virtual auto getAliases() -> std::set<std::string> { return {}; };
+  virtual auto getName() const -> const std::string {
+    return "BaseVideoCodec";
+  };
+  virtual auto getDisplayName() const -> const std::string {
+    return "Base Video Codec";
+  };
+  virtual auto getAliases() const -> const std::set<std::string> { return {}; };
 
   /**
    * @brief The control rate flag used by this codec.
    *
    * @return std::string
    */
-  virtual auto controlRateFlag() -> std::string = 0;
+  virtual auto controlRateFlag() const -> const std::string = 0;
 
   // what is a preset ?
-  virtual auto supportedPresets() -> std::vector<std::string> = 0;
-  virtual auto fallbackPreset() -> std::string = 0;
+  virtual auto supportedPresets() const -> const std::vector<std::string> = 0;
+  virtual auto fallbackPreset() const -> const std::string = 0;
 
-  auto getPreset(std::string &preset) -> const std::string {
+  auto getPreset(const std::string &preset) const -> const std::string {
     return getParam(preset, &BaseVideoCodec::supportedPresets,
                     &BaseVideoCodec::fallbackPreset);
   }
 
-  virtual auto supportedLevels() -> std::vector<std::string> = 0;
-  virtual auto fallbackLevel() -> std::string = 0;
+  virtual auto supportedLevels() const -> const std::vector<std::string> = 0;
+  virtual auto fallbackLevel() const -> const std::string = 0;
 
-  auto getLevel(std::string &level) -> const std::string {
+  auto getLevel(const std::string &level) const -> const std::string {
     return getParam(level, &BaseVideoCodec::supportedLevels,
                     &BaseVideoCodec::fallbackLevel);
   }
 
-  virtual auto supportedTunes() -> std::vector<Tunes_N::Tunes> = 0;
-  virtual auto fallbackTune() -> Tunes_N::Tunes = 0;
+  virtual auto supportedTunes() const -> const std::vector<Tunes_N::Tunes> = 0;
+  virtual auto fallbackTune() const -> const Tunes_N::Tunes = 0;
 
-  auto getTune(Tunes_N::Tunes &tune) -> const Tunes_N::Tunes {
+  auto getTune(const Tunes_N::Tunes &tune) const -> const Tunes_N::Tunes {
     return getParam(tune, &BaseVideoCodec::supportedTunes,
                     &BaseVideoCodec::fallbackTune);
   }
 
-  virtual auto getRunningPreset() -> const std::string & {
+  virtual auto getRunningPreset() const -> const std::string & {
     return this->runningPreset;
   }
-  virtual void setRunningPreset(std::string &preset) {
+  virtual void setRunningPreset(const std::string &preset) {
     this->runningPreset = getPreset(preset);
   }
 
-  virtual auto getRunningLevel() -> const std::string & {
+  virtual auto getRunningLevel() const -> const std::string & {
     return this->runningLevel;
   }
-  virtual void setRunningLevel(std::string &level) {
+  virtual void setRunningLevel(const std::string &level) {
     this->runningLevel = getLevel(level);
   }
 
-  virtual auto getRunningTune() -> const Tunes_N::Tunes & {
+  virtual auto getRunningTune() const -> const Tunes_N::Tunes & {
     return this->runningTune;
   }
-  virtual void setRunningTune(Tunes_N::Tunes tune) {
+  virtual void setRunningTune(const Tunes_N::Tunes &tune) {
     this->runningTune = getTune(tune);
   };
 
 private:
   template <typename T, typename C>
-  auto getParam(T &search, std::vector<T> (C::*provider)(), T (C::*fallback)())
-      -> const T {
+  auto getParam(const T &search, const std::vector<T> (C::*provider)() const,
+                const T (C::*fallback)() const) const -> const T {
     auto params = (this->*provider)();
 
     for (auto &p : params) {
