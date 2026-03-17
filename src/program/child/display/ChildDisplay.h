@@ -6,11 +6,11 @@
 #include "../Child.h"
 
 class ChildDisplay : public GenericDisplay<NTicker, Child> {
- public:
-  void print(void);
-  void printDebug(void);
-  void printInformationTyped(NTicker* ticker, Child* child);
+public:
+  void print(JSONSerializableRunner &ticker);
+  void printDebug(JSONSerializableRunner &ticker);
+  void printInformationTyped(NTicker *ticker, Child *child);
   void printJSON(void);
 };
 
-#endif  // !CHILD_DISPLAY_H
+#endif // !CHILD_DISPLAY_H
