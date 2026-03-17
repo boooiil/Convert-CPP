@@ -8,11 +8,9 @@
 #include "../../../utils/logging/Logger.h"
 #include "../../child/media/Media.h"
 #include "../../registry/ArgumentRegistry.h"
-#include "../../settings/arguments/FlagArgument.h"
 #include "../../settings/arguments/StringArgument.h"
 #include "../../settings/arguments/TimeStringVectorArgument.h"
 #include "../../settings/arguments/VectorArgument.h"
-#include "../../settings/arguments/video/Quality.h"
 #include "../../settings/options/ChildOptions.h"
 #include "../media/MediaFormat.h"
 #include "audio/AudioCodecFactory.h"
@@ -30,26 +28,21 @@
 
 FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
     : container(nullptr), media(_media) {
-  ChildOptions &childOptions = *Program::settings->childOptionsMap[media->id];
+  ChildOptions &childOptions = _media->getOptions();
   ArgumentRegistry &argumentRegistry = *childOptions.argumentRegistry;
-  MediaFormat format =
-      argumentRegistry.get_t<Quality>(Command_N::QUALITY)->get();
+  MediaFormat format = argumentRegistry.get_t<Command_N::QUALITY>()->get();
 
   Encoders_N::Encoders wanted_enc =
-      argumentRegistry
-          .get_t<EnumArgument<Encoders_N::Encoders>>(Command_N::ENCODER)
-          ->get();
+      argumentRegistry.get_t<Command_N::ENCODER>()->get();
   Container_N::Container wanted_container =
-      argumentRegistry
-          .get_t<EnumArgument<Container_N::Container>>(Command_N::CONTAINER)
-          ->get();
+      argumentRegistry.get_t<Command_N::CONTAINER>()->get();
 
   // audio streams desired by the user
-  VectorArgument<int> *audioStreams =
-      argumentRegistry.get_t<VectorArgument<int>>(Command_N::AUDIOSTREAMS);
+  const VectorArgument<int> *audioStreams =
+      argumentRegistry.get_t<Command_N::AUDIOSTREAMS>();
 
-  VectorArgument<int> *subtitleStreams =
-      argumentRegistry.get_t<VectorArgument<int>>(Command_N::SUBTITLESTREAMS);
+  const VectorArgument<int> *subtitleStreams =
+      argumentRegistry.get_t<Command_N::SUBTITLESTREAMS>();
 
   // TODO: either use enums for codecs or strings for everything
 
@@ -85,7 +78,7 @@ FFmpegArgumentBuilder::~FFmpegArgumentBuilder() {
   }
 }
 
-void FFmpegArgumentBuilder::assertAudio(VectorArgument<int> &streams) {
+void FFmpegArgumentBuilder::assertAudio(const VectorArgument<int> &streams) {
 
   // wanted index total
   int w_index_total = 0;
@@ -118,7 +111,7 @@ void FFmpegArgumentBuilder::assertAudio(VectorArgument<int> &streams) {
   }
 }
 
-void FFmpegArgumentBuilder::assertSubtitle(VectorArgument<int> &streams) {
+void FFmpegArgumentBuilder::assertSubtitle(const VectorArgument<int> &streams) {
 
   // wanted index total
   int w_sindex_total = 0;
@@ -155,7 +148,7 @@ void FFmpegArgumentBuilder::assertSubtitle(VectorArgument<int> &streams) {
 }
 
 std::vector<BaseAudioCodec *>
-FFmpegArgumentBuilder::generateAudioCodecs(VectorArgument<int> &streams,
+FFmpegArgumentBuilder::generateAudioCodecs(const VectorArgument<int> &streams,
                                            ArgumentRegistry &argumentRegistry) {
   // cases:
   // 1. audio streams (vec<int>) match audio codecs (vec<AudioCodec>)
@@ -171,12 +164,9 @@ FFmpegArgumentBuilder::generateAudioCodecs(VectorArgument<int> &streams,
   std::vector<BaseAudioCodec *> audioCodecs;
 
   std::vector<std::string> wanted_codecs =
-      argumentRegistry
-          .get_t<VectorArgument<std::string>>(Command_N::AUDIOCODEC)
-          ->get();
+      argumentRegistry.get_t<Command_N::AUDIOCODEC>()->get();
   std::vector<int> wanted_channels =
-      argumentRegistry.get_t<VectorArgument<int>>(Command_N::AUDIOCHANNELS)
-          ->get();
+      argumentRegistry.get_t<Command_N::AUDIOCHANNELS>()->get();
 
   // we are generating a new BaseAudioCodec for each audio stream
   // in the existing audio streams
@@ -264,14 +254,12 @@ FFmpegArgumentBuilder::generateAudioCodecs(VectorArgument<int> &streams,
 }
 
 std::vector<BaseSubtitleCodec *> FFmpegArgumentBuilder::generateSubtitleCodecs(
-    VectorArgument<int> &streams, ArgumentRegistry &argumentRegistry) {
+    const VectorArgument<int> &streams, ArgumentRegistry &argumentRegistry) {
   // Implementation for generating subtitle codecs
   std::vector<BaseSubtitleCodec *> subtitleCodecs;
 
   std::vector<std::string> wanted_codecs =
-      argumentRegistry
-          .get_t<VectorArgument<std::string>>(Command_N::SUBTITLECODECS)
-          ->get();
+      argumentRegistry.get_t<Command_N::SUBTITLECODECS>()->get();
 
   for (int i = 0; i < media->probeResult->subtitleStreams.size(); i++) {
     BaseSubtitleCodec *subtitleCodec = nullptr;
@@ -366,25 +354,25 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
          media->probeResult->audioStreams.size());
 
   // ProgramOptions& programSettings = *Program::settings->programOptions;
-  ChildOptions &childOptions = *Program::settings->childOptionsMap[media->id];
+  ChildOptions &childOptions = media->getOptions();
   ArgumentRegistry &argumentRegistry = *childOptions.argumentRegistry;
-  MediaFormat format =
-      argumentRegistry.get_t<Quality>(Command_N::QUALITY)->get();
+  MediaFormat format = argumentRegistry.get_t<Command_N::QUALITY>()->get();
 
   std::vector<std::string> result;
 
   result.push_back("-v error -stats");
 
-  if (argumentRegistry.get_t<FlagArgument>(Command_N::HARDWAREDECODE)->get()) {
+  if (*argumentRegistry.get_t<Command_N::HARDWAREDECODE>()) {
     if (childOptions.runningHWAccel != HWAccelerators_N::INVALID) {
       result.push_back("-hwaccel " + HWAccelerators_N::definition(
                                          childOptions.runningHWAccel));
     }
   }
 
-  result.push_back("-i \"" + media->file->originalFullPath + "\"");
+  result.push_back("-i \"" + media->getFile().naming.original_full_path + "\"");
 
-  result.push_back("-metadata title=\"" + media->file->conversionName + "\"");
+  result.push_back("-metadata title=\"" +
+                   media->getFile().naming.conversion_name + "\"");
 
   result.push_back("-map 0:v:0");
 
@@ -445,39 +433,42 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
 
   result.push_back("-level 4.1");
 
-  if (argumentRegistry.get_t<FlagArgument>(Command_N::BITRATE)->get()) {
+  // TODO: refactor to handle the differing control rate flags
+  // for each codec
+  if (*argumentRegistry.get_t<Command_N::BITRATE>()) {
     result.push_back("-b:v " + std::to_string(format.bitrate) + "M");
     result.push_back("-bufsize " + std::to_string(format.bitrate * 2) + "M");
     result.push_back("-maxrate " + std::to_string(format.max * 2) + "M");
     result.push_back("-minrate " + std::to_string(format.min * 2) + "M");
-  } else if (argumentRegistry.get_t<FlagArgument>(Command_N::CONSTRAIN)
-                 ->get()) {
-    result.push_back("-crf " + std::to_string(format.crf));
+  } else if (*argumentRegistry.get_t<Command_N::CONSTRAIN>()) {
+    result.push_back(container->getVideoCodec()->controlRateFlag() + " " +
+                     std::to_string(format.crf));
     result.push_back("-bufsize " + std::to_string(format.bitrate * 2) + "M");
     result.push_back("-maxrate " + std::to_string(format.max * 2) + "M");
   } else {
-    result.push_back("-crf " + std::to_string(format.crf));
+    result.push_back(container->getVideoCodec()->controlRateFlag() + " " +
+                     std::to_string(format.crf));
   }
 
-  if (argumentRegistry.get_t<FlagArgument>(Command_N::CROP)->get()) {
-    result.push_back("-vf scale=" + media->video->convertedResolution +
-                     ":flags=lanczos,crop=" + format.crop);
+  if (*argumentRegistry.get_t<Command_N::CROP>()) {
+    result.push_back(
+        "-vf scale=" + media->getFile().video_info.convertedResolution +
+        ":flags=lanczos,crop=" + format.crop);
 
   }
 
   else
-    result.push_back("-vf scale=" + media->video->convertedResolution +
-                     ":flags=lanczos");
+    result.push_back(
+        "-vf scale=" + media->getFile().video_info.convertedResolution +
+        ":flags=lanczos");
 
-  StringArgument *startBeginning =
-      argumentRegistry.get_t<StringArgument>(Command_N::START);
+  StringArgument *startBeginning = argumentRegistry.get_t<Command_N::START>();
 
   if (!startBeginning->get().empty()) {
     result.push_back("-ss " + startBeginning->get());
   }
 
-  TimeStringVectorArgument *trim =
-      argumentRegistry.get_t<TimeStringVectorArgument>(Command_N::TRIM);
+  TimeStringVectorArgument *trim = argumentRegistry.get_t<Command_N::TRIM>();
 
   if (!trim->get().empty()) {
     result.push_back("-ss " + trim->get()[0]);
@@ -493,19 +484,16 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
 
   // }
 
-  if (argumentRegistry.get_t<BaseArgument<Tunes_N::Tunes>>(Command_N::TUNE)
-          ->get() != Tunes_N::DEFAULT) {
+  if (*argumentRegistry.get_t<Command_N::TUNE>() != Tunes_N::DEFAULT) {
     result.push_back(
-        "-tune " + Tunes_N::definition(
-                       argumentRegistry
-                           .get_t<BaseArgument<Tunes_N::Tunes>>(Command_N::TUNE)
-                           ->get()));
+        "-tune " +
+        Tunes_N::definition(argumentRegistry.get_t<Command_N::TUNE>()->get()));
   }
 
-  result.push_back("\"" + media->file->conversionFilePath + "\"");
+  result.push_back("\"" + media->getFile().naming.conversion_full_path + "\"");
 
   if (false // TODO: create validate flag
-      || argumentRegistry.get_t<FlagArgument>(Command_N::OVERWRITE)->get())
+      || argumentRegistry.get_t<Command_N::OVERWRITE>()->get())
     result.push_back("-y");
   else {
     result.push_back("-n");

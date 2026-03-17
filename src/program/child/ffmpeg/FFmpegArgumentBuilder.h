@@ -20,13 +20,13 @@ public:
   FFmpegArgumentBuilder(Media *media);
   ~FFmpegArgumentBuilder();
 
-  void assertAudio(VectorArgument<int> &);
-  void assertSubtitle(VectorArgument<int> &);
+  void assertAudio(const VectorArgument<int> &);
+  void assertSubtitle(const VectorArgument<int> &);
 
-  std::vector<BaseAudioCodec *> generateAudioCodecs(VectorArgument<int> &,
+  std::vector<BaseAudioCodec *> generateAudioCodecs(const VectorArgument<int> &,
                                                     ArgumentRegistry &);
-  std::vector<BaseSubtitleCodec *> generateSubtitleCodecs(VectorArgument<int> &,
-                                                          ArgumentRegistry &);
+  std::vector<BaseSubtitleCodec *>
+  generateSubtitleCodecs(const VectorArgument<int> &, ArgumentRegistry &);
 
   // if container supports video codec, use
   // else stop program
