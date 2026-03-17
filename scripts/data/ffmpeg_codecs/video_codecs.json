@@ -544,5 +544,45 @@
             "ZERO_LATENCY",
             "GRAIN"
         ]
+    },
+    "libvpx_vp9": {
+        "defaults": {
+            "runningPreset": "slow",
+            "runningLevel": "4.1",
+            "runningTune": "DEFAULT"
+        },
+        "name": "vp9",
+        "displayName": "vp9",
+        "aliases": [
+            "vp9",
+            "libvpx-vp9"
+        ],
+        "controlRateFlag": "-b:v 0 -crf",
+        "supportedLevels": [
+            "1",
+            "1.1",
+            "2",
+            "2.1",
+            "3",
+            "3.1",
+            "4",
+            "4.1",
+            "5",
+            "5.1",
+            "6",
+            "6.1"
+        ],
+        "supportedPresets": [
+            "default",
+            "good",
+            "best",
+            "slow",
+            "realtime"
+        ],
+        "supportedTunes": [
+            "PSNR",
+            "SSIM",
+            "ZERO_LATENCY"
+        ]
     }
 }
