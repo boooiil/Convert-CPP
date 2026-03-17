@@ -6,19 +6,11 @@
 #include <queue>
 #include <string>
 
-#include "../../../utils/NumberUtils.h"
 #include "../../../utils/StringUtils.h"
 #include "../../../utils/TimeUtils.h"
 #include "../../../utils/logging/LogColor.h"
 #include "../../../utils/logging/Logger.h"
 #include "../../Program.h"
-#include "../../settings/Settings.h"
-#include "../../settings/arguments/EnumArgument.h"
-#include "../../settings/arguments/FlagArgument.h"
-#include "../../settings/arguments/IntegerArgument.h"
-#include "../../settings/arguments/video/Quality.h"
-#include "../../settings/enums/Encoders_N.h"
-#include "../../settings/enums/LogFormat_N.h"
 #include "../../ticker/NTicker.h"
 #include "../Child.h"
 #include "../ffmpeg/probe/ProbeResultStreamAudio.h"
@@ -26,9 +18,9 @@
 #include "../ffmpeg/probe/ProbeResultStreamVideo.h"
 #include "../media/Media.h"
 #include "src/program/definitions/DefinitionRegistry.h"
+#include "src/program/generics/JSONSerializableRunner.h"
 #include "src/program/settings/enums/Command_N.h"
 #include "src/program/settings/enums/Container_N.h"
-#include "src/program/settings/enums/Encoders_N.h"
 #include "src/program/settings/enums/Tunes_N.h"
 
 // TODO: appending to string rebuilds each time
@@ -40,11 +32,10 @@ inline auto tab(int spaces) -> std::string {
 }
 // NOLINTEND(modernize-return-braced-init-list)
 
-void ChildDisplay::print() {
-  Child &child =
-      *Program::ticker->getRunner<NTicker>()->runner->getRunner<Child>();
+void ChildDisplay::print(JSONSerializableRunner &ticker) {
+  Child &child = *ticker.getRunner<NTicker>()->runner->getRunner<Child>();
 
-  ChildOptions &childOptions = *Program::settings->childOptionsMap[child.id];
+  ChildOptions &childOptions = child.getOptions();
   ArgumentRegistry &argumentRegistry = *childOptions.argumentRegistry;
 
   std::string sendStr = "";
@@ -57,35 +48,20 @@ void ChildDisplay::print() {
       LogColor::fgCyan, LogColor::fgWhite);
 
   std::string encoder = StringUtils::bracket(
-      "TARGET ENC",
-      DefinitionRegistry::defFromEnum(
-          argumentRegistry
-              .get_t<BaseArgument<Encoders_N::Encoders>>(Command_N::ENCODER)
-              ->get()));
-
-  std::string runningEncoder = StringUtils::bracket(
-      "ENC", DefinitionRegistry::defFromEnum(childOptions.runningEncoder));
-
-  std::string runningDecoder = StringUtils::bracket(
-      "ACC", DefinitionRegistry::defFromEnum(childOptions.runningHWAccel));
+      "TARGET ENC", DefinitionRegistry::defFromEnum(
+                        argumentRegistry.get_t<Command_N::ENCODER>()->get()));
 
   std::string resolution = StringUtils::bracket(
-      "RES", argumentRegistry.get_t<Quality>(Command_N::QUALITY)->get().name);
+      "RES", argumentRegistry.get_t<Command_N::QUALITY>()->get().name);
 
   std::string tune = StringUtils::bracket(
-      "TUNE",
-      Tunes_N::definition(argumentRegistry.get_t<EnumArgument<Tunes_N::Tunes>>(
-          Command_N::TUNE)));
+      "TUNE", Tunes_N::definition(argumentRegistry.get_t<Command_N::TUNE>()));
 
   std::string amount = StringUtils::bracket(
-      "AMOUNT",
-      argumentRegistry.get_t<IntegerArgument>(Command_N::AMOUNT)->toString());
-
+      "AMOUNT", argumentRegistry.get_t<Command_N::AMOUNT>()->toString());
   std::string container = StringUtils::bracket(
       "CONTAINER",
-      Container_N::definition(
-          argumentRegistry.get_t<EnumArgument<Container_N::Container>>(
-              Command_N::CONTAINER)));
+      Container_N::definition(argumentRegistry.get_t<Command_N::CONTAINER>()));
 
   // std::string a = ArgumentRegistry::get_t<IntegerArgument>("-a");
 
@@ -96,22 +72,14 @@ void ChildDisplay::print() {
   std::string crop =
       StringUtils::bracket("CROP", "", LogColor::fgGray, LogColor::fgRed);
 
-  std::string header = time + " " + encoder + " " + runningEncoder + " " +
-                       runningDecoder + " " + resolution + " " + tune + " " +
-                       amount + " " + container;
+  std::string header = time + " " + encoder + " " + " " + resolution + " " +
+                       tune + " " + amount + " " + container;
 
-  if (argumentRegistry.get_t<FlagArgument>(Command_N::CONSTRAIN)->get()) {
+  if (*argumentRegistry.get_t<Command_N::CONSTRAIN>()) {
     header += " " + constrain;
   }
 
-  if (Program::settings->programOptions->argumentRegistry
-          ->get_t<EnumArgument<LogFormat_N::LogFormat>>(
-              Command_N::LOGGINGOPTIONS)
-          ->get() == LogFormat_N::DEBUG) {
-    header += " " + debug;
-  }
-
-  if (argumentRegistry.get_t<FlagArgument>(Command_N::CROP)->get()) {
+  if (*argumentRegistry.get_t<Command_N::CROP>()) {
     header += " " + crop;
   }
 
@@ -130,39 +98,7 @@ void ChildDisplay::print() {
     Media *media = child.converting.front();
     child.converting.pop();
 
-    // create a time util to get this
-    std::string started =
-        StringUtils::bracket("STR", TimeUtils::timeFormat(media->started));
-
-    // create a time util to get this
-    std::string eta =
-        StringUtils::bracket("ETA", TimeUtils::durationFormat(media->eta()));
-
-    std::string fileName = StringUtils::bracket(
-        "FILE", StringUtils::truncateString(media->file->conversionName, 25));
-
-    std::string activity = StringUtils::bracket(
-        "ACT", DefinitionRegistry::defFromEnum(media->getActivity()));
-
-    std::string progress = StringUtils::bracket(
-        "PROG", std::to_string(media->percentCompleted()) + "%");
-
-    std::string cq = StringUtils::bracket(
-        "QUAL", NumberUtils::formatNumber(media->quality(), 2) + "%");
-
-    std::string speed = StringUtils::bracket(
-        "SPEED", NumberUtils::formatNumber(media->speed(), 2));
-
-    std::string bitrate = StringUtils::bracket(
-        "BITRATE",
-        NumberUtils::formatNumber(media->working->bitrate, 2) + "kb/s");
-
-    sendStr += fileName + " " + activity + " " + started + " " + progress +
-               " " + cq + " " + bitrate + " " + speed + " " + eta + "\n";
-    // Program::log->sendBuffer(
-    //     bufferLen, fileName + " " + activity + " " + started + " " +
-    //     percent
-    //     + " " + cq + " " + bitrate + " " + speed + " " + eta);
+    sendStr += media->convertingLine();
 
     t_queue.push(media);
   }
@@ -174,34 +110,7 @@ void ChildDisplay::print() {
     Media *media = child.pending.front();
     child.pending.pop();
 
-    std::string fileName = StringUtils::bracket(
-        "FILE", StringUtils::truncateString(media->file->conversionName, 25));
-
-    std::string activity = StringUtils::bracket(
-        "ACT", DefinitionRegistry::defFromEnum(media->getActivity()));
-
-    if (media->hasFinished()) {
-
-      std::string ended =
-          StringUtils::bracket("END", TimeUtils::timeFormat(media->ended));
-
-      std::string elapsed = StringUtils::bracket(
-          "ELAPSED",
-          TimeUtils::durationFormat((media->ended - media->started) * 1000));
-
-      std::string reduced = StringUtils::bracket(
-          "REDUCED", std::to_string(media->percentReduced()) + "%");
-
-      sendStr += fileName + " " + activity + " " + reduced + " " + ended + " " +
-                 elapsed + "\n";
-      // Program::log->sendBuffer(bufferLen, fileName + " " + activity + " "
-      // +
-      //                                         reduced + " " + ended + " "
-      //                                         + elapsed);
-    } else {
-      sendStr += fileName + " " + activity + "\n";
-      // Program::log->sendBuffer(bufferLen, fileName + " " + activity);
-    }
+    sendStr += media->pendingLine();
 
     t_queue.push(media);
   }
@@ -209,17 +118,18 @@ void ChildDisplay::print() {
   LOG(sendStr);
 }
 
-void ChildDisplay::printDebug(void) {
-  Child &child =
-      *Program::ticker->getRunner<NTicker>()->runner->getRunner<Child>();
+void ChildDisplay::printDebug(JSONSerializableRunner &ticker) {
+  Child &child = *ticker.getRunner<NTicker>()->runner->getRunner<Child>();
 
   std::queue<Media *> t_queue;
 
   while (!child.converting.empty()) {
     Media *media = child.converting.front();
     child.converting.pop();
-    auto totalFrames = static_cast<double>(media->video->totalFrames);
-    auto completedFrames = static_cast<double>(media->working->completedFrames);
+    auto totalFrames =
+        static_cast<double>(media->getFile().video_info.totalFrames);
+    auto completedFrames =
+        static_cast<double>(media->getFile().processing_info.completedFrames);
 
     int percent_result =
         static_cast<int>(std::round((completedFrames / totalFrames) * 100));
@@ -259,7 +169,7 @@ void ChildDisplay::printInformationTyped(NTicker *ticker, Child *child) {
 
   std::queue<Media *> media_t_queue;
   while (!child->pending.empty()) {
-    ChildOptions &childOptions = *Program::settings->childOptionsMap[child->id];
+    ChildOptions &childOptions = child->getOptions();
 
     Media *media = child->pending.front();
     child->pending.pop();
@@ -277,7 +187,8 @@ void ChildDisplay::printInformationTyped(NTicker *ticker, Child *child) {
     LOG(ob + "CWD - " + LogColor::fgGray(childOptions.CWD) + cb);
     LOG();
     // file bloc
-    LOG(tab(1) + ob + LogColor::fgRed(media->file->originalFileNameExt) + cb);
+    LOG(tab(1) + ob +
+        LogColor::fgRed(media->getFile().naming.original_name_ext) + cb);
     LOG();
     // format bloc
     LOG(tab(2) + ob + LogColor::fgWhite("Format") + cb);
@@ -380,13 +291,4 @@ void ChildDisplay::printInformationTyped(NTicker *ticker, Child *child) {
   child->pending = media_t_queue;
 }
 
-void ChildDisplay::printJSON() {
-  // clear console?
-#ifdef _WIN32
-  system("cls");
-#else
-  system("clear");
-#endif
-  // TODO: finish
-  puts(Program::ticker->toJSON().dump().c_str());
-}
+void ChildDisplay::printJSON() {}
