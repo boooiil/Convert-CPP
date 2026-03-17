@@ -44,11 +44,11 @@ class SubtitleCodec_{class_name}_Generated : public BaseSubtitleCodec {{
  public:
     SubtitleCodec_{class_name}_Generated() : BaseSubtitleCodec() {{}};
     
-    auto getName() -> std::string override {{ return "{value['name']}"; }};
-    auto getDisplayName() -> std::string override {{ return "{value['displayName']}"; }};
-    auto getArg() -> std::string override {{ return "{value['arg']}"; }};
-    auto getAliases() -> std::set<std::string> override {{ return {{{aliases}}}; }};
-    auto isImage() -> bool override {{ return {str(value['isImage']).lower()}; }};
+    auto getName() const -> const std::string override {{ return "{value['name']}"; }};
+    auto getDisplayName() const -> const std::string override {{ return "{value['displayName']}"; }};
+    auto getArg() const -> const std::string override {{ return "{value['arg']}"; }};
+    auto getAliases() const -> const std::set<std::string> override {{ return {{{aliases}}}; }};
+    auto isImage() const -> const bool override {{ return {str(value['isImage']).lower()}; }};
 }};
 #endif // SUBTITLE_CODEC_{class_name}_GENERATED_H"""
 

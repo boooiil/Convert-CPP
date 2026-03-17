@@ -59,17 +59,17 @@ class AudioCodec_{class_name}_Generated : public BaseAudioCodec {{
                  int bitDepth = {defaults['bitDepth']}):
                  BaseAudioCodec(channel, sampleRate, bitDepth) {{}};
 
-  auto getName() -> std::string override {{ return "{value['name']}"; }};
-  auto getDisplayName() -> std::string override {{ return "{value['displayName']}"; }};
-  auto getAliases() -> std::set<std::string> override {{ return {{{aliases}}}; }};
+  auto getName() const -> const std::string override {{ return "{value['name']}"; }};
+  auto getDisplayName() const -> const std::string override {{ return "{value['displayName']}"; }};
+  auto getAliases() const -> const std::set<std::string> override {{ return {{{aliases}}}; }};
 
-  auto supportedChannels() -> std::vector<int> override {{ return {{{supportedChannels}}}; }};
-  auto supportedSampleRates() -> std::vector<int> override {{ return {{{supportedSampleRates}}}; }};
-  auto supportedBitDepths() -> std::vector<int> override {{ return {{{supportedBitDepths}}}; }};
+  auto supportedChannels() const -> const std::vector<int> override {{ return {{{supportedChannels}}}; }};
+  auto supportedSampleRates() const -> const std::vector<int> override {{ return {{{supportedSampleRates}}}; }};
+  auto supportedBitDepths() const -> const std::vector<int> override {{ return {{{supportedBitDepths}}}; }};
 
-  auto fallbackChannel() -> int override {{ return {defaults['channel']}; }};
-  auto fallbackSampleRate() -> int override {{ return {defaults['sampleRate']}; }};
-  auto fallbackBitDepth() -> int override {{ return {defaults['bitDepth']}; }};
+  auto fallbackChannel() const -> const int override {{ return {defaults['channel']}; }};
+  auto fallbackSampleRate() const -> const int override {{ return {defaults['sampleRate']}; }};
+  auto fallbackBitDepth() const -> const int override {{ return {defaults['bitDepth']}; }};
 
 }};
 

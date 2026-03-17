@@ -51,39 +51,39 @@ def generate(source: str, destination: str):
 class Container_{class_name}_Generated : public BaseContainer {{
 public:
 
-    auto getName() -> std::string override {{
+    auto getName() const -> const std::string override {{
         return "{value['name']}";
     }}
 
-    auto getDisplayName() -> std::string override {{
+    auto getDisplayName() const -> const std::string override {{
         return "{value['displayName']}";
     }}
 
-    auto getAliases() -> std::set<std::string> override {{
+    auto getAliases() const -> const std::set<std::string> override {{
         return {{{aliases}}};
     }}
 
-    auto supportedAudioCodecs() -> std::vector<std::string> override {{
+    auto supportedAudioCodecs() const -> const std::vector<std::string> override {{
         return {{{supportedAudioCodecs}}};
     }}
 
-    auto supportedSubtitleCodecs() -> std::vector<std::string> override {{
+    auto supportedSubtitleCodecs() const -> const std::vector<std::string> override {{
         return {{{supportedSubtitleCodecs}}};
     }}
 
-    auto supportedVideoCodecs() -> std::vector<std::string> override {{
+    auto supportedVideoCodecs() const -> const std::vector<std::string> override {{
         return {{{supportedVideoCodecs}}};
     }}
 
-    auto fallbackAudioCodec() -> std::string override {{
+    auto fallbackAudioCodec() const -> const std::string override {{
         return "{defaults['audioCodec']}";
     }}
 
-    auto fallbackSubtitleCodec() -> std::string override {{
+    auto fallbackSubtitleCodec() const -> const std::string override {{
         return "{defaults['subtitleCodec']}";
     }}
 
-    auto fallbackVideoCodec() -> std::string override {{
+    auto fallbackVideoCodec() const -> const std::string override {{
         return "{defaults['videoCodec']}";
     }}
 }};
