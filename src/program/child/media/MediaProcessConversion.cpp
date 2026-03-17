@@ -7,8 +7,6 @@
 #include "../../../utils/RegexUtils.h"
 #include "../../../utils/StringUtils.h"
 #include "../../../utils/logging/Logger.h"
-#include "../../Program.h"
-#include "../../settings/Settings.h"
 #include "../../settings/enums/Activity_N.h"
 #include "../../settings/enums/Encoders_N.h"
 #include "Media.h"
@@ -25,9 +23,13 @@ MediaProcessConversion::~MediaProcessConversion() {
 void MediaProcessConversion::parse(std::string data) {
   LOG_VERBOSE("PARSING LINE:", data);
 
-  ChildOptions &childOptions =
-      *Program::settings->childOptionsMap[this->object->id];
+  ChildOptions &childOptions = this->object->getOptions();
   // ArgumentRegistry& argumentRegistry = *childOptions.argumentRegistry;
+
+  // wants to do a stress test
+  // wants to know if virus or blockage
+  // kidneys failing
+  // she is anemic
 
   // Return fail IF:
   // 1&2. Encode fails to find a device
@@ -128,11 +130,13 @@ void MediaProcessConversion::parse(std::string data) {
     // assert(completedFrames != "");
     // assert(fps != "");
 
-    if (quality != "-1.0")
-      this->object->working->quality = std::stof(quality);
-    this->object->working->bitrate = std::stof(bitrate);
-    this->object->working->completedFrames = std::stoll(completedFrames);
-    this->object->working->fps = std::stof(fps);
+    if (quality != "-1.0") {
+      this->object->getFile().processing_info.quality = std::stof(quality);
+    }
+    this->object->getFile().processing_info.bitrate = std::stof(bitrate);
+    this->object->getFile().processing_info.completedFrames =
+        std::stoll(completedFrames);
+    this->object->getFile().processing_info.fps = std::stof(fps);
 
     LOG_DEBUG("QUALITY:", quality);
     LOG_DEBUG("BITRATE:", bitrate);

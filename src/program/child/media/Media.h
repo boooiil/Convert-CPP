@@ -19,8 +19,8 @@
 #include "../ffmpeg/FFmpegArgumentBuilder.h"
 #include "../ffmpeg/probe/ProbeResult.h"
 #include "MediaFile.h"
-#include "MediaVideoProperties.h"
-#include "MediaWorkingProperties.h"
+#include "src/program/child/media/file/FileContainer.h"
+#include "src/program/settings/options/ChildOptions.h"
 
 /**
  * @brief Media class.
@@ -34,10 +34,7 @@ public:
   long started;   /// @brief start time
   long ended;     /// @brief end time
 
-  ProbeResult *probeResult;        /// @brief ProbeResult object
-  MediaFile *file;                 /// @brief MediaFile object
-  MediaVideoProperties *video;     /// @brief MediaVideoProperties object
-  MediaWorkingProperties *working; /// @brief MediaWorkingProperties object
+  ProbeResult *probeResult; /// @brief ProbeResult object
   FFmpegArgumentBuilder
       *ffmpegArguments; /// @brief vector of arguments to be passed to ffmpeg
 
@@ -53,7 +50,8 @@ public:
    * @param[in] name - Name of the file.
    * @param[in] path - Path to the file (generally CWD).
    */
-  Media(uuids::uuid id, std::string name, std::string path);
+  Media(ChildOptions &options, uuids::uuid id, std::string name,
+        std::string path);
   ~Media(void);
 
   /**
@@ -106,49 +104,49 @@ public:
    * @return false if the media activity is WAITING-like, FINISHED, or
    * FAILED-like.
    */
-  const bool isProcessing(void);
+  const bool isProcessing(void) const;
 
   /**
    * @brief Check if the current media has failed processing.
    *
    * @return true if the media activity is FAILED-like.
    */
-  const bool hasFailed(void);
+  const bool hasFailed(void) const;
 
   /**
    * @brief Check if the current media has failed processing.
    *
    * @return true if the media activity is FINISHED.
    */
-  const bool hasFinished(void);
+  const bool hasFinished(void) const;
 
   /**
    * @brief Check if the current media is waiting to be processed.
    *
    * @return true if the media activity is WAITING.
    */
-  const bool isWaiting(void);
+  const bool isWaiting(void) const;
 
   /**
    * @brief Check if the current media is waiting for statistics.
    *
    * @return true if the media activity is WAITING_STATISTICS.
    */
-  const bool isWaitingToStatistics(void);
+  const bool isWaitingToStatistics(void) const;
 
   /**
    * @brief Check if the current media is waiting to convert.
    *
    * @return true if the media activity is WAITING_CONVERT.
    */
-  const bool isWaitingToConvert(void);
+  const bool isWaitingToConvert(void) const;
 
   /**
    * @brief Check if the current media is waiting to validate.
    *
    * @return true if the media activity is WAITING_VALIDATE.
    */
-  const bool isWaitingToValidate(void);
+  const bool isWaitingToValidate(void) const;
 
   /**
    * @brief Get ms until item is completed based on its total frames,
@@ -188,6 +186,13 @@ public:
    */
   int percentReduced() const;
 
+  FileContainer &getFile() { return this->file; }
+
+  ChildOptions &getOptions();
+
+  std::string convertingLine() const;
+  std::string pendingLine() const;
+
   void fromJSON(nlohmann::json) override;
 
   nlohmann::json toJSON(void) override;
@@ -195,6 +200,8 @@ public:
 private:
   /// @brief activity type
   Activity_N::Activity activity;
+  FileContainer file;
+  ChildOptions &childOptions; /// @brief owner child
 };
 
 #endif // !MEDIA

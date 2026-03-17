@@ -18,14 +18,13 @@
 #include "../../../utils/ListUtils.h"
 #include "../../../utils/RegexUtils.h"
 #include "../../../utils/logging/Logger.h"
-#include "../../Program.h"
-#include "../../settings/arguments/video/Quality.h"
 #include "../../settings/enums/Activity_N.h"
 #include "../ffmpeg/probe/ProbeResult.h"
 #include "../ffmpeg/probe/ProbeResultStreamVideo.h"
 #include "Media.h"
 #include "MediaFormat.h"
 #include "MediaProcess.h"
+#include "src/program/settings/enums/Command_N.h"
 
 #ifdef _WIN32
 #define popen _popen
@@ -120,30 +119,32 @@ void MediaProcessStatistics::parse(std::string data) {
       duration = (int)std::stof(this->object->probeResult->format.duration);
     }
 
-    this->object->file->size =
+    this->object->getFile().video_info.size =
         std::stoull(this->object->probeResult->format.size);
-    this->object->video->fps =
+    this->object->getFile().video_info.fps =
         round((static_cast<float>(numerator) / denominator) * 100) / 100;
-    this->object->video->width = prsv.width;
-    this->object->video->height = prsv.height;
-    this->object->video->totalFrames = static_cast<unsigned long long>(
-        std::ceil(duration * this->object->video->fps));
+    this->object->getFile().video_info.width = prsv.width;
+    this->object->getFile().video_info.height = prsv.height;
+    this->object->getFile().video_info.totalFrames =
+        static_cast<unsigned long long>(
+            std::ceil(duration * this->object->getFile().video_info.fps));
 
     // assert(!settings->argumentParser->quality.get().name.empty());
 
-    ChildOptions &childOptions =
-        *Program::settings->childOptionsMap[this->object->id];
+    ChildOptions &childOptions = this->object->getOptions();
     ArgumentRegistry &argumentRegistry = *childOptions.argumentRegistry;
-    MediaFormat format =
-        argumentRegistry.get_t<Quality>(Command_N::QUALITY)->get();
+    MediaFormat format = argumentRegistry.get_t<Command_N::QUALITY>()->get();
 
-    this->object->video->convertedWidth = std::to_string(format.width);
-    this->object->video->convertedHeight = std::to_string(format.getResolution(
-        this->object->video->width, this->object->video->height, format.width));
-    this->object->video->convertedResolution =
-        this->object->video->convertedWidth + ":" +
-        this->object->video->convertedHeight;
-    this->object->video->crf = format.crf;
+    this->object->getFile().video_info.convertedWidth =
+        std::to_string(format.width);
+    this->object->getFile().video_info.convertedHeight =
+        std::to_string(format.getResolution(
+            this->object->getFile().video_info.width,
+            this->object->getFile().video_info.height, format.width));
+    this->object->getFile().video_info.convertedResolution =
+        this->object->getFile().video_info.convertedWidth + ":" +
+        this->object->getFile().video_info.convertedHeight;
+    this->object->getFile().video_info.crf = format.crf;
   } catch (const std::exception &e) {
     LOG_DEBUG("ERROR: ", e.what());
     this->object->setActivity(Activity_N::FAILED_JSON_PARSE);

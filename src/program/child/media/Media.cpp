@@ -19,37 +19,25 @@
 #include "MediaProcessConversion.h"
 #include "MediaProcessStatistics.h"
 #include "MediaProcessValidate.h"
-#include "MediaVideoProperties.h"
-#include "MediaWorkingProperties.h"
 #include "src/program/Program.h"
+#include "src/program/child/media/file/FileContainer.h"
 #include "src/program/definitions/DefinitionRegistry.h"
+#include "src/program/settings/enums/Activity_N.h"
+#include "src/program/settings/enums/Encoders_N.h"
+#include "src/program/settings/enums/HWAccelerators_N.h"
+#include "src/utils/NumberUtils.h"
+#include "src/utils/StringUtils.h"
+#include "src/utils/TimeUtils.h"
 
-Media::Media()
-    : started(0), ended(0), probeResult(nullptr), file(new MediaFile()),
-      video(new MediaVideoProperties()), working(new MediaWorkingProperties()),
-      ffmpegArguments(nullptr), activity(Activity_N::WAITING) {
-  std::random_device rd;  // Seed for random number generator
-  std::mt19937 gen(rd()); // Standard mersenne_twister_engine seeded with rd()
-  uuids::uuid_random_generator generator(
-      gen); // Pass the generator to uuid_random_generator
-  this->id = generator();
-}
-
-Media::Media(uuids::uuid id, std::string name, std::string path)
+Media::Media(ChildOptions &options, uuids::uuid id, std::string name,
+             std::string path)
     : id(id), started(0), ended(0), probeResult(nullptr),
-      file(new MediaFile(id, name, path)), video(new MediaVideoProperties()),
-      working(new MediaWorkingProperties()), ffmpegArguments(nullptr),
-      activity(Activity_N::WAITING) {}
+      ffmpegArguments(nullptr), activity(Activity_N::WAITING),
+      file(FileContainer(*this)), childOptions(options) {}
 
 Media::~Media() {
   LOG_DEBUG("Deconstructing media: ", this->id);
 
-  if (file != nullptr)
-    delete file;
-  if (video != nullptr)
-    delete video;
-  if (working != nullptr)
-    delete working;
   if (probeResult != nullptr)
     delete probeResult;
 
@@ -61,27 +49,30 @@ Media::~Media() {
 
 Activity_N::Activity Media::getActivity() { return this->activity; }
 
-const bool Media::isProcessing() {
+const bool Media::isProcessing() const {
   return Activity_N::isProcessing(this->activity);
 }
 
-const bool Media::hasFailed() { return Activity_N::isFailed(this->activity); }
+const bool Media::hasFailed() const {
+  return Activity_N::isFailed(this->activity);
+}
 
-const bool Media::hasFinished() {
+const bool Media::hasFinished() const {
   return this->activity == Activity_N::FINISHED;
 }
 
-const bool Media::isWaiting() { return this->activity == Activity_N::WAITING; }
-
-const bool Media::isWaitingToStatistics() {
+const bool Media::isWaiting() const {
+  return this->activity == Activity_N::WAITING;
+}
+const bool Media::isWaitingToStatistics() const {
   return this->activity == Activity_N::WAITING_STATISTICS;
 }
 
-const bool Media::isWaitingToConvert() {
+const bool Media::isWaitingToConvert() const {
   return this->activity == Activity_N::WAITING_CONVERT;
 }
 
-const bool Media::isWaitingToValidate() {
+const bool Media::isWaitingToValidate() const {
   return this->activity == Activity_N::WAITING_VALIDATE;
 }
 
@@ -98,12 +89,12 @@ void Media::doStatistics() {
 
   this->setActivity(Activity_N::STATISTICS);
 
-  LOG_DEBUG("Starting statistics for: ", this->file->originalFileNameExt);
+  LOG_DEBUG("Starting statistics for: ", this->file.naming.original_name_ext);
 
   MediaProcessStatistics statistics(this);
   statistics.start("ffprobe -v quiet -print_format json -show_format "
                    "-show_streams \"" +
-                   this->file->originalFullPath + "\"");
+                   this->file.naming.original_full_path + "\"");
 
   if (this->hasFailed()) {
     return;
@@ -120,7 +111,7 @@ void Media::doConversion() {
 
   this->setActivity(Activity_N::CONVERT);
 
-  LOG_DEBUG("Starting conversion for: ", this->file->originalFileNameExt);
+  LOG_DEBUG("Starting conversion for: ", this->file.naming.original_name_ext);
 
   MediaProcessConversion conversion(this);
 
@@ -131,14 +122,14 @@ void Media::doConversion() {
     return;
   }
 
-  if (!std::filesystem::exists(this->file->conversionFilePath)) {
+  if (!std::filesystem::exists(this->file.naming.conversion_full_path)) {
     LOG_DEBUG("Converted file does not exist: ",
-              this->file->conversionFilePath);
+              this->file.naming.conversion_full_path);
     this->setActivity(Activity_N::FAILED_FILE_MISSING);
     return;
   } else {
-    this->file->newSize =
-        std::filesystem::file_size(this->file->conversionFilePath);
+    this->file.video_info.new_size =
+        std::filesystem::file_size(this->file.naming.conversion_full_path);
   }
 
   this->setActivity(Activity_N::WAITING_VALIDATE);
@@ -153,12 +144,11 @@ void Media::doValidation() {
 
   this->setActivity(Activity_N::VALIDATE);
 
-  LOG_DEBUG("Starting validation for: ", this->file->originalFileNameExt);
+  LOG_DEBUG("Starting validation for: ", this->file.naming.original_name_ext);
 
   MediaProcessValidate validate(this);
   validate.start("ffmpeg -v quiet -stats -i \"" +
-                 this->file->conversionFilePath + "\" -f null -");
-
+                 this->file.naming.conversion_full_path + "\" -f null -");
   if (this->hasFailed()) {
     return;
   }
@@ -173,9 +163,10 @@ void Media::buildFFmpegArguments(bool isValidate) {
 
 int Media::eta() const {
 
-  float mediaFPS = this->working->fps > 0 ? this->working->fps : 1;
-  auto totalFrames = this->video->totalFrames;
-  auto completedFrames = this->working->completedFrames;
+  float mediaFPS =
+      this->file.processing_info.fps > 0 ? this->file.processing_info.fps : 1;
+  auto totalFrames = this->file.video_info.totalFrames;
+  auto completedFrames = this->file.processing_info.completedFrames;
 
   return static_cast<int>(ceil((totalFrames - completedFrames) / mediaFPS) *
                           1000);
@@ -183,32 +174,109 @@ int Media::eta() const {
 
 int Media::percentCompleted() const {
 
-  auto totalFrames = static_cast<double>(this->video->totalFrames);
-  auto completedFrames = this->working->completedFrames;
+  auto totalFrames = static_cast<double>(this->file.video_info.totalFrames);
+  auto completedFrames = this->file.processing_info.completedFrames;
 
   return static_cast<int>(std::round((completedFrames / totalFrames) * 100));
 }
 
 float Media::quality() const {
-  float crf = this->working->quality;
-  int v_crf = this->video->crf;
+  float crf = this->file.processing_info.quality;
+  int v_crf = this->file.video_info.crf;
 
   return (v_crf / crf) * 100;
 }
 
 float Media::speed() const {
-  float workingFPS = this->working->fps;
-  float videoFPS = this->video->fps;
+  float workingFPS = this->file.processing_info.fps;
+  float videoFPS = this->file.video_info.fps;
 
   return workingFPS / videoFPS;
 }
 
 int Media::percentReduced() const {
-  auto currSize = static_cast<double>(this->file->size);
-  auto newSize = this->file->newSize;
+  auto currSize = static_cast<double>(this->file.video_info.size);
+  auto newSize = this->file.video_info.new_size;
 
   return static_cast<int>(std::round(((currSize - newSize) / currSize) * 100));
 }
+
+std::string Media::convertingLine() const {
+
+  std::string accel_letter =
+      HWAccelerators_N::getLetter(this->childOptions.runningHWAccel);
+
+  std::string encoder_letter =
+      Encoders_N::getLetter(this->childOptions.runningEncoder);
+
+  std::string activity_letter = Activity_N::getLetter(this->activity);
+
+  std::string prefix = StringUtils::i_bracket(
+      activity_letter + accel_letter + encoder_letter, "");
+
+  // create a time util to get this
+  std::string started =
+      StringUtils::bracket("STR", TimeUtils::timeFormat(this->started));
+
+  // create a time util to get this
+  std::string eta =
+      StringUtils::bracket("ETA", TimeUtils::durationFormat(this->eta()));
+
+  std::string fileName = StringUtils::bracket(
+      "FILE",
+      StringUtils::truncateString(this->file.naming.conversion_name, 25));
+
+  std::string activity = StringUtils::bracket(
+      "ACT", DefinitionRegistry::defFromEnum(this->activity));
+
+  std::string progress = StringUtils::bracket(
+      "PROG", std::to_string(this->percentCompleted()) + "%");
+
+  std::string cq = StringUtils::bracket(
+      "QUAL", NumberUtils::formatNumber(this->quality(), 2) + "%");
+
+  std::string speed = StringUtils::bracket(
+      "SPEED", NumberUtils::formatNumber(this->speed(), 2));
+
+  std::string bitrate = StringUtils::bracket(
+      "BITRATE",
+      NumberUtils::formatNumber(this->file.processing_info.bitrate, 2) +
+          "kb/s");
+
+  return prefix + " " + fileName + " " + started + " " + progress + " " + cq +
+         " " + bitrate + " " + speed + " " + eta + "\n";
+}
+
+std::string Media::pendingLine() const {
+  std::string fileName = StringUtils::bracket(
+      "FILE",
+      StringUtils::truncateString(this->file.naming.conversion_name, 25));
+
+  std::string activity = StringUtils::bracket(
+      "ACT", DefinitionRegistry::defFromEnum(this->activity));
+
+  if (this->hasFinished()) {
+
+    std::string ended =
+        StringUtils::bracket("END", TimeUtils::timeFormat(this->ended));
+
+    std::string elapsed = StringUtils::bracket(
+        "ELAPSED",
+        TimeUtils::durationFormat((this->ended - this->started) * 1000));
+
+    std::string reduced = StringUtils::bracket(
+        "REDUCED", std::to_string(this->percentReduced()) + "%");
+
+    return fileName + " " + activity + " " + reduced + " " + ended + " " +
+           elapsed + "\n";
+
+  } else {
+    return fileName + " " + activity + "\n";
+  }
+}
+
+// i dont like this
+ChildOptions &Media::getOptions() { return this->childOptions; }
 
 void Media::fromJSON(nlohmann::json json) {
   if (json.empty()) {
@@ -228,40 +296,55 @@ void Media::fromJSON(nlohmann::json json) {
   this->started = json["started"];
   // this->ffmpegArguments = json["ffmpegArguments"];
 
-  this->file->originalFileNameExt = json_file["originalFileNameExt"];
-  this->file->originalFullPath = json_file["originalFullPath"];
-  this->file->conversionFilePath = json_file["conversionFilePath"];
-  this->file->conversionFolderPath = json_file["conversionFolderPath"];
-  this->file->conversionName = json_file["conversionName"];
-  this->file->conversionNameExt = json_file["conversionNameExt"];
-  this->file->ext = json_file["ext"];
-  this->file->size = json_file["size"];
-  this->file->newSize = json_file["newSize"];
-  this->file->cwd = json_file["cwd"];
-  this->file->quality = json_file["quality"];
-  this->file->series = json_file["series"];
-  this->file->season = json_file["season"];
+  this->file.naming.original_name_ext = json_file["originalFileNameExt"];
+  this->file.naming.original_full_path = json_file["originalFullPath"];
+  this->file.naming.conversion_full_path = json_file["conversionFilePath"];
+  this->file.naming.conversion_folder_path = json_file["conversionFolderPath"];
+  this->file.naming.conversion_name = json_file["conversionName"];
+  this->file.naming.conversion_name_ext = json_file["conversionNameExt"];
+  this->file.naming.extension = json_file["ext"];
+  this->file.video_info.size = json_file["size"];
+  this->file.video_info.new_size = json_file["newSize"];
+  this->file.processing_info.quality = json_file["quality"];
+  this->file.naming.series = json_file["series"];
+  this->file.naming.season_no = json_file["season"];
 
-  this->video->fps = json_video["fps"];
-  this->video->totalFrames = json_video["totalFrames"];
-  this->video->subtitleProvider = json_video["subtitleProvider"];
-  this->video->width = json_video["width"];
-  this->video->height = json_video["height"];
-  this->video->ratio = json_video["ratio"];
-  this->video->convertedResolution = json_video["convertedResolution"];
-  this->video->convertedHeight = json_video["convertedHeight"];
-  this->video->convertedWidth = json_video["convertedWidth"];
-  this->video->crop = json_video["crop"];
-  this->video->crf = json_video["crf"];
+  this->childOptions.CWD = json_file["cwd"];
 
-  this->working->fps = json_working["fps"];
-  this->working->completedFrames = json_working["completedFrames"];
-  this->working->quality = json_working["quality"];
-  this->working->bitrate = json_working["bitrate"];
+  this->file.video_info.fps = json_video["fps"];
+  this->file.video_info.totalFrames = json_video["totalFrames"];
+  this->file.video_info.subtitleProvider = json_video["subtitleProvider"];
+  this->file.video_info.width = json_video["width"];
+  this->file.video_info.height = json_video["height"];
+  this->file.video_info.ratio = json_video["ratio"];
+  this->file.video_info.convertedResolution = json_video["convertedResolution"];
+  this->file.video_info.convertedHeight = json_video["convertedHeight"];
+  this->file.video_info.convertedWidth = json_video["convertedWidth"];
+  this->file.video_info.crop = json_video["crop"];
+  this->file.video_info.crf = json_video["crf"];
+
+  this->file.processing_info.fps = json_working["fps"];
+  this->file.processing_info.completedFrames = json_working["completedFrames"];
+  this->file.processing_info.quality = json_working["quality"];
+  this->file.processing_info.bitrate = json_working["bitrate"];
 }
 
 nlohmann::json Media::toJSON(void) {
   nlohmann::json json;
+
+  json["file"] = this->file.toJSON();
+
+  if (this->ffmpegArguments == nullptr) {
+    LOG_DEBUG("Media ffmpegArguments is null:",
+              this->file.naming.original_name_ext);
+  } else {
+    // this might not work
+    json["ffmpegArguments"] = this->ffmpegArguments->build();
+  }
+
+  json["activity"] = Activity_N::definition(this->getActivity());
+  json["started"] = this->started;
+  json["ended"] = this->ended;
 
   return json;
 }

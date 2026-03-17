@@ -28,11 +28,12 @@ void MediaProcessValidate::parse(std::string data) {
     std::string fps = RegexUtils::getFirstMatch(data, "fps=(\\d+\\.\\d+|\\d+)");
 
     if (quality != "-1.0")
-      this->object->working->quality = std::stof(quality);
+      this->object->getFile().processing_info.quality = std::stof(quality);
 
-    this->object->working->bitrate = -1;
-    this->object->working->completedFrames = std::stoll(completedFrames);
-    this->object->working->fps = std::stof(fps);
+    this->object->getFile().processing_info.bitrate = -1;
+    this->object->getFile().processing_info.completedFrames =
+        std::stoll(completedFrames);
+    this->object->getFile().processing_info.fps = std::stof(fps);
 
     LOG_DEBUG("QUALITY:", quality);
     LOG_DEBUG("COMPLETED FRAMES:", completedFrames);
