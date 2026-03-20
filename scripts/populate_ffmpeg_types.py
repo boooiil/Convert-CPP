@@ -1,14 +1,10 @@
 import os
 import sys
 from ffmpeg_codecs import audio_codec, container, video_codec, subtitle_codec, factory
-# import audio_codec
-# import container
-# import video_codec
-# import subtitle_codec
-# import factory
 
-#print("CWD:", os.getcwd())
-#print("args:", sys.argv)
+if (len(sys.argv) != 2):
+    print("Usage: python populate_ffmpeg_types.py <root_directory>")
+    sys.exit()
 
 root: str = sys.argv[1]
 ffmpeg_path = os.path.join(root, "src", "program", "child", "ffmpeg")

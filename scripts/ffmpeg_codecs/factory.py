@@ -2,17 +2,16 @@ import os
 
 def generate(
         class_prefix: str, 
-        generic_class: str, 
+        parent_class: str, 
         data: list[str], 
         destination: str):
     """
     Generates a factory implementation file in the destination directory.
 
     Args:
-        header_prefix (str): The prefix for the header guard.
         class_prefix (str): The prefix for the class names.
-        generic_class (str): The generic class type for the factory.
-        data (List[str]): The audio codecs data.
+        parent_class (str): The parent class type for the factory.
+        data (List[str]): The codec data.
         destination (str): The path to the destination directory.
     """
     includes: str = ""
@@ -22,13 +21,13 @@ def generate(
         class_name: str = key.upper()
         includes += f'#include "{class_prefix}_{class_name}_Generated.h"\n'
         initBody += f"""
-  auto {key} = []() -> {generic_class}* {{
+  auto {key} = []() -> {parent_class}* {{
     return new {class_prefix}_{class_name}_Generated();
   }};
   for (auto &alias : {class_prefix}_{class_name}_Generated().getAliases()) {{
     codec_registry.add(
       alias,
-      std::make_unique<std::function<{generic_class}*()>>({key}));
+      std::make_unique<std::function<{parent_class}*()>>({key}));
   }}
 """
 
@@ -37,11 +36,11 @@ def generate(
 #include <functional>
 #include <string>
 
-Registry<std::string, std::function<{generic_class} *()>> 
+Registry<std::string, std::function<{parent_class} *()>> 
     {class_prefix}Factory::codec_registry;
 
 auto {class_prefix}Factory::create(const std::string &name) 
-    -> {generic_class} * {{
+    -> {parent_class} * {{
   if (codec_registry.empty()) {{
     initialize();
   }}
@@ -56,7 +55,7 @@ auto {class_prefix}Factory::create(const std::string &name)
 }}
 
 auto {class_prefix}Factory::registry()
-    -> const Registry<std::string, std::function<{generic_class} *()>> & {{
+    -> const Registry<std::string, std::function<{parent_class} *()>> & {{
   if (codec_registry.empty()) {{
     initialize();
   }}
