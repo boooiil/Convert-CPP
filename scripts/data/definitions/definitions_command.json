@@ -19,6 +19,15 @@
         "short_description": "Amount command.",
         "long_description": "Controls or specifies a general amount value."
     },
+    "command_audiobitrate": {
+        "name": "audiobitrate",
+        "aliases": [
+            "command_audiobitrate",
+            "audiobitrate_command"
+        ],
+        "short_description": "Audio bitrate command.",
+        "long_description": "Specifies the audio bitrate to use per stream mapping."
+    },
     "command_audiochannels": {
         "name": "audiochannels",
         "aliases": [
