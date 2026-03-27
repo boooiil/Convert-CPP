@@ -10,7 +10,6 @@
 #include "../../../utils/TimeUtils.h"
 #include "../../../utils/logging/LogColor.h"
 #include "../../../utils/logging/Logger.h"
-#include "../../Program.h"
 #include "../../ticker/NTicker.h"
 #include "../Child.h"
 #include "../ffmpeg/probe/ProbeResultStreamAudio.h"
@@ -49,21 +48,21 @@ void ChildDisplay::print(JSONSerializableRunner &ticker) {
 
   std::string encoder = StringUtils::bracket(
       "TARGET ENC", DefinitionRegistry::defFromEnum(
-                        argumentRegistry.get_t<Command_N::ENCODER>()->get()));
+                        argumentRegistry.get<Command_N::ENCODER>().get()));
 
   std::string resolution = StringUtils::bracket(
-      "RES", argumentRegistry.get_t<Command_N::QUALITY>()->get().name);
+      "RES", argumentRegistry.get<Command_N::QUALITY>().get().name);
 
   std::string tune = StringUtils::bracket(
-      "TUNE", Tunes_N::definition(argumentRegistry.get_t<Command_N::TUNE>()));
+      "TUNE", Tunes_N::definition(argumentRegistry.get<Command_N::TUNE>()));
 
   std::string amount = StringUtils::bracket(
-      "AMOUNT", argumentRegistry.get_t<Command_N::AMOUNT>()->toString());
+      "AMOUNT", argumentRegistry.get<Command_N::AMOUNT>().toString());
   std::string container = StringUtils::bracket(
       "CONTAINER",
-      Container_N::definition(argumentRegistry.get_t<Command_N::CONTAINER>()));
+      Container_N::definition(argumentRegistry.get<Command_N::CONTAINER>()));
 
-  // std::string a = ArgumentRegistry::get_t<IntegerArgument>("-a");
+  // std::string a = ArgumentRegistry::get<IntegerArgument>("-a");
 
   std::string constrain =
       StringUtils::bracket("CONSTRAIN", "", LogColor::fgGray, LogColor::fgRed);
@@ -75,11 +74,11 @@ void ChildDisplay::print(JSONSerializableRunner &ticker) {
   std::string header = time + " " + encoder + " " + " " + resolution + " " +
                        tune + " " + amount + " " + container;
 
-  if (*argumentRegistry.get_t<Command_N::CONSTRAIN>()) {
+  if (argumentRegistry.get<Command_N::CONSTRAIN>()) {
     header += " " + constrain;
   }
 
-  if (*argumentRegistry.get_t<Command_N::CROP>()) {
+  if (argumentRegistry.get<Command_N::CROP>()) {
     header += " " + crop;
   }
 
@@ -262,7 +261,7 @@ void ChildDisplay::printInformationTyped(NTicker *ticker, Child *child) {
           LogColor::fgOrange(std::to_string(prsa.sample_rate)));
 
       LOG(tab(4) + LogColor::fgBlue("Bit Rate") + colon +
-          LogColor::fgOrange(prsa.tags.BPS));
+          LogColor::fgOrange(std::to_string(prsa.tags.BPS)));
     }
 
     LOG();

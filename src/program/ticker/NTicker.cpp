@@ -11,24 +11,24 @@
 #include "../parent/Parent.h"
 #include "../parent/display/ParentDisplay.h"
 #include "../settings/Help.h"
-#include "../settings/arguments/FlagArgument.h"
 #include "../settings/arguments/IntegerArgument.h"
 #include "nlohmann/json.hpp"
+#include "src/program/context/RuntimeEnvironment.h"
+#include "src/program/settings/enums/Command_N.h"
 #include "src/program/settings/enums/LogFormat_N.h"
+#include "src/program/settings/options/ProgramOptions.h"
 
-NTicker::NTicker() : endable(true) {
-  this->display = nullptr;
-  this->runner = nullptr;
-}
+NTicker::NTicker(RuntimeEnvironment &run_env, ProgramOptions &programOptions)
+    : runner(nullptr), endable(true), display(nullptr),
+      programOptions(programOptions), run_env(run_env) {};
 
 void NTicker::determineNextAction(std::vector<std::string> &args) {
-  ArgumentRegistry *program_arg_reg =
-      Program::settings->programOptions->argumentRegistry;
+  ArgumentRegistry &argumentRegistry = *this->programOptions.argumentRegistry;
 
-  if (program_arg_reg->get_t<FlagArgument>(Command_N::HELP)->get()) {
+  if (argumentRegistry.get<Command_N::HELP>()) {
     Help::printHelp();
     Program::stopFlag = true;
-  } else if (program_arg_reg->get_t<FlagArgument>(Command_N::INFO)->get()) {
+  } else if (argumentRegistry.get<Command_N::INFO>()) {
     // print information
     this->runner->prepare(args);
     this->display->printInformation(this, this->runner);
@@ -47,7 +47,7 @@ void NTicker::determineNextAction(std::vector<std::string> &args) {
 
 // void NTicker::prepare(ArgumentParser* arguments) {
 //   // use parent display
-//   if (arguments->argumentRegistry.get_t<FlagArgument>("-parent")->get()) {
+//   if (arguments->argumentRegistry.get<FlagArgument>("-parent")->get()) {
 //     LOG_DEBUG("Running as parent.");
 //     this->display = new ParentDisplay();
 //     this->runner = new Parent();
@@ -63,27 +63,25 @@ void NTicker::determineNextAction(std::vector<std::string> &args) {
 
 void NTicker::prepare(std::vector<std::string> &args) {
   // use parent display
-  ArgumentRegistry *program_arg_reg =
-      Program::settings->programOptions->argumentRegistry;
+  ArgumentRegistry &argumentRegistry = *this->programOptions.argumentRegistry;
 
-  if (program_arg_reg->get_t<FlagArgument>(Command_N::PARENT)->get()) {
+  if (argumentRegistry.get<Command_N::PARENT>()) {
     LOG_DEBUG("Running as parent.");
     this->display = new ParentDisplay();
-    this->runner = new Parent();
+    this->runner = new Parent(run_env);
   } else {
     LOG_DEBUG("Running as child.");
     this->display = new ChildDisplay();
-    this->runner = new Child();
+    this->runner = new Child(this->run_env);
   }
 
   this->determineNextAction(args);
 }
 
 void NTicker::run() {
-  ArgumentRegistry *program_arg_reg =
-      Program::settings->programOptions->argumentRegistry;
+  ArgumentRegistry &argumentRegistry = *this->programOptions.argumentRegistry;
 
-  if (program_arg_reg->get_t<FlagArgument>(Command_N::INFO)->get()) {
+  if (argumentRegistry.get<Command_N::INFO>()) {
     this->display->printInformation(this, this->runner);
     return;
   }
@@ -98,31 +96,27 @@ void NTicker::run() {
     }
 
     LogFormat_N::LogFormat log_option =
-        program_arg_reg
-            ->get_t<EnumArgument<LogFormat_N::LogFormat>>(
-                Command_N::LOGGINGOPTIONS)
-            ->get();
+        argumentRegistry.get<Command_N::LOGGINGOPTIONS>().get();
 
     switch (log_option) {
     case LogFormat_N::DEBUG:
     case LogFormat_N::JSON_DEBUG:
-      this->display->printDebug();
+      this->display->printDebug(*this);
       break;
     case LogFormat_N::VERBOSE:
     case LogFormat_N::JSON_VERBOSE:
-      this->display->printDebug();
+      this->display->printDebug(*this);
       break;
     case LogFormat_N::JSON:
       this->display->printJSON();
       break;
     default:
-      this->display->print();
+      this->display->print(*this);
       break;
     }
 
-    std::this_thread::sleep_for(
-        std::chrono::milliseconds((int)*program_arg_reg->get_t<IntegerArgument>(
-            Command_N::DISPLAYREFRESH)));
+    std::this_thread::sleep_for(std::chrono::milliseconds(
+        (int)argumentRegistry.get<Command_N::DISPLAYREFRESH>().get()));
   }
   // if (Program::settings->argumentParser->isParent) {
   //   // parent display
@@ -157,7 +151,7 @@ void NTicker::end() {
   }
 }
 
-void NTicker::fromJSON(nlohmann::json) {
+void NTicker::fromJSON(const nlohmann::json &json) {
   // read json information
 }
 
