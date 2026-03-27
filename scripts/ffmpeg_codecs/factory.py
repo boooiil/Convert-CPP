@@ -45,13 +45,12 @@ auto {class_prefix}Factory::create(const std::string &name)
     initialize();
   }}
 
-  auto result = codec_registry.get(name);
-
-  if (result != nullptr) {{
-    return (*result)();
+  if (!codec_registry.has(name)) {{
+    throw std::runtime_error("Codec '" + name + "' not found in registry.");
   }}
 
-  return nullptr;
+  return codec_registry.get(name)();
+
 }}
 
 auto {class_prefix}Factory::registry()
