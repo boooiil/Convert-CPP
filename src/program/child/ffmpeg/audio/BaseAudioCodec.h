@@ -10,7 +10,7 @@ public:
   virtual ~BaseAudioCodec() = default;
   BaseAudioCodec(int channel, int sampleRate, int bitDepth)
       : runningChannel(channel), runningSampleRate(sampleRate),
-        runningBitDepth(bitDepth) {};
+        runningBitDepth(bitDepth), runningBitrate(-1) {};
 
   virtual auto getName() const -> const std::string {
     return "BaseAudioCodec";
@@ -52,6 +52,9 @@ public:
   auto setBitDepth(const int &bitDepth) -> void {
     this->runningBitDepth = getBitDepth(bitDepth);
   };
+  auto setBitrate(const int &bitrate) -> void {
+    this->runningBitrate = bitrate;
+  };
   auto setIndex(const int &index) -> void { this->index = index; };
   auto setMapIndex(const int &mapIndex) -> void { this->mapIndex = mapIndex; };
 
@@ -62,6 +65,7 @@ public:
   auto getRunningBitDepth() const -> const int {
     return this->runningBitDepth;
   };
+  auto getRunningBitrate() const -> const int { return this->runningBitrate; };
   auto getIndex() const -> const int { return this->index; };
   auto getMapIndex() const -> const int { return this->mapIndex; };
   auto getChannelLayout() const -> const std::string {
@@ -111,6 +115,7 @@ private:
   int runningChannel;
   int runningSampleRate;
   int runningBitDepth;
+  int runningBitrate;
 };
 
 #endif // BASE_AUDIO_CODEC_H
