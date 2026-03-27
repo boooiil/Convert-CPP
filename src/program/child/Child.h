@@ -9,6 +9,8 @@
 
 #include "../generics/JSONSerializableRunner.h"
 #include "./media/Media.h"
+#include "src/program/context/RuntimeEnvironment.h"
+#include "src/program/settings/options/ChildOptions.h"
 
 class Child : public JSONSerializableRunner {
 public:
@@ -18,7 +20,7 @@ public:
   /// @brief Holds media files that are waiting to be converted.
   std::queue<Media *> pending;
 
-  Child(void);
+  Child(RuntimeEnvironment &run_env);
 
   /// @brief Prepares the child for conversion.
   void prepare(std::vector<std::string> &args) override;
@@ -27,13 +29,17 @@ public:
   /// @brief Ends the child's conversion process.
   void end(void) override;
 
-  void fromJSON(nlohmann::json) override;
+  ChildOptions &getOptions() { return *this->childOptions; }
+
+  void fromJSON(const nlohmann::json &json) override;
 
   nlohmann::json toJSON(void) override;
 
 private:
   bool endable;
   bool completed;
+  RuntimeEnvironment &run_env;
+  ChildOptions *childOptions; // no delete, owned by Program::settings
 };
 
 #endif // !CHILD_H

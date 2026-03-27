@@ -11,20 +11,21 @@
 #include "../../utils/TimeUtils.h"
 #include "../../utils/logging/LogColor.h"
 #include "../../utils/logging/Logger.h"
-#include "../Program.h"
-#include "../settings/Settings.h"
-#include "../settings/arguments/FlagArgument.h"
 #include "../settings/arguments/IntegerArgument.h"
 #include "../settings/enums/Activity_N.h"
 #include "media/Media.h"
+#include "src/program/context/RuntimeEnvironment.h"
+#include "src/program/settings/enums/Command_N.h"
+#include "src/program/settings/options/ChildOptions.h"
+#include "src/utils/logging/Logger.h"
 
 std::vector<std::thread> workerThreads;
 
 // template <typename T>
-// typename ArgumentRegistry::getTFn<T> get_t =
+// typename ArgumentRegistry::getTFn<T> get =
 // Child::settings->argumentRegistry.get<T>;
 
-Child::Child(void) : endable(false) {}
+Child::Child(RuntimeEnvironment &run_env) : endable(false), run_env(run_env) {}
 
 void Child::prepare(std::vector<std::string> &args) {
   // initialize settings
@@ -35,12 +36,11 @@ void Child::prepare(std::vector<std::string> &args) {
       gen); // Pass the generator to uuid_random_generator
   this->id = generator();
 
-  Program::settings->childOptionsMap[this->id] = new ChildOptions();
-  ChildOptions &childOptions = *Program::settings->childOptionsMap[this->id];
+  this->childOptions = new ChildOptions(run_env);
 
-  childOptions.prepare();
-  childOptions.parse(args);
-  childOptions.validate();
+  childOptions->prepare();
+  childOptions->parse(args);
+  childOptions->validate();
 
   std::vector<std::filesystem::directory_entry> files =
       DirectoryUtils::getFilesInDirectory(args[0],
@@ -50,19 +50,30 @@ void Child::prepare(std::vector<std::string> &args) {
     std::string cwd = file.path().parent_path().string();
     std::string filename = file.path().filename().string();
 
-    Media *media = new Media(this->id, filename, cwd);
-    media->file->rename();
+    Media *media = new Media(*this->childOptions, this->id, filename, cwd);
+    media->getFile().naming.rename();
 
-    if (!std::filesystem::exists(media->file->conversionFolderPath) &&
-        !childOptions.argumentRegistry->get_t<FlagArgument>(Command_N::INFO)
-             ->get()) {
-      LOG_DEBUG("Creating directory: ", media->file->conversionFolderPath);
-      std::filesystem::create_directory(media->file->conversionFolderPath);
+    bool fs_exists =
+        std::filesystem::exists(media->getFile().naming.conversion_folder_path);
+    bool is_info = childOptions->argumentRegistry->get<Command_N::INFO>().get();
+
+    LOG_DEBUG("fs exists?", fs_exists ? "true" : "false", "is info?",
+              is_info ? "true" : "false");
+
+    // if the conversion folder path does not exist, and we are not
+    // trying to get the info, create it
+    if (!fs_exists && !is_info) {
+      LOG_DEBUG("Creating directory: ",
+                media->getFile().naming.conversion_folder_path);
+      std::filesystem::create_directory(
+          media->getFile().naming.conversion_folder_path);
+    } else {
+      LOG_DEBUG("Directory exists or info:",
+                media->getFile().naming.conversion_folder_path);
     }
 
     LOG_DEBUG("Adding media to pending queue: ",
-              media->file->originalFileNameExt);
-
+              media->getFile().naming.original_name_ext);
     this->pending.push(media);
   }
 }
@@ -82,7 +93,7 @@ void Child::prepare(std::vector<std::string> &args) {
 //     media->file->rename(this->processSettings);
 //
 //     if (!std::filesystem::exists(media->file->conversionFolderPath) &&
-//       !this->processSettings->argumentParser->argumentRegistry.get_t<FlagArgument>("-i")->get())
+//       !this->processSettings->argumentParser->argumentRegistry.get<FlagArgument>("-i")->get())
 //       { LOG_DEBUG("Creating directory: ", media->file->conversionFolderPath);
 //       std::filesystem::create_directory(media->file->conversionFolderPath);
 //     }
@@ -96,31 +107,31 @@ void Child::run(void) {
   this->setEndable(false);
   int currentAmount = static_cast<int>(this->converting.size());
 
-  ChildOptions &childOptions = *Program::settings->childOptionsMap[this->id];
+  IntegerArgument setAmount =
+      childOptions->argumentRegistry->get<Command_N::AMOUNT>();
 
-  IntegerArgument *setAmount =
-      childOptions.argumentRegistry->get_t<IntegerArgument>(Command_N::AMOUNT);
-
-  LOG_DEBUG("C:" + std::to_string(currentAmount), "W:" + setAmount->toString(),
+  LOG_DEBUG("C:" + std::to_string(currentAmount), "W:" + setAmount.toString(),
             "T:" +
                 std::to_string(this->pending.size() + this->converting.size()));
 
-  if ((currentAmount < (int)*setAmount) && !this->pending.empty()) {
+  if ((currentAmount < (int)setAmount) && !this->pending.empty()) {
     Media *media = this->pending.front();
 
     // if there are no media files waiting
     // and the current amount of converting media is 0
     // then exit the program
     if (!media->isWaiting()) {
-      LOG_DEBUG("Media is not waiting:", media->file->originalFileNameExt,
-                Activity_N::definition(media->getActivity()));
+      LOG_DEBUG(
+          "Media is not waiting:", media->getFile().naming.original_name_ext,
+          Activity_N::definition(media->getActivity()));
       if (currentAmount == 0) {
         this->setEndable(true);
         this->setCompleted(true);
         // Program::stopFlag = true;
       }
     } else {
-      LOG_DEBUG("Queued media for encoding:", media->file->originalFileNameExt,
+      LOG_DEBUG("Queued media for encoding:",
+                media->getFile().naming.original_name_ext,
                 Activity_N::definition(media->getActivity()));
       media->setActivity(Activity_N::WAITING_STATISTICS);
 
@@ -134,18 +145,19 @@ void Child::run(void) {
   }
 
   // error if there are more converting than allowed
-  if (currentAmount > (int)*setAmount) {
+  if (currentAmount > (int)setAmount) {
     LOG(LogColor::fgRed(
         "CURRENT TRANSCODES ARE GREATER THAN THE ALLOWED AMOUNT."));
 
-    LOG(LogColor::fgRed("CURRENT ALLOWED AMOUNT: " + setAmount->toString()));
+    LOG(LogColor::fgRed("CURRENT ALLOWED AMOUNT: " + setAmount.toString()));
 
-    LOG(LogColor::fgRed("CURRENT QUEUE: " + setAmount->toString()));
+    LOG(LogColor::fgRed("CURRENT QUEUE: " + setAmount.toString()));
 
     // iterate over converting
     while (!this->converting.empty()) {
       Media *value = this->converting.front();
-      LOG(LogColor::fgRed("CURRENT FILE: " + value->file->conversionName));
+      LOG(LogColor::fgRed("CURRENT FILE: " +
+                          value->getFile().naming.conversion_name));
       this->converting.pop();
     }
 
@@ -159,25 +171,26 @@ void Child::run(void) {
   while (!this->converting.empty()) {
     Media *media = this->converting.front();
 
-    LOG_DEBUG(media->file->originalFileNameExt,
+    LOG_DEBUG(media->getFile().naming.original_name_ext,
               Activity_N::definition(media->getActivity()));
 
     if (!media->isProcessing()) {
-      LOG_DEBUG("Media is not processing:", media->file->originalFileNameExt,
-                Activity_N::definition(media->getActivity()));
+      LOG_DEBUG(
+          "Media is not processing:", media->getFile().naming.original_name_ext,
+          Activity_N::definition(media->getActivity()));
 
       if (media->isWaitingToStatistics()) {
         LOG_DEBUG("Media is waiting for statistics:",
-                  media->file->originalFileNameExt);
+                  media->getFile().naming.original_name_ext);
         media->doStatistics();
       } else if (media->isWaitingToConvert()) {
         LOG_DEBUG("Media is waiting for conversion:",
-                  media->file->originalFileNameExt);
+                  media->getFile().naming.original_name_ext);
         media->buildFFmpegArguments(false);
         workerThreads.emplace_back([media]() { media->doConversion(); });
       } else if (media->isWaitingToValidate()) {
         LOG_DEBUG("Media is waiting for validation:",
-                  media->file->originalFileNameExt);
+                  media->getFile().naming.original_name_ext);
         workerThreads.emplace_back([media]() { media->doValidation(); });
       }
     }
@@ -186,7 +199,7 @@ void Child::run(void) {
       // todo: again, chrono stuff
       media->ended = TimeUtils::getEpoch();
 
-      LOG_DEBUG("Media ended:", media->file->conversionName);
+      LOG_DEBUG("Media ended:", media->getFile().naming.conversion_name);
       this->pending.push(media);
       LOG_DEBUG("pending size after finish:",
                 std::to_string(this->pending.size()));
@@ -233,7 +246,7 @@ void Child::end(void) {
     Media *media = this->pending.front();
     this->pending.pop();
 
-    LOG_DEBUG("Deleting media in:", media->file->originalFileNameExt);
+    LOG_DEBUG("Deleting media in:", media->getFile().naming.original_name_ext);
 
     delete media;
   }
@@ -243,9 +256,14 @@ void Child::end(void) {
     Media *media = this->converting.front();
     this->converting.pop();
 
-    LOG_DEBUG("Deleting media in:", media->file->originalFileNameExt);
+    LOG_DEBUG("Deleting media in:", media->getFile().naming.original_name_ext);
 
     delete media;
+  }
+
+  if (this->childOptions != nullptr) {
+    LOG_DEBUG("Deleting child options.");
+    delete this->childOptions;
   }
 
   /*if (this->processSettings != nullptr) {
@@ -254,7 +272,7 @@ void Child::end(void) {
   }*/
 }
 
-void Child::fromJSON(nlohmann::json) {}
+void Child::fromJSON(const nlohmann::json &json) {}
 
 nlohmann::json Child::toJSON() {
   using namespace nlohmann;
@@ -263,6 +281,7 @@ nlohmann::json Child::toJSON() {
 
   std::queue<Media *> t_queue;
 
+  child["id"] = uuids::to_string(this->id);
   child["pending"] = nlohmann::json::array();
   child["converting"] = nlohmann::json::array();
 
@@ -270,57 +289,7 @@ nlohmann::json Child::toJSON() {
   while (!this->converting.empty()) {
     Media *media = this->converting.front();
 
-    nlohmann::json mediaDebug;
-    nlohmann::json mediaFileDebug;
-    nlohmann::json mediaVideoDebug;
-    nlohmann::json mediaWorkingDebug;
-
-    mediaDebug["activity"] = Activity_N::definition(media->getActivity());
-    mediaDebug["started"] = media->started;
-    mediaDebug["ended"] = media->ended;
-
-    if (media->ffmpegArguments == nullptr) {
-      LOG_DEBUG("Media ffmpegArguments is null:",
-                media->file->originalFileNameExt);
-    } else {
-      // this might not work
-      mediaDebug["ffmpegArguments"] = media->ffmpegArguments->build();
-    }
-
-    mediaFileDebug["originalFileNameExt"] = media->file->originalFileNameExt;
-    mediaFileDebug["originalFullPath"] = media->file->originalFullPath;
-    mediaFileDebug["conversionName"] = media->file->conversionName;
-    mediaFileDebug["conversionNameExt"] = media->file->conversionNameExt;
-    mediaFileDebug["conversionFolderPath"] = media->file->conversionFolderPath;
-    mediaFileDebug["conversionFilePath"] = media->file->conversionFilePath;
-    mediaFileDebug["ext"] = media->file->ext;
-    mediaFileDebug["size"] = media->file->size;
-    mediaFileDebug["newSize"] = media->file->newSize;
-    mediaFileDebug["cwd"] = media->file->cwd;
-    mediaFileDebug["quality"] = media->file->quality;
-    mediaFileDebug["series"] = media->file->series;
-    mediaFileDebug["season"] = media->file->season;
-
-    mediaVideoDebug["fps"] = media->video->fps;
-    mediaVideoDebug["totalFrames"] = media->video->totalFrames;
-    mediaVideoDebug["subtitleProvider"] = media->video->subtitleProvider;
-    mediaVideoDebug["width"] = media->video->width;
-    mediaVideoDebug["height"] = media->video->height;
-    mediaVideoDebug["ratio"] = media->video->ratio;
-    mediaVideoDebug["convertedWidth"] = media->video->convertedWidth;
-    mediaVideoDebug["convertedHeight"] = media->video->convertedHeight;
-    mediaVideoDebug["convertedResolution"] = media->video->convertedResolution;
-    mediaVideoDebug["crop"] = media->video->crop;
-    mediaVideoDebug["crf"] = media->video->crf;
-
-    mediaWorkingDebug["fps"] = media->working->fps;
-    mediaWorkingDebug["completedFrames"] = media->working->completedFrames;
-    mediaWorkingDebug["quality"] = media->working->quality;
-    mediaWorkingDebug["bitrate"] = media->working->bitrate;
-
-    mediaDebug["file"] = mediaFileDebug;
-    mediaDebug["video"] = mediaVideoDebug;
-    mediaDebug["working"] = mediaWorkingDebug;
+    nlohmann::json mediaDebug = media->toJSON();
 
     child["converting"].push_back(mediaDebug);
 
@@ -334,57 +303,7 @@ nlohmann::json Child::toJSON() {
   // pending file
   while (!this->pending.empty()) {
     Media *media = this->pending.front();
-    nlohmann::json mediaDebug;
-    nlohmann::json mediaFileDebug;
-    nlohmann::json mediaVideoDebug;
-    nlohmann::json mediaWorkingDebug;
-
-    mediaDebug["activity"] = Activity_N::definition(media->getActivity());
-    mediaDebug["started"] = media->started;
-    mediaDebug["ended"] = media->ended;
-
-    if (media->ffmpegArguments == nullptr) {
-      LOG_DEBUG("Media ffmpegArguments is null:",
-                media->file->originalFileNameExt);
-    } else {
-      // this might not work
-      mediaDebug["ffmpegArguments"] = media->ffmpegArguments->build();
-    }
-
-    mediaFileDebug["originalFileNameExt"] = media->file->originalFileNameExt;
-    mediaFileDebug["originalFullPath"] = media->file->originalFullPath;
-    mediaFileDebug["conversionName"] = media->file->conversionName;
-    mediaFileDebug["conversionNameExt"] = media->file->conversionNameExt;
-    mediaFileDebug["conversionFolderPath"] = media->file->conversionFolderPath;
-    mediaFileDebug["conversionFilePath"] = media->file->conversionFilePath;
-    mediaFileDebug["ext"] = media->file->ext;
-    mediaFileDebug["size"] = media->file->size;
-    mediaFileDebug["newSize"] = media->file->newSize;
-    mediaFileDebug["cwd"] = media->file->cwd;
-    mediaFileDebug["quality"] = media->file->quality;
-    mediaFileDebug["series"] = media->file->series;
-    mediaFileDebug["season"] = media->file->season;
-
-    mediaVideoDebug["fps"] = media->video->fps;
-    mediaVideoDebug["totalFrames"] = media->video->totalFrames;
-    mediaVideoDebug["subtitleProvider"] = media->video->subtitleProvider;
-    mediaVideoDebug["width"] = media->video->width;
-    mediaVideoDebug["height"] = media->video->height;
-    mediaVideoDebug["ratio"] = media->video->ratio;
-    mediaVideoDebug["convertedWidth"] = media->video->convertedWidth;
-    mediaVideoDebug["convertedHeight"] = media->video->convertedHeight;
-    mediaVideoDebug["convertedResolution"] = media->video->convertedResolution;
-    mediaVideoDebug["crop"] = media->video->crop;
-    mediaVideoDebug["crf"] = media->video->crf;
-
-    mediaWorkingDebug["fps"] = media->working->fps;
-    mediaWorkingDebug["completedFrames"] = media->working->completedFrames;
-    mediaWorkingDebug["quality"] = media->working->quality;
-    mediaWorkingDebug["bitrate"] = media->working->bitrate;
-
-    mediaDebug["file"] = mediaFileDebug;
-    mediaDebug["video"] = mediaVideoDebug;
-    mediaDebug["working"] = mediaWorkingDebug;
+    nlohmann::json mediaDebug = media->toJSON();
 
     child["pending"].push_back(mediaDebug);
     this->pending.pop();
