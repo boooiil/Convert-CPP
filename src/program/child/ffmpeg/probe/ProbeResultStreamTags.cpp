@@ -22,7 +22,7 @@ ProbeResultStreamTags::ProbeResultStreamTags(nlohmann::json JSON) {
 
   if (!JSON["BPS"].is_null()) {
     LOG_VERBOSE("BPS: ", JSON["BPS"]);
-    ProbeResultStreamTags::BPS = JSON["BPS"];
+    ProbeResultStreamTags::BPS = std::stoi(JSON["BPS"].get<std::string>());
   }
 
   if (!JSON["NUMBER_OF_FRAMES"].is_null()) {

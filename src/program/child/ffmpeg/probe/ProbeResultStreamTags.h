@@ -16,7 +16,7 @@
  * @brief This class represents the tags of a stream in a FFProbe result.
  */
 class ProbeResultStreamTags {
- public:
+public:
   /** This constructor should never be called. */
   ProbeResultStreamTags();
 
@@ -33,7 +33,7 @@ class ProbeResultStreamTags {
   /// @brief title of the stream
   std::string title;
   /// @brief bits per second
-  std::string BPS;
+  int BPS;
   /// @brief number of frames in the stream
   std::string NUMBER_OF_FRAMES;
   /// @brief number of bytes of the stream
@@ -50,4 +50,4 @@ class ProbeResultStreamTags {
   std::string DURATION;
 };
 
-#endif  // PROBE_RESULT_STREAM_TAGS
+#endif // PROBE_RESULT_STREAM_TAGS
