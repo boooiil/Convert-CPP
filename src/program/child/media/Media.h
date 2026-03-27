@@ -18,7 +18,6 @@
 #include "../../settings/enums/Activity_N.h"
 #include "../ffmpeg/FFmpegArgumentBuilder.h"
 #include "../ffmpeg/probe/ProbeResult.h"
-#include "MediaFile.h"
 #include "src/program/child/media/file/FileContainer.h"
 #include "src/program/settings/options/ChildOptions.h"
 
@@ -51,7 +50,7 @@ public:
    * @param[in] path - Path to the file (generally CWD).
    */
   Media(ChildOptions &options, uuids::uuid id, std::string name,
-        std::string path);
+        std::filesystem::path path);
   ~Media(void);
 
   /**
@@ -193,7 +192,7 @@ public:
   std::string convertingLine() const;
   std::string pendingLine() const;
 
-  void fromJSON(nlohmann::json) override;
+  void fromJSON(const nlohmann::json &json) override;
 
   nlohmann::json toJSON(void) override;
 

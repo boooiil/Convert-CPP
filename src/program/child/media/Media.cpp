@@ -15,7 +15,6 @@
 #include "../../../utils/logging/Logger.h"
 #include "../../settings/enums/Activity_N.h"
 #include "../ffmpeg/FFmpegArgumentBuilder.h"
-#include "MediaFile.h"
 #include "MediaProcessConversion.h"
 #include "MediaProcessStatistics.h"
 #include "MediaProcessValidate.h"
@@ -30,10 +29,14 @@
 #include "src/utils/TimeUtils.h"
 
 Media::Media(ChildOptions &options, uuids::uuid id, std::string name,
-             std::string path)
+             std::filesystem::path path)
     : id(id), started(0), ended(0), probeResult(nullptr),
       ffmpegArguments(nullptr), activity(Activity_N::WAITING),
-      file(FileContainer(*this)), childOptions(options) {}
+      file(FileContainer(
+          name, path,
+          options.argumentRegistry->get<Command_N::QUALITY>().get().name,
+          std::string("mkv"))),
+      childOptions(options) {}
 
 Media::~Media() {
   LOG_DEBUG("Deconstructing media: ", this->id);
@@ -94,7 +97,7 @@ void Media::doStatistics() {
   MediaProcessStatistics statistics(this);
   statistics.start("ffprobe -v quiet -print_format json -show_format "
                    "-show_streams \"" +
-                   this->file.naming.original_full_path + "\"");
+                   this->file.naming.original_full_path.string() + "\"");
 
   if (this->hasFailed()) {
     return;
@@ -148,7 +151,8 @@ void Media::doValidation() {
 
   MediaProcessValidate validate(this);
   validate.start("ffmpeg -v quiet -stats -i \"" +
-                 this->file.naming.conversion_full_path + "\" -f null -");
+                 this->file.naming.conversion_full_path.string() +
+                 "\" -f null -");
   if (this->hasFailed()) {
     return;
   }
@@ -278,7 +282,7 @@ std::string Media::pendingLine() const {
 // i dont like this
 ChildOptions &Media::getOptions() { return this->childOptions; }
 
-void Media::fromJSON(nlohmann::json json) {
+void Media::fromJSON(const nlohmann::json &json) {
   if (json.empty()) {
     LOG_DEBUG("JSON is empty.");
     return;
@@ -297,9 +301,12 @@ void Media::fromJSON(nlohmann::json json) {
   // this->ffmpegArguments = json["ffmpegArguments"];
 
   this->file.naming.original_name_ext = json_file["originalFileNameExt"];
-  this->file.naming.original_full_path = json_file["originalFullPath"];
-  this->file.naming.conversion_full_path = json_file["conversionFilePath"];
-  this->file.naming.conversion_folder_path = json_file["conversionFolderPath"];
+  this->file.naming.original_full_path =
+      std::filesystem::path(std::string(json_file["originalFullPath"]));
+  this->file.naming.conversion_full_path =
+      std::filesystem::path(std::string(json_file["conversionFilePath"]));
+  this->file.naming.conversion_folder_path =
+      std::filesystem::path(std::string(json_file["conversionFolderPath"]));
   this->file.naming.conversion_name = json_file["conversionName"];
   this->file.naming.conversion_name_ext = json_file["conversionNameExt"];
   this->file.naming.extension = json_file["ext"];
