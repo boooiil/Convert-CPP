@@ -10,16 +10,18 @@
 #include "../utils/logging/LogColor.h"
 #include "../utils/logging/Logger.h"
 #include "generics/JSONSerializableRunner.h"
-#include "settings/Settings.h"
 #include "settings/enums/LogFormat_N.h"
+#include "settings/options/ProgramOptions.h"
+#include "src/program/context/RuntimeEnvironment.h"
+#include "src/utils/logging/Logger.h"
 #include "ticker/NTicker.h"
 
-JSONSerializableRunner *Program::ticker = nullptr;
 // Log* Program::log = nullptr;
-Settings *Program::settings = nullptr;
 bool Program::stopFlag = false;
 
-Program::Program(void) : endable(true) {}
+Program::Program(void) : endable(true) {
+  this->runtimeEnv = RuntimeEnvironment::detect();
+}
 Program::~Program(void) {
   // should always call end
   // this->end();
@@ -28,14 +30,12 @@ Program::~Program(void) {
 void Program::prepare(std::vector<std::string> &args) {
   // Program::log = new Log();
 
-  Program::settings = new Settings();
-  Program::settings->programOptions->prepare();
-  Program::settings->programOptions->parse(args);
+  this->options = new ProgramOptions();
+  this->options->prepare();
+  this->options->parse(args);
 
-  switch (Program::settings->programOptions->argumentRegistry
-              ->get_t<EnumArgument<LogFormat_N::LogFormat>>(
-                  Command_N::LOGGINGOPTIONS)
-              ->get()) {
+  switch (
+      this->options->argumentRegistry->get<Command_N::LOGGINGOPTIONS>().get()) {
   case LogFormat_N::DEBUG:
   case LogFormat_N::JSON_DEBUG:
     Logger::debug_flag = true;
@@ -56,12 +56,12 @@ void Program::prepare(std::vector<std::string> &args) {
     break;
   };
 
-  Program::settings->programOptions->gatherSystemDetails();
-  Program::settings->programOptions->validate();
+  this->options->gatherSystemDetails();
+  this->options->validate();
 
-  Program::ticker = new NTicker();
+  this->ticker = new NTicker(*this->runtimeEnv, *this->options);
   if (!stopFlag)
-    Program::ticker->prepare(args);
+    this->ticker->prepare(args);
 }
 
 void Program::prepare(int argc, char *argv[]) {
@@ -76,7 +76,7 @@ void Program::prepare(int argc, char *argv[]) {
 
 void Program::run() {
   if (!stopFlag)
-    Program::ticker->run();
+    this->ticker->run();
 }
 
 void Program::end(void) {
@@ -99,10 +99,10 @@ void Program::end(void) {
     oFile.close();
   }
 
-  if (Program::ticker != nullptr) {
+  if (this->ticker != nullptr) {
     LOG_DEBUG("Deleting ticker.");
-    Program::ticker->end();
-    delete Program::ticker;
+    this->ticker->end();
+    delete this->ticker;
   }
 
   /*if (Program::log != nullptr) {
@@ -111,9 +111,14 @@ void Program::end(void) {
     delete Program::log;
   }*/
 
-  if (Program::settings != nullptr) {
-    LOG_DEBUG("Deleting settings.");
-    delete Program::settings;
+  if (this->options != nullptr) {
+    LOG_DEBUG("Deleting ProgramOptions.");
+    delete this->options;
+  }
+
+  if (this->runtimeEnv != nullptr) {
+    LOG_DEBUG("Deleting RuntimeEnvironment.");
+    delete this->runtimeEnv;
   }
 
   // TODO: end needs to exit program
@@ -128,18 +133,18 @@ void Program::setEndable(bool flag) {
 
 bool Program::isEndable() { return Program::stopFlag; }
 
-void Program::fromJSON(nlohmann::json program) { (void)program; }
+void Program::fromJSON(const nlohmann::json &json) { (void)json; }
 
 nlohmann::json Program::toJSON() {
   using namespace nlohmann;
 
   json program;
-  json settings_json = Program::settings->toJSON();
+  json program_options = this->options->toJSON();
 
-  program["Settings"] = settings_json;
+  program["ProgramOptions"] = program_options;
 
-  if (Program::ticker != nullptr) {
-    program["Ticker"] = Program::ticker->toJSON();
+  if (this->ticker != nullptr) {
+    program["Ticker"] = this->ticker->toJSON();
   }
 
   return program;

@@ -19,7 +19,7 @@ public:
   void parse(std::vector<std::string> &args);
   void validate(void);
 
-  void fromJSON(const nlohmann::json json) override;
+  void fromJSON(const nlohmann::json &json) override;
   nlohmann::json toJSON(void) override;
 };
 #endif // !PARENT_OPTIONS_H

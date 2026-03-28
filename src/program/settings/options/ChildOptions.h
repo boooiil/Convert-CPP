@@ -7,11 +7,12 @@
 #include "../enums/Encoders_N.h"
 #include "../enums/HWAccelerators_N.h"
 #include "nlohmann/json_fwd.hpp"
+#include "src/program/context/RuntimeEnvironment.h"
 #include "src/program/registry/ArgumentRegistry.h"
 
 class ChildOptions : public JSONSerializable {
 public:
-  ChildOptions(void);
+  ChildOptions(RuntimeEnvironment &runtimeEnvironment);
   ~ChildOptions(void);
 
   Encoders_N::Encoders runningEncoder;
@@ -26,8 +27,11 @@ public:
   void parse(std::vector<std::string> &args);
   void validate(void);
 
-  void fromJSON(const nlohmann::json json) override;
+  void fromJSON(const nlohmann::json &json) override;
   nlohmann::json toJSON(void) override;
+
+private:
+  RuntimeEnvironment &run_env;
 };
 
 #endif // !CHILD_OPTIONS_H

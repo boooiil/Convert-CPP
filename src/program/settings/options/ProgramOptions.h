@@ -7,11 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "../../settings/enums/Encoders_N.h"
-#include "../../settings/enums/HWAccelerators_N.h"
 #include "../../settings/enums/Tunes_N.h"
-#include "../enums/GPUProviders_N.h"
-#include "../enums/Platform_N.h"
 #include "src/program/registry/ArgumentRegistry.h"
 
 class ProgramOptions : public JSONSerializable {
@@ -23,12 +19,6 @@ public:
   ArgumentRegistry *argumentRegistry;
   std::vector<std::string> i_args;
 
-  /// @brief The current operating system of the user's machine
-  Platform_N::Platform platform;
-  /// @brief List of supported encoders by the program.
-  std::vector<Encoders_N::Encoders> supportedEncoders;
-  /// @brief List of supported hardware accelerators by the program.
-  std::vector<HWAccelerators_N::HWAccelerators> supportedHWAccel;
   /// @brief List of regular expressions matching tunes.
   /// @brief The matching tunes can be used as an index
   /// @brief in the tuneAssociations list.
@@ -36,18 +26,12 @@ public:
   /// @brief List of tunes.
   std::vector<Tunes_N::Tunes> tuneAssociations;
 
-  // TODO: change this to a map vvvv
-  /// @brief The current GPU of the user's machine
-  std::vector<GPUProviders_N::GPUProviders> GPU_Providers;
-  /// @brief The preferred GPU provider for the user.
-  GPUProviders_N::GPUProviders preferredGPUProvider;
-
   void prepare(void);
   void parse(std::vector<std::string> args);
   void validate(void);
   void gatherSystemDetails(void);
 
-  void fromJSON(nlohmann::json) override;
+  void fromJSON(const nlohmann::json &json) override;
   nlohmann::json toJSON(void) override;
 };
 

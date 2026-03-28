@@ -14,13 +14,14 @@
 #include "../enums/HWAccelerators_N.h"
 #include "../enums/Tunes_N.h"
 #include "nlohmann/json.hpp"
+#include "src/program/context/RuntimeEnvironment.h"
 #include "src/program/definitions/DefinitionRegistry.h"
 #include "src/program/settings/arguments/GenericArgument.h"
 #include "src/program/settings/enums/Container_N.h"
 
-ChildOptions::ChildOptions(void)
+ChildOptions::ChildOptions(RuntimeEnvironment &runtimeEnvironment)
     : runningEncoder(Encoders_N::HEVC), runningHWAccel(HWAccelerators_N::NONE),
-      argumentRegistry(new ArgumentRegistry()) {}
+      argumentRegistry(new ArgumentRegistry()), run_env(runtimeEnvironment) {}
 
 ChildOptions::~ChildOptions(void) {
   if (this->argumentRegistry != nullptr) {
@@ -50,6 +51,10 @@ void ChildOptions::prepare(void) {
                         std::make_unique<VectorArgument<int>>(
                             "Index of audio streams to include", "-as",
                             "--audiostreams", std::vector<int>()));
+  argumentRegistry->add(Command_N::AUDIOBITRATE,
+                        std::make_unique<VectorArgument<int>>(
+                            "Audio bitrate to use per stream mapping", "-ab",
+                            "--audiobitrate", std::vector<int>()));
   argumentRegistry->add(Command_N::BITRATE, std::make_unique<FlagArgument>(
                                                 "Use bitrate instead of CRF",
                                                 "-b", "--bitrate", false));
@@ -123,23 +128,23 @@ void ChildOptions::parse(std::vector<std::string> &args) {
 
 void ChildOptions::validate(void) {
 
-  GenericArgument *encoderArg = this->argumentRegistry->get(Command_N::ENCODER);
-  GenericArgument *tunesArg = this->argumentRegistry->get(Command_N::TUNE);
+  GenericArgument &encoderArg =
+      this->argumentRegistry->get<Command_N::ENCODER>();
+  GenericArgument &tunesArg = this->argumentRegistry->get<Command_N::TUNE>();
 
   EnumArgument<Encoders_N::Encoders> *enumArgEncoder =
-      dynamic_cast<EnumArgument<Encoders_N::Encoders> *>(encoderArg);
+      dynamic_cast<EnumArgument<Encoders_N::Encoders> *>(&encoderArg);
 
   EnumArgument<Tunes_N::Tunes> *enumArgTunes =
-      dynamic_cast<EnumArgument<Tunes_N::Tunes> *>(tunesArg);
+      dynamic_cast<EnumArgument<Tunes_N::Tunes> *>(&tunesArg);
   if (enumArgEncoder && enumArgEncoder->get() == Encoders_N::INVALID) {
     this->runningEncoder = Encoders_N::HEVC;
   } else {
     this->runningEncoder = enumArgEncoder->get();
   }
 
-  if (!Program::settings->programOptions->supportedHWAccel.empty()) {
-    this->runningHWAccel =
-        Program::settings->programOptions->supportedHWAccel[0];
+  if (!this->run_env.hw_cap.supportedHWAccel.empty()) {
+    this->runningHWAccel = this->run_env.hw_cap.supportedHWAccel[0];
   }
 
   switch (enumArgEncoder->get()) {
@@ -178,7 +183,7 @@ void ChildOptions::validate(void) {
             DefinitionRegistry::defFromEnum(enumArgTunes->get()));
 }
 
-void ChildOptions::fromJSON(const nlohmann::json json) { (void)json; };
+void ChildOptions::fromJSON(const nlohmann::json &json) { (void)json; };
 
 nlohmann::json ChildOptions::toJSON() {
   nlohmann::json ChildOptions;
