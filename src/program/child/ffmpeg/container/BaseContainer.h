@@ -10,6 +10,7 @@
 #include "../audio/BaseAudioCodec.h"
 #include "../subtitle/BaseSubtitleCodec.h"
 #include "../video/BaseVideoCodec.h"
+#include "src/program/child/ffmpeg/attachment/BaseAttachment.h"
 
 /**
  * Thoughts for container:
@@ -71,6 +72,8 @@ public:
 
   virtual const std::vector<std::string> supportedSubtitleCodecs() const = 0;
   virtual const std::string fallbackSubtitleCodec() const = 0;
+
+  virtual const std::vector<std::string> supportedAttachments() const = 0;
 
   virtual const std::string getVideoCodec(const std::string &encoder) const {
     return getParam(encoder, &BaseContainer::supportedVideoCodecs,
@@ -176,6 +179,38 @@ public:
     this->subtitle_codec = _subtitle_codecs;
   }
 
+  virtual void
+  setAttachments(const std::vector<BaseAttachment *> &_attachments) {
+    if (_attachments.empty()) {
+      return;
+    }
+
+    for (auto _attachment : _attachments) {
+      if (_attachment == nullptr) {
+        throw std::runtime_error("Null attachment provided.");
+      }
+
+      std::string wanted_type = _attachment->getName();
+      std::vector<std::string> supported_attachments = supportedAttachments();
+
+      if (std::find(supported_attachments.begin(), supported_attachments.end(),
+                    wanted_type) == supported_attachments.end()) {
+        LOG_DEBUG("Invalid attachment for container", this->getName(),
+                  _attachment->getName());
+        throw std::runtime_error("Invalid attachment: " +
+                                 _attachment->getName());
+      }
+
+      LOG_DEBUG("Setting attachment to", _attachment->getName());
+    }
+
+    for (auto attachment : attachments) {
+      delete attachment;
+    }
+
+    this->attachments = _attachments;
+  }
+
   auto getAudioCodecs() -> const std::vector<BaseAudioCodec *> & {
     return audio_codec;
   }
@@ -184,6 +219,10 @@ public:
 
   auto getSubtitleCodecs() -> const std::vector<BaseSubtitleCodec *> & {
     return subtitle_codec;
+  }
+
+  auto getAttachments() -> const std::vector<BaseAttachment *> & {
+    return attachments;
   }
 
 private:
@@ -202,6 +241,7 @@ private:
 
   std::vector<BaseAudioCodec *> audio_codec = {};
   std::vector<BaseSubtitleCodec *> subtitle_codec = {};
+  std::vector<BaseAttachment *> attachments = {};
   BaseVideoCodec *video_codec = nullptr;
 };
 

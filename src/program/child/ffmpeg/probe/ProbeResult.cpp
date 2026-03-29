@@ -21,6 +21,11 @@ ProbeResult::ProbeResult(nlohmann::json JSON) {
       ProbeResult::audioStreams.push_back(ProbeResultStreamAudio(stream));
     } else if (stream["codec_type"] == "subtitle") {
       ProbeResult::subtitleStreams.push_back(ProbeResultStreamSubtitle(stream));
+    } else if (stream["codec_type"] == "attachment") {
+      ProbeResult::attachmentStreams.push_back(
+          ProbeResultStreamAttachment(stream));
+    } else {
+      LOG_DEBUG("Unknown stream type: ", stream["codec_type"]);
     }
   }
 }

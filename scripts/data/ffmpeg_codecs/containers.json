@@ -47,6 +47,17 @@
             "hevc_amf",
             "hevc_nvenc",
             "hevc_qsv"
+        ],
+        "supportedAttachments": [
+            "application/x-truetype-font",
+            "application/x-font-ttf",
+            "application/vnd.ms-opentype",
+            "application/x-font-woff",
+            "application/x-font-woff2",
+            "application/octet-stream",
+            "application/json",
+            "application/xml",
+            "application/x-7z-compressed"
         ]
     },
     "mp4": {
@@ -75,7 +86,8 @@
         ],
         "supportedSubtitleCodecs": [
             "dvb_sub",
-            "srt"
+            "srt",
+            "mov_text"
         ],
         "supportedVideoCodecs": [
             "h264",
@@ -86,6 +98,7 @@
             "hevc_amf",
             "hevc_nvenc",
             "hevc_qsv"
-        ]
+        ],
+        "supportedAttachments": []
     }
 }

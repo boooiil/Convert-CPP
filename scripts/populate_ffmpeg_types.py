@@ -1,6 +1,6 @@
 import os
 import sys
-from ffmpeg_codecs import audio_codec, container, video_codec, subtitle_codec, factory
+from ffmpeg_codecs import audio_codec, container, video_codec, subtitle_codec, factory, attachment
 
 if (len(sys.argv) != 2):
     print("Usage: python populate_ffmpeg_types.py <root_directory>")
@@ -29,6 +29,11 @@ videoCodecs = video_codec.generate(
 subtitleCodecs = subtitle_codec.generate(
     os.path.join(data_path, "subtitle_codecs.json"), 
     os.path.join(ffmpeg_path, "subtitle"))
+
+# Generate Attachments
+attachment = attachment.generate(
+    os.path.join(data_path, "attachments.json"), 
+    os.path.join(ffmpeg_path, "attachment"))
 
 # Generate Audio Codec Factory
 factory.generate(
@@ -60,6 +65,13 @@ factory.generate(
     "BaseSubtitleCodec", 
     list(subtitleCodecs.keys()), 
     os.path.join(ffmpeg_path, "subtitle")
+)
+
+factory.generate(
+    "Attachment", 
+    "BaseAttachment", 
+    list(attachment.keys()), 
+    os.path.join(ffmpeg_path, "attachment")
 )
 
 print("Types OK.")

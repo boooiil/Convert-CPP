@@ -12,10 +12,13 @@
 #include "../../settings/arguments/TimeStringVectorArgument.h"
 #include "../../settings/arguments/VectorArgument.h"
 #include "../media/MediaFormat.h"
+#include "attachment/BaseAttachment.h"
 #include "audio/AudioCodecFactory.h"
 #include "audio/BaseAudioCodec.h"
 #include "container/BaseContainer.h"
 #include "container/ContainerFactory.h"
+#include "probe/ProbeResultStreamAttachment.h"
+#include "src/program/child/ffmpeg/attachment/AttachmentFactory.h"
 #include "src/program/settings/enums/Command_N.h"
 #include "src/program/settings/enums/Container_N.h"
 #include "src/program/settings/enums/Encoders_N.h"
@@ -57,10 +60,6 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
       ContainerFactory::create(Container_N::definition(wanted_container));
 
   LOG_DEBUG("Container ptr: {}", static_cast<void *>(container));
-  // this is the new way since i added index to the
-  // audio codecs.
-  // all audio codecs should be mapped to the streams
-  // regardless if the user specified a mapping.
 
   // assert audio stream mapping
   assertStreamMapping(audioStreams, media->probeResult->audioStreams);
@@ -74,6 +73,7 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
   this->container->setAudioCodec(
       generateAudioCodecs(audioStreams, argumentRegistry));
   this->container->setVideoCodec(videoCodec);
+  this->container->setAttachments(generateAttachments());
 }
 
 FFmpegArgumentBuilder::~FFmpegArgumentBuilder() {
@@ -305,6 +305,17 @@ std::vector<BaseSubtitleCodec *> FFmpegArgumentBuilder::generateSubtitleCodecs(
   }
 
   return subtitleCodecs;
+}
+
+std::vector<BaseAttachment *> FFmpegArgumentBuilder::generateAttachments() {
+  std::vector<BaseAttachment *> attachments;
+
+  for (int i = 0; i < media->probeResult->attachmentStreams.size(); i++) {
+    ProbeResultStreamAttachment att = media->probeResult->attachmentStreams[i];
+    attachments.push_back(AttachmentFactory::create(att.tags.mimetype));
+  }
+
+  return attachments;
 }
 
 void FFmpegArgumentBuilder::validate() { return; }

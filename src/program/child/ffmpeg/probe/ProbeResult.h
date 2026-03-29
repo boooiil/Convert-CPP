@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ProbeResultFormat.h"
+#include "ProbeResultStreamAttachment.h"
 #include "ProbeResultStreamAudio.h"
 #include "ProbeResultStreamSubtitle.h"
 #include "ProbeResultStreamVideo.h"
@@ -21,7 +22,7 @@
  *
  */
 class ProbeResult {
- public:
+public:
   /** This constructor should never be called. */
   ProbeResult();
 
@@ -56,6 +57,12 @@ class ProbeResult {
    *
    */
   std::vector<ProbeResultStreamSubtitle> subtitleStreams;
+
+  /**
+   * @brief The parsed FFProbe attachment streams result.
+   *
+   */
+  std::vector<ProbeResultStreamAttachment> attachmentStreams;
 };
 
-#endif  // PROBE_RESULT
+#endif // PROBE_RESULT

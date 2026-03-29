@@ -278,10 +278,31 @@ void ChildDisplay::printInformationTyped(NTicker *ticker, Child *child) {
           LogColor::fgOrange(prss.tags.language));
 
       LOG(tab(4) + LogColor::fgBlue("Title") + colon +
-          LogColor::fgOrange(prss.tags.title));
+          LogColor::fgOrange(prss.tags.title.empty() ? "None"
+                                                     : prss.tags.title));
 
       LOG(tab(4) + LogColor::fgBlue("Codec") + colon +
           LogColor::fgOrange(prss.codec_name));
+    }
+
+    LOG();
+    // attachment bloc
+    LOG(tab(2) + ob + LogColor::fgWhite("Attachment Streams") + cb);
+
+    // iterate subtitle streams
+    for (int i = 0; i < media->probeResult->attachmentStreams.size(); i++) {
+      ProbeResultStreamAttachment prsa =
+          media->probeResult->attachmentStreams[i];
+
+      LOG(tab(3) + ob + std::to_string(i) + cb + " " +
+          LogColor::fgOrange(prsa.tags.filename));
+
+      LOG(tab(4) + LogColor::fgBlue("Mimetype") + colon +
+          LogColor::fgOrange(prsa.tags.mimetype));
+
+      LOG(tab(4) + LogColor::fgBlue("Codec") + colon +
+          LogColor::fgOrange(prsa.codec_name.empty() ? "None"
+                                                     : prsa.codec_name));
     }
 
     media_t_queue.push(media);

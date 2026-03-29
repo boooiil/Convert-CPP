@@ -1,0 +1,86 @@
+{
+    "x_truetype_font": {
+        "name": "application/x-truetype-font",
+        "displayName": "TrueType Font",
+        "aliases": [
+            "application/x-truetype-font",
+            "x-font-ttf",
+            "truetype_font",
+            "ttf"
+        ]
+    },
+    "x_opentype_font": {
+        "name": "application/vnd.ms-opentype",
+        "displayName": "OpenType Font",
+        "aliases": [
+            "application/vnd.ms-opentype",
+            "x-font-otf",
+            "opentype_font",
+            "otf"
+        ]
+    },
+    "x_font_woff": {
+        "name": "application/x-font-woff",
+        "displayName": "Web Open Font Format",
+        "aliases": [
+            "application/x-font-woff",
+            "font/woff",
+            "woff"
+        ]
+    },
+    "x_font_woff2": {
+        "name": "application/x-font-woff2",
+        "displayName": "Web Open Font Format 2",
+        "aliases": [
+            "application/x-font-woff2",
+            "font/woff2",
+            "woff2"
+        ]
+    },
+    "octet_stream": {
+        "name": "application/octet-stream",
+        "displayName": "Binary Data",
+        "aliases": [
+            "application/octet-stream",
+            "binary",
+            "bin",
+            "octet_stream"
+        ]
+    },
+    "json": {
+        "name": "application/json",
+        "displayName": "JSON Data",
+        "aliases": [
+            "application/json",
+            "json",
+            "application_json"
+        ]
+    },
+    "xml": {
+        "name": "application/xml",
+        "displayName": "XML Data",
+        "aliases": [
+            "application/xml",
+            "xml",
+            "application_xml"
+        ]
+    },
+    "zip": {
+        "name": "application/zip",
+        "displayName": "ZIP Archive",
+        "aliases": [
+            "application/zip",
+            "zip",
+            "application_zip"
+        ]
+    },
+    "_7z": {
+        "name": "application/x-7z-compressed",
+        "displayName": "7-Zip Archive",
+        "aliases": [
+            "application/x-7z-compressed",
+            "7z",
+            "application_7z"
+        ]
+    }
+}

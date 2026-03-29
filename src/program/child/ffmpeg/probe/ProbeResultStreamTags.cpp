@@ -20,6 +20,16 @@ ProbeResultStreamTags::ProbeResultStreamTags(nlohmann::json JSON) {
     ProbeResultStreamTags::title = JSON["title"];
   }
 
+  if (!JSON["filename"].is_null()) {
+    LOG_VERBOSE("filename: ", JSON["filename"]);
+    ProbeResultStreamTags::filename = JSON["filename"];
+  }
+
+  if (!JSON["mimetype"].is_null()) {
+    LOG_VERBOSE("mimetype: ", JSON["mimetype"]);
+    ProbeResultStreamTags::mimetype = JSON["mimetype"];
+  }
+
   if (!JSON["BPS"].is_null()) {
     LOG_VERBOSE("BPS: ", JSON["BPS"]);
     ProbeResultStreamTags::BPS = std::stoi(JSON["BPS"].get<std::string>());

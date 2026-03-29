@@ -15,6 +15,7 @@ class Container(TypedDict):
     supportedAudioCodecs: List[str]
     supportedSubtitleCodecs: List[str]
     supportedVideoCodecs: List[str]
+    supportedAttachments: List[str]
 
 Containers = Dict[str, Container]
 
@@ -40,6 +41,7 @@ def generate(source: str, destination: str):
         supportedAudioCodecs = ", ".join([f'"{codec}"' for codec in value['supportedAudioCodecs']])
         supportedSubtitleCodecs = ", ".join([f'"{codec}"' for codec in value['supportedSubtitleCodecs']])
         supportedVideoCodecs = ", ".join([f'"{codec}"' for codec in value['supportedVideoCodecs']])
+        supportedAttachments = ", ".join([f'"{codec}"' for codec in value['supportedAttachments']])
 
         body: str = f"""#ifndef CONTAINER_{class_name}_GENERATED_H
 #define CONTAINER_{class_name}_GENERATED_H
@@ -73,6 +75,10 @@ public:
 
     auto supportedVideoCodecs() const -> const std::vector<std::string> override {{
         return {{{supportedVideoCodecs}}};
+    }}
+
+    auto supportedAttachments() const -> const std::vector<std::string> override {{
+        return {{{supportedAttachments}}};
     }}
 
     auto fallbackAudioCodec() const -> const std::string override {{

@@ -62,6 +62,7 @@ public:
                                                     ArgumentRegistry &);
   std::vector<BaseSubtitleCodec *>
   generateSubtitleCodecs(const VectorArgument<int> &, ArgumentRegistry &);
+  std::vector<BaseAttachment *> generateAttachments();
 
   // if container supports video codec, use
   // else stop program

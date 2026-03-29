@@ -32,6 +32,10 @@ public:
   std::string language;
   /// @brief title of the stream
   std::string title;
+  /// @brief filename
+  std::string filename;
+  /// @brief mimetype of the stream
+  std::string mimetype;
   /// @brief bits per second
   int BPS;
   /// @brief number of frames in the stream
