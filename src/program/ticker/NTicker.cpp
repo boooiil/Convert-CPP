@@ -27,7 +27,7 @@ void NTicker::determineNextAction(std::vector<std::string> &args) {
   ArgumentRegistry &argumentRegistry = this->arguments->argumentRegistry;
 
   if (argumentRegistry.get<Command_N::HELP>()) {
-    Help::printHelp(*arguments);
+    Help::print(*arguments);
     Program::stopFlag = true;
   } else if (argumentRegistry.get<Command_N::INFO>()) {
     // print information
