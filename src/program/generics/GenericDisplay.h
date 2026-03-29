@@ -2,15 +2,15 @@
 #define GENERIC_DISPLAY_H
 
 #include "BaseDisplay.h"
+#include "JSONSerializableRunner.h"
 #include <cassert>
-
 
 template <typename Ticker, typename Runner>
 class GenericDisplay : public BaseDisplay {
 public:
   virtual ~GenericDisplay(void) = default;
-  virtual void print(void) = 0;
-  virtual void printDebug(void) = 0;
+  virtual void print(JSONSerializableRunner &ticker) = 0;
+  virtual void printDebug(JSONSerializableRunner &ticker) = 0;
   void printInformation(JSONSerializableRunner *ticker,
                         JSONSerializableRunner *runner) {
     auto *typedTicker = dynamic_cast<Ticker *>(ticker);
