@@ -24,11 +24,15 @@ using SignalHandler = UnixSignalHandler;
  * WALK AWAY NOTES:
  *
  * We need to iterate over all of the subtitle streams and see if they can be
- mapped to the desired codecs.
+ * mapped to the desired codecs.
  * If a stream cannot be mapped, we need to decide whether to drop it or use a
- fallback codec.
- *
- */
+ * fallback codec.
+ * There are some attachments that are not supported through certain
+ * containers.
+ * We will need to create new oibejcts for attachments and expand our
+ * container.
+ * I think for now we will just discard invalid attachments.
+ **/
 
 /**
  * FINISH NOW, OPTIMIZE LATER

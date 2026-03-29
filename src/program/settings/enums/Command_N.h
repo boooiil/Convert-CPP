@@ -132,12 +132,12 @@ template <> struct CommandValueType<Command_N::AUDIOSTREAMS> {
   using type = VectorArgument<int>;
 };
 
-template <> struct CommandValueType<Command_N::BITRATE> {
-  using type = FlagArgument;
-};
-
 template <> struct CommandValueType<Command_N::AUDIOBITRATE> {
   using type = VectorArgument<int>;
+};
+
+template <> struct CommandValueType<Command_N::BITRATE> {
+  using type = FlagArgument;
 };
 
 template <> struct CommandValueType<Command_N::CROP> {
