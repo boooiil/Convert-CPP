@@ -42,13 +42,13 @@ public:
       std::cout << std::left << tab(2) << std::setw(pad) << "CRF:" << format.crf
                 << std::endl;
       std::cout << std::left << tab(2) << std::setw(pad) << "BITRATE:"
-                << NumberUtils::formatNumber(format.bitrate, 2) + "K"
+                << NumberUtils::formatNumber(format.bitrate, 2) + "M"
                 << std::endl;
       std::cout << std::left << tab(2) << std::setw(pad)
-                << "MIN:" << NumberUtils::formatNumber(format.min, 2) + "K"
+                << "MIN:" << NumberUtils::formatNumber(format.min, 2) + "M"
                 << std::endl;
       std::cout << std::left << tab(2) << std::setw(pad)
-                << "MAX:" << NumberUtils::formatNumber(format.max, 2) + "K"
+                << "MAX:" << NumberUtils::formatNumber(format.max, 2) + "M"
                 << std::endl;
       std::cout << std::left << tab(2) << std::setw(pad) << "RES:"
                 << std::to_string(format.width) + ":" +
