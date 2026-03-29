@@ -2,25 +2,25 @@
 
 #include "../../../utils/logging/LogColor.h"
 #include "../../../utils/logging/Logger.h"
-#include "../../Program.h"
 #include "../../child/display/ChildDisplay.h"
 #include "../../ticker/NTicker.h"
 #include "../Parent.h"
+#include "src/program/generics/JSONSerializableRunner.h"
 
 // NOLINTBEGIN(modernize-return-braced-init-list)
 inline auto tab(int spaces) -> std::string {
   return std::string(spaces * 2, ' ');
 }
 // NOLINTEND(modernize-return-braced-init-list)
-void ParentDisplay::print() {
+void ParentDisplay::print(JSONSerializableRunner &ticker) {
   // TODO: finish
 }
 
-void ParentDisplay::printDebug() {
+void ParentDisplay::printDebug(JSONSerializableRunner &ticker) {
   // TODO: finish
 }
 
-void ParentDisplay::printInformationTyped(NTicker* ticker, Parent* parent) {
+void ParentDisplay::printInformationTyped(NTicker *ticker, Parent *parent) {
   assert(ticker != nullptr);
   assert(parent != nullptr);
 
@@ -42,9 +42,9 @@ void ParentDisplay::printInformationTyped(NTicker* ticker, Parent* parent) {
   /********************************************
    *  ITERATE TRHOUGH PARENT PENDING CHILDREN  *
    *********************************************/
-  std::queue<Child*> child_t_queue;
+  std::queue<Child *> child_t_queue;
   while (!parent->pending.empty()) {
-    Child* child = parent->pending.front();
+    Child *child = parent->pending.front();
     parent->pending.pop();
 
     if (child->pending.empty()) {
