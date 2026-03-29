@@ -10,7 +10,6 @@
 #include "../../utils/DirectoryUtils.h"
 #include "../../utils/ListUtils.h"
 #include "../../utils/logging/Logger.h"
-#include "../Program.h"
 #include "../child/Child.h"
 
 /**
@@ -31,14 +30,18 @@
  *
  */
 
+Parent::Parent(RuntimeEnvironment &run_env, Arguments &arguments)
+    : run_env(run_env), arguments(arguments) {
+  LOG_DEBUG("Constructing parent.");
+}
+
 Parent::~Parent(void) {
   LOG_DEBUG("Deconstructing parent.");
   while (!this->pending.empty()) {
     Child *child = this->pending.front();
     this->pending.pop();
 
-    LOG_DEBUG("Deleting child process in:",
-              Program::settings->childOptionsMap[child->id]->CWD,
+    LOG_DEBUG("Deleting child process in:", child->getArguments().CWD,
               "with uuid:", child->id);
 
     child->end();
@@ -48,13 +51,16 @@ Parent::~Parent(void) {
     Child *child = this->converting.front();
     this->converting.pop();
 
-    LOG_DEBUG("Deleting child process in:",
-              Program::settings->childOptionsMap[child->id]->CWD,
+    LOG_DEBUG("Deleting child process in:", child->getArguments().CWD,
               "with uuid:", child->id);
 
     child->end();
     delete child;
   }
+  // if (this->options != nullptr) {
+  //   LOG_DEBUG("Deleting ParentOptions.");
+  //   delete this->options;
+  // }
 }
 
 // void Parent::prepare(ArgumentParser* arguments) {
@@ -82,11 +88,6 @@ Parent::~Parent(void) {
 // }
 
 void Parent::prepare(std::vector<std::string> &args) {
-  ParentOptions &parentOptions = *Program::settings->parentOptions;
-
-  parentOptions.prepare();
-  parentOptions.parse(args);
-  parentOptions.validate();
 
   std::vector<std::filesystem::directory_entry> files;
 
@@ -97,12 +98,12 @@ void Parent::prepare(std::vector<std::string> &args) {
 #endif
 
   for (std::filesystem::directory_entry file : files) {
-    std::string path = file.path().string();
+    std::filesystem::path path = file.path();
     std::string filename = file.path().filename().string();
 
-    Child *child = new Child();
-
     std::vector<std::string> n_args = this->getArgs(file);
+
+    Child *child = new Child(run_env, Arguments::parse(run_env, n_args));
 
     child->prepare(n_args);
     this->pending.push(child);
@@ -125,14 +126,6 @@ void Parent::end(void) {
   LOG_DEBUG("Expected to delete { }.");
 }
 
-void Parent::setEndable(bool flag) {
-  LOG_DEBUG("Parent has been set as endable:",
-            this->endable ? "True" : "False");
-  this->endable = flag;
-}
-
-bool Parent::isEndable(void) { return this->endable; }
-
 std::vector<std::string>
 Parent::getArgs(std::filesystem::directory_entry file) {
   std::cout << file.path().parent_path() << " arguments: ";
@@ -145,7 +138,7 @@ Parent::getArgs(std::filesystem::directory_entry file) {
   return ListUtils::splitv(input, " ");
 }
 
-void Parent::fromJSON(nlohmann::json) {}
+void Parent::fromJSON(const nlohmann::json &json) {}
 
 nlohmann::json Parent::toJSON(void) {
   nlohmann::json parent;
@@ -160,8 +153,7 @@ nlohmann::json Parent::toJSON(void) {
     Child *child = this->pending.front();
     this->pending.pop();
 
-    LOG_DEBUG("parent json: ",
-              Program::settings->childOptionsMap[child->id]->CWD);
+    LOG_DEBUG("parent json: ", child->getArguments().CWD);
 
     converting_json.push_back(child->toJSON());
 
@@ -176,8 +168,7 @@ nlohmann::json Parent::toJSON(void) {
     Child *child = this->converting.front();
     this->converting.pop();
 
-    LOG_DEBUG("parent json: ",
-              Program::settings->childOptionsMap[child->id]->CWD);
+    LOG_DEBUG("parent json: ", child->getArguments().CWD);
 
     pending_json.push_back(child->toJSON());
 

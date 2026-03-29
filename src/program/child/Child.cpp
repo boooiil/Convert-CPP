@@ -16,7 +16,6 @@
 #include "media/Media.h"
 #include "src/program/context/RuntimeEnvironment.h"
 #include "src/program/settings/enums/Command_N.h"
-#include "src/program/settings/options/ChildOptions.h"
 #include "src/utils/logging/Logger.h"
 
 std::vector<std::thread> workerThreads;
@@ -25,7 +24,8 @@ std::vector<std::thread> workerThreads;
 // typename ArgumentRegistry::getTFn<T> get =
 // Child::settings->argumentRegistry.get<T>;
 
-Child::Child(RuntimeEnvironment &run_env) : endable(false), run_env(run_env) {}
+Child::Child(RuntimeEnvironment &run_env, std::shared_ptr<Arguments> arguments)
+    : endable(false), run_env(run_env), arguments(arguments) {}
 
 void Child::prepare(std::vector<std::string> &args) {
   // initialize settings
@@ -36,12 +36,6 @@ void Child::prepare(std::vector<std::string> &args) {
       gen); // Pass the generator to uuid_random_generator
   this->id = generator();
 
-  this->childOptions = new ChildOptions(run_env);
-
-  childOptions->prepare();
-  childOptions->parse(args);
-  childOptions->validate();
-
   std::vector<std::filesystem::directory_entry> files =
       DirectoryUtils::getFilesInDirectory(args[0],
                                           std::vector{".mp4", ".mkv", ".avi"});
@@ -50,12 +44,12 @@ void Child::prepare(std::vector<std::string> &args) {
     std::string cwd = file.path().parent_path().string();
     std::string filename = file.path().filename().string();
 
-    Media *media = new Media(*this->childOptions, this->id, filename, cwd);
+    Media *media = new Media(*this->arguments, this->id, filename, cwd);
     media->getFile().naming.rename();
 
     bool fs_exists =
         std::filesystem::exists(media->getFile().naming.conversion_folder_path);
-    bool is_info = childOptions->argumentRegistry->get<Command_N::INFO>().get();
+    bool is_info = arguments->argumentRegistry.get<Command_N::INFO>().get();
 
     LOG_DEBUG("fs exists?", fs_exists ? "true" : "false", "is info?",
               is_info ? "true" : "false");
@@ -108,7 +102,7 @@ void Child::run(void) {
   int currentAmount = static_cast<int>(this->converting.size());
 
   IntegerArgument setAmount =
-      childOptions->argumentRegistry->get<Command_N::AMOUNT>();
+      arguments->argumentRegistry.get<Command_N::AMOUNT>();
 
   LOG_DEBUG("C:" + std::to_string(currentAmount), "W:" + setAmount.toString(),
             "T:" +
@@ -261,10 +255,10 @@ void Child::end(void) {
     delete media;
   }
 
-  if (this->childOptions != nullptr) {
-    LOG_DEBUG("Deleting child options.");
-    delete this->childOptions;
-  }
+  // if (this->arguments != nullptr) {
+  //   LOG_DEBUG("Deleting child options.");
+  //   delete this->arguments;
+  // }
 
   /*if (this->processSettings != nullptr) {
     LOG_DEBUG("Deleting settings.");
