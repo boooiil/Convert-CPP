@@ -19,7 +19,7 @@
 #include "../ffmpeg/FFmpegArgumentBuilder.h"
 #include "../ffmpeg/probe/ProbeResult.h"
 #include "src/program/child/media/file/FileContainer.h"
-#include "src/program/settings/options/ChildOptions.h"
+#include "src/program/context/Arguments.h"
 
 /**
  * @brief Media class.
@@ -49,7 +49,7 @@ public:
    * @param[in] name - Name of the file.
    * @param[in] path - Path to the file (generally CWD).
    */
-  Media(ChildOptions &options, uuids::uuid id, std::string name,
+  Media(Arguments &arguments, uuids::uuid id, std::string name,
         std::filesystem::path path);
   ~Media(void);
 
@@ -187,7 +187,7 @@ public:
 
   FileContainer &getFile() { return this->file; }
 
-  ChildOptions &getOptions();
+  Arguments &getArguments() { return this->arguments; }
 
   std::string convertingLine() const;
   std::string pendingLine() const;
@@ -200,7 +200,7 @@ private:
   /// @brief activity type
   Activity_N::Activity activity;
   FileContainer file;
-  ChildOptions &childOptions; /// @brief owner child
+  Arguments &arguments;
 };
 
 #endif // !MEDIA

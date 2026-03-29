@@ -13,20 +13,21 @@
 #include "../settings/Help.h"
 #include "../settings/arguments/IntegerArgument.h"
 #include "nlohmann/json.hpp"
+#include "src/program/context/Arguments.h"
 #include "src/program/context/RuntimeEnvironment.h"
 #include "src/program/settings/enums/Command_N.h"
 #include "src/program/settings/enums/LogFormat_N.h"
-#include "src/program/settings/options/ProgramOptions.h"
 
-NTicker::NTicker(RuntimeEnvironment &run_env, ProgramOptions &programOptions)
-    : runner(nullptr), endable(true), display(nullptr),
-      programOptions(programOptions), run_env(run_env) {};
+NTicker::NTicker(RuntimeEnvironment &run_env,
+                 std::shared_ptr<Arguments> &arguments)
+    : runner(nullptr), endable(true), display(nullptr), arguments(arguments),
+      run_env(run_env) {};
 
 void NTicker::determineNextAction(std::vector<std::string> &args) {
-  ArgumentRegistry &argumentRegistry = *this->programOptions.argumentRegistry;
+  ArgumentRegistry &argumentRegistry = this->arguments->argumentRegistry;
 
   if (argumentRegistry.get<Command_N::HELP>()) {
-    Help::printHelp();
+    Help::printHelp(*arguments);
     Program::stopFlag = true;
   } else if (argumentRegistry.get<Command_N::INFO>()) {
     // print information
@@ -63,23 +64,23 @@ void NTicker::determineNextAction(std::vector<std::string> &args) {
 
 void NTicker::prepare(std::vector<std::string> &args) {
   // use parent display
-  ArgumentRegistry &argumentRegistry = *this->programOptions.argumentRegistry;
+  ArgumentRegistry &argumentRegistry = this->arguments->argumentRegistry;
 
   if (argumentRegistry.get<Command_N::PARENT>()) {
     LOG_DEBUG("Running as parent.");
     this->display = new ParentDisplay();
-    this->runner = new Parent(run_env);
+    this->runner = new Parent(run_env, *arguments);
   } else {
     LOG_DEBUG("Running as child.");
     this->display = new ChildDisplay();
-    this->runner = new Child(this->run_env);
+    this->runner = new Child(run_env, arguments);
   }
 
   this->determineNextAction(args);
 }
 
 void NTicker::run() {
-  ArgumentRegistry &argumentRegistry = *this->programOptions.argumentRegistry;
+  ArgumentRegistry &argumentRegistry = this->arguments->argumentRegistry;
 
   if (argumentRegistry.get<Command_N::INFO>()) {
     this->display->printInformation(this, this->runner);

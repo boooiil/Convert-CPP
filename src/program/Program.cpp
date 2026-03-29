@@ -11,7 +11,6 @@
 #include "../utils/logging/Logger.h"
 #include "generics/JSONSerializableRunner.h"
 #include "settings/enums/LogFormat_N.h"
-#include "settings/options/ProgramOptions.h"
 #include "src/program/context/RuntimeEnvironment.h"
 #include "src/utils/logging/Logger.h"
 #include "ticker/NTicker.h"
@@ -30,12 +29,10 @@ Program::~Program(void) {
 void Program::prepare(std::vector<std::string> &args) {
   // Program::log = new Log();
 
-  this->options = new ProgramOptions();
-  this->options->prepare();
-  this->options->parse(args);
+  this->arguments = Arguments::parse(*this->runtimeEnv, args);
 
-  switch (
-      this->options->argumentRegistry->get<Command_N::LOGGINGOPTIONS>().get()) {
+  switch (this->arguments->argumentRegistry.get<Command_N::LOGGINGOPTIONS>()
+              .get()) {
   case LogFormat_N::DEBUG:
   case LogFormat_N::JSON_DEBUG:
     Logger::debug_flag = true;
@@ -56,10 +53,9 @@ void Program::prepare(std::vector<std::string> &args) {
     break;
   };
 
-  this->options->gatherSystemDetails();
-  this->options->validate();
+  this->arguments->validate();
 
-  this->ticker = new NTicker(*this->runtimeEnv, *this->options);
+  this->ticker = new NTicker(*this->runtimeEnv, this->arguments);
   if (!stopFlag)
     this->ticker->prepare(args);
 }
@@ -111,10 +107,10 @@ void Program::end(void) {
     delete Program::log;
   }*/
 
-  if (this->options != nullptr) {
-    LOG_DEBUG("Deleting ProgramOptions.");
-    delete this->options;
-  }
+  // if (this->options != nullptr) {
+  //   LOG_DEBUG("Deleting ProgramOptions.");
+  //   delete this->options;
+  // }
 
   if (this->runtimeEnv != nullptr) {
     LOG_DEBUG("Deleting RuntimeEnvironment.");
@@ -139,9 +135,9 @@ nlohmann::json Program::toJSON() {
   using namespace nlohmann;
 
   json program;
-  json program_options = this->options->toJSON();
+  json arguments = this->arguments->toJSON();
 
-  program["ProgramOptions"] = program_options;
+  program["arguments"] = arguments;
 
   if (this->ticker != nullptr) {
     program["Ticker"] = this->ticker->toJSON();

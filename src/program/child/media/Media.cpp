@@ -28,15 +28,15 @@
 #include "src/utils/StringUtils.h"
 #include "src/utils/TimeUtils.h"
 
-Media::Media(ChildOptions &options, uuids::uuid id, std::string name,
+Media::Media(Arguments &arguments, uuids::uuid id, std::string name,
              std::filesystem::path path)
     : id(id), started(0), ended(0), probeResult(nullptr),
       ffmpegArguments(nullptr), activity(Activity_N::WAITING),
       file(FileContainer(
           name, path,
-          options.argumentRegistry->get<Command_N::QUALITY>().get().name,
+          arguments.argumentRegistry.get<Command_N::QUALITY>().get().name,
           std::string("mkv"))),
-      childOptions(options) {}
+      arguments(arguments) {}
 
 Media::~Media() {
   LOG_DEBUG("Deconstructing media: ", this->id);
@@ -208,10 +208,10 @@ int Media::percentReduced() const {
 std::string Media::convertingLine() const {
 
   std::string accel_letter =
-      HWAccelerators_N::getLetter(this->childOptions.runningHWAccel);
+      HWAccelerators_N::getLetter(this->arguments.running_hw_accel);
 
   std::string encoder_letter =
-      Encoders_N::getLetter(this->childOptions.runningEncoder);
+      Encoders_N::getLetter(this->arguments.running_encoder);
 
   std::string activity_letter = Activity_N::getLetter(this->activity);
 
@@ -279,9 +279,6 @@ std::string Media::pendingLine() const {
   }
 }
 
-// i dont like this
-ChildOptions &Media::getOptions() { return this->childOptions; }
-
 void Media::fromJSON(const nlohmann::json &json) {
   if (json.empty()) {
     LOG_DEBUG("JSON is empty.");
@@ -316,7 +313,7 @@ void Media::fromJSON(const nlohmann::json &json) {
   this->file.naming.series = json_file["series"];
   this->file.naming.season_no = json_file["season"];
 
-  this->childOptions.CWD = json_file["cwd"];
+  // this->arguments.CWD = json_file["cwd"];
 
   this->file.video_info.fps = json_video["fps"];
   this->file.video_info.totalFrames = json_video["totalFrames"];

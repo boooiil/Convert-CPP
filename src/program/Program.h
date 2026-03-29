@@ -5,15 +5,14 @@
 #include <string>
 #include <vector>
 
+#include "context/Arguments.h"
+#include "context/RuntimeEnvironment.h"
 #include "generics/JSONSerializable.h"
 #include "generics/JSONSerializableRunner.h"
-#include "settings/Settings.h"
 
 class Program : public JSONSerializable {
 public:
-  static Settings *settings;
   // static Log* log;
-  static JSONSerializableRunner *ticker;
   static bool stopFlag;
 
   Program(void);
@@ -27,11 +26,16 @@ public:
   void setEndable(bool);
   bool isEndable(void);
 
-  void fromJSON(nlohmann::json) override;
+  Arguments &getArguments() { return *this->arguments; }
+
+  void fromJSON(const nlohmann::json &json) override;
   nlohmann::json toJSON(void) override;
 
 private:
   bool endable;
+  RuntimeEnvironment *runtimeEnv;
+  JSONSerializableRunner *ticker;
+  std::shared_ptr<Arguments> arguments;
 };
 
 #endif // !PROGRAM_H
