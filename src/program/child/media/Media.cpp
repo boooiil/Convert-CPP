@@ -22,6 +22,7 @@
 #include "src/program/child/media/file/FileContainer.h"
 #include "src/program/definitions/DefinitionRegistry.h"
 #include "src/program/settings/enums/Activity_N.h"
+#include "src/program/settings/enums/Command_N.h"
 #include "src/program/settings/enums/Encoders_N.h"
 #include "src/program/settings/enums/HWAccelerators_N.h"
 #include "src/utils/NumberUtils.h"
@@ -35,7 +36,8 @@ Media::Media(Arguments &arguments, uuids::uuid id, std::string name,
       file(FileContainer(
           name, path,
           arguments.argumentRegistry.get<Command_N::QUALITY>().get().name,
-          std::string("mkv"))),
+          Container_N::definition(
+              arguments.argumentRegistry.get<Command_N::CONTAINER>()))),
       arguments(arguments) {}
 
 Media::~Media() {
@@ -138,7 +140,6 @@ void Media::doConversion() {
   this->setActivity(Activity_N::WAITING_VALIDATE);
 }
 void Media::doValidation() {
-
   if (Program::stopFlag == true) {
     LOG_DEBUG("Stopping validation due to stop flag.");
     this->setActivity(Activity_N::FAILED_SYSTEM);
@@ -166,7 +167,6 @@ void Media::buildFFmpegArguments(bool isValidate) {
 }
 
 int Media::eta() const {
-
   float mediaFPS =
       this->file.processing_info.fps > 0 ? this->file.processing_info.fps : 1;
   auto totalFrames = this->file.video_info.totalFrames;
@@ -177,7 +177,6 @@ int Media::eta() const {
 }
 
 int Media::percentCompleted() const {
-
   auto totalFrames = static_cast<double>(this->file.video_info.totalFrames);
   auto completedFrames = this->file.processing_info.completedFrames;
 
@@ -206,7 +205,6 @@ int Media::percentReduced() const {
 }
 
 std::string Media::convertingLine() const {
-
   std::string accel_letter =
       HWAccelerators_N::getLetter(this->arguments.running_hw_accel);
 
