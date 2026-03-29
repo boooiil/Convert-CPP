@@ -5,10 +5,10 @@
 #include "nlohmann/json_fwd.hpp"
 
 class JSONSerializableRunner : public GenericRunner {
- public:
+public:
   virtual ~JSONSerializableRunner(void) = default;
-  virtual void fromJSON(nlohmann::json) = 0;
+  virtual void fromJSON(const nlohmann::json &json) = 0;
   virtual nlohmann::json toJSON(void) = 0;
 };
 
-#endif  // !JSON_SERIALIZABLE_RUNNER_H
+#endif // !JSON_SERIALIZABLE_RUNNER_H
