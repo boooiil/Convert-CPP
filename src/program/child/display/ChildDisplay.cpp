@@ -16,6 +16,7 @@
 #include "../ffmpeg/probe/ProbeResultStreamSubtitle.h"
 #include "../ffmpeg/probe/ProbeResultStreamVideo.h"
 #include "../media/Media.h"
+#include "src/program/context/Arguments.h"
 #include "src/program/definitions/DefinitionRegistry.h"
 #include "src/program/generics/JSONSerializableRunner.h"
 #include "src/program/settings/enums/Command_N.h"
@@ -34,8 +35,8 @@ inline auto tab(int spaces) -> std::string {
 void ChildDisplay::print(JSONSerializableRunner &ticker) {
   Child &child = *ticker.getRunner<NTicker>()->runner->getRunner<Child>();
 
-  ChildOptions &childOptions = child.getOptions();
-  ArgumentRegistry &argumentRegistry = *childOptions.argumentRegistry;
+  Arguments &arguments = child.getArguments();
+  ArgumentRegistry &argumentRegistry = arguments.argumentRegistry;
 
   std::string sendStr = "";
 
@@ -168,7 +169,7 @@ void ChildDisplay::printInformationTyped(NTicker *ticker, Child *child) {
 
   std::queue<Media *> media_t_queue;
   while (!child->pending.empty()) {
-    ChildOptions &childOptions = child->getOptions();
+    Arguments &arguments = child->getArguments();
 
     Media *media = child->pending.front();
     child->pending.pop();
@@ -183,7 +184,7 @@ void ChildDisplay::printInformationTyped(NTicker *ticker, Child *child) {
 
     LOG();
     // parent bloc
-    LOG(ob + "CWD - " + LogColor::fgGray(childOptions.CWD) + cb);
+    LOG(ob + "CWD - " + LogColor::fgGray(arguments.CWD) + cb);
     LOG();
     // file bloc
     LOG(tab(1) + ob +
