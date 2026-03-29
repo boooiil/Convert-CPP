@@ -1,11 +1,11 @@
 #ifndef HELP_H
 #define HELP_H
 
-#include <string>
+#include "src/program/context/Arguments.h"
 
 class Help {
- public:
-  static void printHelp();
+public:
+  static void printHelp(Arguments &arguments);
 };
 
-#endif  // HELP_H
+#endif // HELP_H
