@@ -76,6 +76,21 @@ public:
   static std::string toProperCase(std::string str);
 
   /**
+   * @brief Wrap content in brackets without changing the inner and outer
+   * colors.
+   *
+   * @param innerContent - The content inside the brackets.
+   * @param outerContent - The content outside the brackets.
+   * @return std::string - The formatted string.
+   */
+  static std::string i_bracket(const std::string &innerContent,
+                               const std::string &outerContent) {
+
+    return LogColor::fgGray("[") + innerContent + LogColor::fgGray("]") +
+           outerContent;
+  }
+
+  /**
    * @brief Wrap content in brackets with specified colors.
    *
    * @param innerContent - The content to wrap.
