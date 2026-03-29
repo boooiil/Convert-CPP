@@ -185,30 +185,39 @@ public:
       return;
     }
 
-    for (auto _attachment : _attachments) {
-      if (_attachment == nullptr) {
+    std::vector<BaseAttachment *> valid_att = {};
+    int running = 0;
+
+    for (int i = 0; i < _attachments.size(); i++) {
+      BaseAttachment *att = _attachments[i];
+
+      if (att == nullptr) {
         throw std::runtime_error("Null attachment provided.");
       }
 
-      std::string wanted_type = _attachment->getName();
+      std::string wanted_type = att->getName();
       std::vector<std::string> supported_attachments = supportedAttachments();
 
       if (std::find(supported_attachments.begin(), supported_attachments.end(),
                     wanted_type) == supported_attachments.end()) {
         LOG_DEBUG("Invalid attachment for container", this->getName(),
-                  _attachment->getName());
-        throw std::runtime_error("Invalid attachment: " +
-                                 _attachment->getName());
+                  att->getName() + ",", "dropping.");
+        delete att;
+        continue;
+        // throw std::runtime_error("Invalid attachment: " + att->getName());
       }
 
-      LOG_DEBUG("Setting attachment to", _attachment->getName());
+      LOG_DEBUG("Setting attachment to", att->getName());
+      att->setIndex(i);
+      att->setMapIndex(running++);
+      valid_att.push_back(att);
     }
 
     for (auto attachment : attachments) {
       delete attachment;
     }
 
-    this->attachments = _attachments;
+    this->attachments = valid_att;
   }
 
   auto getAudioCodecs() -> const std::vector<BaseAudioCodec *> & {
