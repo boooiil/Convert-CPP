@@ -4,6 +4,17 @@
 #include "src/program/definitions/Definition.h"
 #include "src/program/definitions/DefinitionRegistry.h"
 #include "src/program/settings/arguments/EnumArgument.h"
+#include "src/program/settings/arguments/FlagArgument.h"
+#include "src/program/settings/arguments/IntegerArgument.h"
+#include "src/program/settings/arguments/TimeStringArgument.h"
+#include "src/program/settings/arguments/TimeStringVectorArgument.h"
+#include "src/program/settings/arguments/VectorArgument.h"
+#include "src/program/settings/arguments/video/Quality.h"
+#include "src/program/settings/enums/Container_N.h"
+#include "src/program/settings/enums/Encoders_N.h"
+#include "src/program/settings/enums/HWAccelerators_N.h"
+#include "src/program/settings/enums/LogFormat_N.h"
+#include "src/program/settings/enums/Tunes_N.h"
 
 class Command_N {
 public:
@@ -14,6 +25,7 @@ public:
     AUDIOCHANNELS,   // IntegerArgument
     AUDIOCODEC,      // VectorArgument<std::string>
     AUDIOSTREAMS,    // VectorArgument<int>
+    AUDIOBITRATE,    // VectorArgument<int>
     BITRATE,         // IntegerArgument
     CROP,            // FlagArgument
     CONSTRAIN,       // FlagArgument
@@ -48,6 +60,8 @@ public:
       return DefinitionRegistry::get("command_audiocodec");
     case AUDIOSTREAMS:
       return DefinitionRegistry::get("command_audiostreams");
+    case AUDIOBITRATE:
+      return DefinitionRegistry::get("command_audiobitrate");
     case BITRATE:
       return DefinitionRegistry::get("command_bitrate");
     case CROP:
@@ -98,6 +112,112 @@ public:
   static const Definition &definition(EnumArgument<Command> &arg) {
     return definition(arg.get());
   }
+};
+
+template <Command_N::Command C> struct CommandValueType;
+
+template <> struct CommandValueType<Command_N::AMOUNT> {
+  using type = IntegerArgument;
+};
+
+template <> struct CommandValueType<Command_N::AUDIOCHANNELS> {
+  using type = VectorArgument<int>;
+};
+
+template <> struct CommandValueType<Command_N::AUDIOCODEC> {
+  using type = VectorArgument<std::string>;
+};
+
+template <> struct CommandValueType<Command_N::AUDIOSTREAMS> {
+  using type = VectorArgument<int>;
+};
+
+template <> struct CommandValueType<Command_N::BITRATE> {
+  using type = FlagArgument;
+};
+
+template <> struct CommandValueType<Command_N::AUDIOBITRATE> {
+  using type = VectorArgument<int>;
+};
+
+template <> struct CommandValueType<Command_N::CROP> {
+  using type = FlagArgument;
+};
+
+template <> struct CommandValueType<Command_N::CONSTRAIN> {
+  using type = FlagArgument;
+};
+
+template <> struct CommandValueType<Command_N::CONTAINER> {
+  using type = EnumArgument<Container_N::Container>;
+};
+
+template <> struct CommandValueType<Command_N::CRF> {
+  using type = IntegerArgument;
+};
+
+template <> struct CommandValueType<Command_N::DISPLAYREFRESH> {
+  using type = IntegerArgument;
+};
+
+template <> struct CommandValueType<Command_N::ENCODER> {
+  using type = EnumArgument<Encoders_N::Encoders>;
+};
+
+template <> struct CommandValueType<Command_N::HELP> {
+  using type = FlagArgument;
+};
+
+template <> struct CommandValueType<Command_N::HARDWAREACCEL> {
+  using type = EnumArgument<HWAccelerators_N::HWAccelerators>;
+};
+
+template <> struct CommandValueType<Command_N::HARDWAREDECODE> {
+  using type = FlagArgument;
+};
+
+template <> struct CommandValueType<Command_N::HARDWAREENCODE> {
+  using type = FlagArgument;
+};
+
+template <> struct CommandValueType<Command_N::INFO> {
+  using type = FlagArgument;
+};
+
+template <> struct CommandValueType<Command_N::LOGGINGOPTIONS> {
+  using type = EnumArgument<LogFormat_N::LogFormat>;
+};
+
+template <> struct CommandValueType<Command_N::OVERWRITE> {
+  using type = FlagArgument;
+};
+
+template <> struct CommandValueType<Command_N::PARENT> {
+  using type = FlagArgument;
+};
+
+template <> struct CommandValueType<Command_N::QUALITY> {
+  using type = Quality;
+};
+
+template <> struct CommandValueType<Command_N::START> {
+  using type = TimeStringArgument;
+};
+
+template <> struct CommandValueType<Command_N::SUBTITLECODECS> {
+  using type = VectorArgument<std::string>;
+};
+
+template <> struct CommandValueType<Command_N::SUBTITLESTREAMS> {
+  using type = VectorArgument<int>;
+};
+
+template <> struct CommandValueType<Command_N::TRIM> {
+  using type = TimeStringVectorArgument;
+};
+
+template <> struct CommandValueType<Command_N::TUNE> {
+  using type = EnumArgument<Tunes_N::Tunes>;
 };
 
 #endif /* D0A2DFE9_99D7_4509_B991_E34B696E29AE */

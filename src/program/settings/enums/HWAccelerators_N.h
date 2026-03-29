@@ -4,6 +4,7 @@
 #include "src/program/definitions/Definition.h"
 #include "src/program/definitions/DefinitionRegistry.h"
 #include "src/program/settings/arguments/EnumArgument.h"
+#include "src/utils/logging/LogColor.h"
 
 class HWAccelerators_N {
 public:
@@ -32,6 +33,21 @@ public:
       return DefinitionRegistry::get("hwaccel_vulkan");
     default:
       return DefinitionRegistry::get("hwaccel_invalid");
+    }
+  }
+
+  static const std::string getLetter(HWAccelerators hwaccel) {
+    switch (hwaccel) {
+    case AMD:
+      return LogColor::fgRed("A");
+    case NVIDIA:
+      return LogColor::fgGreen("N");
+    case INTEL:
+      return LogColor::fgBlue("I");
+    case VULKAN:
+      return LogColor::fgOrange("V");
+    default:
+      return LogColor::fgWhite("N");
     }
   }
 

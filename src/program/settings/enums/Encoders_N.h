@@ -4,6 +4,7 @@
 #include "src/program/definitions/Definition.h"
 #include "src/program/definitions/DefinitionRegistry.h"
 #include "src/program/settings/arguments/EnumArgument.h"
+#include "src/utils/logging/LogColor.h"
 
 class Encoders_N {
 public:
@@ -56,6 +57,26 @@ public:
     default:
       return DefinitionRegistry::get("encoder_invalid");
     }
+  }
+
+  static const std::string getLetter(Encoders encoder) {
+    return isSoftwareEncoder(encoder) ? LogColor::fgWhite("S")
+                                      : LogColor::fgGreen("H");
+  }
+
+  static const bool isSoftwareEncoder(Encoders encoder) {
+    switch (encoder) {
+    case H264:
+    case HEVC:
+    case AV1:
+      return true;
+    default:
+      return false;
+    }
+  }
+
+  static const bool isHardwareEncoder(Encoders encoder) {
+    return !isSoftwareEncoder(encoder);
   }
 
   static const Definition &definition(EnumArgument<Encoders> *arg) {

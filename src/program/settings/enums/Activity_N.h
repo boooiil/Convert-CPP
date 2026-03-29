@@ -4,6 +4,7 @@
 #include "src/program/definitions/Definition.h"
 #include "src/program/definitions/DefinitionRegistry.h"
 #include "src/program/settings/arguments/EnumArgument.h"
+#include "src/utils/logging/LogColor.h"
 
 class Activity_N {
 public:
@@ -90,6 +91,26 @@ public:
       return DefinitionRegistry::get("activity_validate");
     default:
       return DefinitionRegistry::get("activity_invalid");
+    }
+  }
+
+  static const std::string getLetter(Activity activity) {
+    switch (activity) {
+    case CONVERT:
+      return LogColor::fgOrange("C");
+    case STATISTICS:
+      return LogColor::fgWhite("S");
+    case VALIDATE:
+      return LogColor::fgYellow("V");
+    case FINISHED:
+      return LogColor::fgGreen("D");
+    case WAITING:
+    case WAITING_STATISTICS:
+    case WAITING_CONVERT:
+    case WAITING_VALIDATE:
+      return LogColor::fgGray("W");
+    default:
+      return LogColor::fgRed("F");
     }
   }
 
