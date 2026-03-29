@@ -19,16 +19,13 @@
  */
 class ProbeResultStreamAudio : public ProbeResultStream {
 public:
-  /** This constructor should never be called. */
-  ProbeResultStreamAudio();
-
   /**
    * @brief Construct a new Probe Result Stream Audio object
    *
    * @param[in] JSON - The FFProbe stream JSON.
    */
   ProbeResultStreamAudio(const nlohmann::json JSON);
-  ~ProbeResultStreamAudio();
+  ~ProbeResultStreamAudio() = default;
 
   /// @brief sample format
   std::string sample_fmt;

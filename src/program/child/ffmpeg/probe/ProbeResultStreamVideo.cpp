@@ -5,53 +5,22 @@
 
 #include "../../../../utils/RegexUtils.h"
 #include "../../../../utils/logging/Logger.h"
-#include "ProbeResultStreamDisposition.h"
-#include "ProbeResultStreamTags.h"
+#include "ProbeResultStream.h"
 
 /**
  * TODO: Validate ffmpeg verison to avoid missing fields
  */
-
-ProbeResultStreamVideo::ProbeResultStreamVideo()
-    : closed_captions(-1), film_grain(-1), has_b_frames(-1), height(-1),
-      width(-1), coded_height(-1), coded_width(-1), is_avc(-1), level(-1),
-      refs(-1) {}
-ProbeResultStreamVideo::~ProbeResultStreamVideo() = default;
-
-ProbeResultStreamVideo::ProbeResultStreamVideo(nlohmann::json JSON) {
+ProbeResultStreamVideo::ProbeResultStreamVideo(nlohmann::json JSON)
+    : ProbeResultStream(JSON) {
   LOG_DEBUG("Starting ProbeResultStreamVideo...");
-  ProbeResultStreamVideo::index = JSON["index"];
 
   if (!JSON["is_avc"].is_null()) {
     LOG_VERBOSE("is_avc: ", JSON["is_avc"]);
     ProbeResultStreamVideo::is_avc = RegexUtils::isMatch(
         JSON["is_avc"], "true", std::regex_constants::icase);
   }
-  LOG_VERBOSE("codec_name: ", JSON["codec_name"]);
-  ProbeResultStreamVideo::codec_name = JSON["codec_name"];
-  LOG_VERBOSE("codec_long_name: ", JSON["codec_long_name"]);
-  ProbeResultStreamVideo::codec_long_name = JSON["codec_long_name"];
-  LOG_VERBOSE("codec_tag_string: ", JSON["codec_tag_string"]);
-  ProbeResultStreamVideo::codec_tag_string = JSON["codec_tag_string"];
-  LOG_VERBOSE("codec_tag: ", JSON["codec_tag"]);
-  ProbeResultStreamVideo::codec_tag = JSON["codec_tag"];
-  LOG_VERBOSE("codec_type: ", JSON["codec_type"]);
-  ProbeResultStreamVideo::codec_type = JSON["codec_type"];
-  LOG_VERBOSE("r_frame_rate: ", JSON["r_frame_rate"]);
-  ProbeResultStreamVideo::r_frame_rate = JSON["r_frame_rate"];
-  LOG_VERBOSE("avg_frame_rate: ", JSON["avg_frame_rate"]);
-  ProbeResultStreamVideo::avg_frame_rate = JSON["avg_frame_rate"];
-  LOG_VERBOSE("time_base: ", JSON["time_base"]);
-  ProbeResultStreamVideo::time_base = JSON["time_base"];
-  LOG_VERBOSE("start_pts: ", std::to_string((int)JSON["start_pts"]));
-  ProbeResultStreamVideo::start_pts = JSON["start_pts"];
-  LOG_VERBOSE("start_time: ", JSON["start_time"]);
-  ProbeResultStreamVideo::start_time = JSON["start_time"];
   /* Does not appear on linux (ubuntu), apt, ffmpeg=4.4.2-0ubuntu0.22.04.1 */
   // ProbeResultStreamVideo::extradata_size = JSON["extradata_size"];
-  ProbeResultStreamVideo::disposition =
-      ProbeResultStreamDisposition(JSON["disposition"]);
-  ProbeResultStreamVideo::tags = ProbeResultStreamTags(JSON["tags"]);
   LOG_VERBOSE("width: ", std::to_string((int)JSON["width"]));
   ProbeResultStreamVideo::width = JSON["width"];
   LOG_VERBOSE("height: ", std::to_string((int)JSON["height"]));

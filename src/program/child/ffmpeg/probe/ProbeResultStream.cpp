@@ -7,11 +7,8 @@
 #include "ProbeResultStreamDisposition.h"
 #include "ProbeResultStreamTags.h"
 
-ProbeResultStream::ProbeResultStream()
-    : index(-1), extradata_size(-1), start_pts(-1) {}
-ProbeResultStream::~ProbeResultStream() = default;
-
-ProbeResultStream::ProbeResultStream(nlohmann::json JSON) {
+ProbeResultStream::ProbeResultStream(nlohmann::json JSON)
+    : disposition(JSON["disposition"]), tags(JSON["tags"]) {
   LOG_DEBUG("Starting ProbeResultStream...");
   if (!JSON["index"].is_null()) {
     LOG_VERBOSE("index: ", std::to_string((int)JSON["index"]));
@@ -62,8 +59,5 @@ ProbeResultStream::ProbeResultStream(nlohmann::json JSON) {
     ProbeResultStream::extradata_size = JSON["extradata_size"];
   }
 
-  ProbeResultStream::disposition =
-      ProbeResultStreamDisposition(JSON["disposition"]);
-  ProbeResultStream::tags = ProbeResultStreamTags(JSON["tags"]);
   LOG_DEBUG("Ended ProbeResultStream");
 }

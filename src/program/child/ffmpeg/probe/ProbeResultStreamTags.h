@@ -26,7 +26,7 @@ public:
    * @param[in] JSON - The FFProbe tag JSON.
    */
   ProbeResultStreamTags(const nlohmann::json JSON);
-  ~ProbeResultStreamTags();
+  ~ProbeResultStreamTags() = default;
 
   /// @brief language of the stream
   std::string language;

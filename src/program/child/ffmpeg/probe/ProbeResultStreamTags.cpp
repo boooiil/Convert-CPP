@@ -4,9 +4,6 @@
 
 #include "../../../../utils/logging/Logger.h"
 
-ProbeResultStreamTags::ProbeResultStreamTags() = default;
-ProbeResultStreamTags::~ProbeResultStreamTags() = default;
-
 ProbeResultStreamTags::ProbeResultStreamTags(nlohmann::json JSON) {
   LOG_DEBUG("Starting ProbeResultStreamTags...");
 

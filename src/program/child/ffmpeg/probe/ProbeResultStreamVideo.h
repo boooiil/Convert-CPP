@@ -7,17 +7,14 @@
 #include "ProbeResultStream.h"
 
 class ProbeResultStreamVideo : public ProbeResultStream {
- public:
-  /** This constructor should never be called. */
-  ProbeResultStreamVideo();
-
+public:
   /**
    * @brief Construct a new Probe Result Stream Video object
    *
    * @param JSON - The FFProbe video stream JSON.
    */
   ProbeResultStreamVideo(const nlohmann::json JSON);
-  ~ProbeResultStreamVideo();
+  ~ProbeResultStreamVideo() = default;
 
   /// @brief codec profile
   std::string profile;
@@ -64,4 +61,4 @@ class ProbeResultStreamVideo : public ProbeResultStream {
   /// @brief ???
   std::string bits_per_raw_sample;
 };
-#endif  // PROBE_RESULT_STREAM_VIDEO
+#endif // PROBE_RESULT_STREAM_VIDEO

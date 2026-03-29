@@ -15,17 +15,14 @@
  * @brief A class to represent the stream disposition of a FFProbe stream.
  */
 class ProbeResultStreamDisposition {
- public:
-  /** This constructor should never be called. */
-  ProbeResultStreamDisposition();
-
+public:
   /**
    * @brief Construct a new Probe Result Stream Disposition object
    *
    * @param[in] JSON - The FFProbe stream disposition JSON.
    */
   ProbeResultStreamDisposition(const nlohmann::json JSON);
-  ~ProbeResultStreamDisposition();
+  ~ProbeResultStreamDisposition() = default;
 
   /// @brief if this stream is the default stream
   int default_;
@@ -63,4 +60,4 @@ class ProbeResultStreamDisposition {
   int still_image;
 };
 
-#endif  // PROBE_RESULT_STREAM_DISPOSITION
+#endif // PROBE_RESULT_STREAM_DISPOSITION

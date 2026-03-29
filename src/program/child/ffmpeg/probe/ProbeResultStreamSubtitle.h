@@ -18,17 +18,14 @@
  * @brief A class that represents a subtitle stream from FFProbe.
  */
 class ProbeResultStreamSubtitle : public ProbeResultStream {
- public:
-  /** This constructor should never be called. */
-  ProbeResultStreamSubtitle();
-
+public:
   /**
    * @brief Construct a new Probe Result Stream Subtitle object
    *
    * @param[in] JSON - The FFProbe subtitle stream JSON.
    */
   ProbeResultStreamSubtitle(const nlohmann::json JSON);
-  ~ProbeResultStreamSubtitle();
+  ~ProbeResultStreamSubtitle() = default;
 
   /// @brief duration of the subtitle stream in ms
   int duration_ts;
@@ -36,4 +33,4 @@ class ProbeResultStreamSubtitle : public ProbeResultStream {
   std::string duration;
 };
 
-#endif  // PROBE_RESULT_STREAM_SUBTITLE
+#endif // PROBE_RESULT_STREAM_SUBTITLE

@@ -21,17 +21,14 @@
  *
  */
 class ProbeResultStream {
- public:
-  /** This constructor should never be called. */
-  ProbeResultStream();
-
+public:
   /**
    * @brief Construct a new Probe Result Stream object
    *
    * @param[in] JSON - The FFProbe stream JSON.
    */
   ProbeResultStream(const nlohmann::json JSON);
-  ~ProbeResultStream();
+  ~ProbeResultStream() = default;
 
   /// @brief stream index
   int index;
@@ -66,4 +63,4 @@ class ProbeResultStream {
   ProbeResultStreamTags tags;
 };
 
-#endif  // PROBE_RESULT_STREAM
+#endif // PROBE_RESULT_STREAM

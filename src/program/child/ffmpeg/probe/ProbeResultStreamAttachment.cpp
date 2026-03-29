@@ -1,7 +1,5 @@
 #include "ProbeResultStreamAttachment.h"
 #include "ProbeResultStream.h"
-#include "ProbeResultStreamDisposition.h"
-#include "ProbeResultStreamTags.h"
 #include "src/utils/logging/Logger.h"
 #include <nlohmann/json.hpp>
 
@@ -16,13 +14,5 @@ ProbeResultStreamAttachment::ProbeResultStreamAttachment(nlohmann::json JSON)
 
   if (!JSON["duration"].is_null()) {
     this->duration = JSON["duration"];
-  }
-
-  if (!JSON["disposition"].is_null()) {
-    this->disposition = ProbeResultStreamDisposition(JSON["disposition"]);
-  }
-
-  if (!JSON["tags"].is_null()) {
-    this->tags = ProbeResultStreamTags(JSON["tags"]);
   }
 }
