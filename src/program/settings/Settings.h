@@ -30,13 +30,13 @@ public:
   // amount
   ParentOptions *parentOptions;
   // amount, ffmpeg
-  std::unordered_map<uuids::uuid, ChildOptions *> childOptionsMap;
+  // std::unordered_map<uuids::uuid, ChildOptions *> childOptionsMap;
 
   std::string cwd;
 
   void init(std::vector<std::string> &args);
 
-  void fromJSON(nlohmann::json json) override;
+  void fromJSON(const nlohmann::json &json) override;
 
   nlohmann::json toJSON(void);
 };

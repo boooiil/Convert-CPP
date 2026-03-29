@@ -17,18 +17,18 @@ Settings::Settings()
       tunesRegistry(new EnumToStringRegistry<Tunes>()),
       platformRegistry(new EnumToStringRegistry<Platform>()),
       loggingFormatRegistry(new EnumToStringRegistry<LoggingOptions>()),*/
-      childOptionsMap({}), parentOptions(new ParentOptions()),
-      programOptions(new ProgramOptions()) {}
+      programOptions(new ProgramOptions()), parentOptions(new ParentOptions()) {
+}
 
 Settings::~Settings() {
   LOG_DEBUG("deleting { parentOptions, programOptions, childOptions }");
-  if (!this->childOptionsMap.empty()) {
-    LOG_DEBUG("Deleting child options");
-    for (auto &[uuid, childOptions] : this->childOptionsMap) {
-      LOG_DEBUG("Deleting child options with uuid:", uuid);
-      delete childOptions;
-    }
-  }
+  // if (!this->childOptionsMap.empty()) {
+  //   LOG_DEBUG("Deleting child options");
+  //   for (auto &[uuid, childOptions] : this->childOptionsMap) {
+  //     LOG_DEBUG("Deleting child options with uuid:", uuid);
+  //     delete childOptions;
+  //   }
+  // }
   if (this->parentOptions != nullptr) {
     LOG_DEBUG("Deleting parent options");
     delete this->parentOptions;
@@ -223,7 +223,7 @@ void Settings::init(std::vector<std::string> &args) {
   this->programOptions->validate();
 }
 
-void Settings::fromJSON(nlohmann::json json) { (void)json; }
+void Settings::fromJSON(const nlohmann::json &json) { (void)json; }
 
 nlohmann::json Settings::toJSON() {
   using namespace nlohmann;
@@ -235,9 +235,10 @@ nlohmann::json Settings::toJSON() {
   settings["ProgramOptions"] = this->programOptions->toJSON();
   settings["ParentOptions"] = this->parentOptions->toJSON();
 
-  for (const auto &[uuid, childOptions] : this->childOptionsMap) {
-    settings["ChildOptions"][uuids::to_string(uuid)] = childOptions->toJSON();
-  }
+  // for (const auto &[uuid, childOptions] : this->childOptionsMap) {
+  //   settings["ChildOptions"][uuids::to_string(uuid)] =
+  //   childOptions->toJSON();
+  // }
 
   return settings;
 }
