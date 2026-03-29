@@ -401,10 +401,16 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
                      codec->getArg());
   }
 
-  result.push_back("-map 0:t?");
+  for (auto attachment : container->getAttachments()) {
+    int att_index = attachment->getIndex();
+    int att_map_index = attachment->getMapIndex();
 
-  // attachments?
-  result.push_back("-c:t copy");
+    LOG_DEBUG("Attachment index [", att_index, "] mapped at [", att_map_index,
+              "] using attachment (", attachment->getName(), ")");
+
+    result.push_back("-map 0:t:" + std::to_string(att_map_index));
+    result.push_back("-c:t:" + std::to_string(att_index) + " copy");
+  }
 
   result.push_back("-c:v " + Encoders_N::definition(arguments.running_encoder));
 
