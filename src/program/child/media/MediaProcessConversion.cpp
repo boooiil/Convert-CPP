@@ -11,6 +11,7 @@
 #include "../../settings/enums/Encoders_N.h"
 #include "Media.h"
 #include "MediaProcess.h"
+#include "src/program/context/Arguments.h"
 #include "src/utils/logging/Logger.h"
 
 MediaProcessConversion::MediaProcessConversion(Media *media)
@@ -23,7 +24,7 @@ MediaProcessConversion::~MediaProcessConversion() {
 void MediaProcessConversion::parse(std::string data) {
   LOG_VERBOSE("PARSING LINE:", data);
 
-  ChildOptions &childOptions = this->object->getOptions();
+  Arguments &arguments = this->object->getArguments();
   // ArgumentRegistry& argumentRegistry = *childOptions.argumentRegistry;
 
   // wants to do a stress test
@@ -46,13 +47,13 @@ void MediaProcessConversion::parse(std::string data) {
     LOG_DEBUG(
         "User selected hardware encoding but no compatible device was found.");
     LOG_DEBUG("Wanted encoder:",
-              Encoders_N::definition(childOptions.runningEncoder));
+              Encoders_N::definition(arguments.running_encoder));
 
     // this does not make sense to keep
     // if the user specified a hw encoder then it should be assumed that
     // they want hardware encoding.
     // FlagArgument &hweFlag =
-    // *childOptions.argumentRegistry->get_t<FlagArgument>(
+    // *childOptions.argumentRegistry->get<FlagArgument>(
     //     Command_N::HARDWAREENCODE);
 
     // if (hweFlag) {
@@ -60,7 +61,7 @@ void MediaProcessConversion::parse(std::string data) {
     //   return;
     // }
 
-    switch (childOptions.runningEncoder) {
+    switch (arguments.running_encoder) {
     case Encoders_N::AV1_AMF:
     case Encoders_N::AV1_NVENC:
     case Encoders_N::AV1_QSV:

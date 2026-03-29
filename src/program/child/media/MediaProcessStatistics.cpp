@@ -24,6 +24,7 @@
 #include "Media.h"
 #include "MediaFormat.h"
 #include "MediaProcess.h"
+#include "src/program/context/Arguments.h"
 #include "src/program/settings/enums/Command_N.h"
 
 #ifdef _WIN32
@@ -131,9 +132,9 @@ void MediaProcessStatistics::parse(std::string data) {
 
     // assert(!settings->argumentParser->quality.get().name.empty());
 
-    ChildOptions &childOptions = this->object->getOptions();
-    ArgumentRegistry &argumentRegistry = *childOptions.argumentRegistry;
-    MediaFormat format = argumentRegistry.get_t<Command_N::QUALITY>()->get();
+    Arguments &arguments = this->object->getArguments();
+    ArgumentRegistry &argumentRegistry = arguments.argumentRegistry;
+    MediaFormat format = argumentRegistry.get<Command_N::QUALITY>().get();
 
     this->object->getFile().video_info.convertedWidth =
         std::to_string(format.width);
