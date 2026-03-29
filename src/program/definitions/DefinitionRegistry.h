@@ -3,6 +3,7 @@
 
 #include "Definition.h"
 #include "src/program/registry/Registry.h"
+#include <functional>
 #include <string>
 
 class DefinitionRegistry {
@@ -12,14 +13,14 @@ public:
       initialize();
     }
 
-    auto result = definition_registry.get(name);
-    if (result != nullptr) {
-      return *result;
+    // if not exist
+    if (!definition_registry.has(name)) {
+      return *(new Definition(
+          name, {}, "Placeholder definition for " + name,
+          "The definition requested does not have an implementation."));
     }
 
-    return *(new Definition(
-        name, {}, "Unimplemented Definition",
-        "The definition requested does not have an implementation."));
+    return definition_registry.get(name);
   }
 
   static auto registry() -> const Registry<std::string, const Definition> & {
@@ -48,13 +49,14 @@ public:
       initialize();
     }
 
-    for (const Definition *val : definition_registry.values()) {
-      if (val->getEnumType() != typeid(T)) {
+    for (const std::reference_wrapper<const Definition> val :
+         definition_registry.values()) {
+      if (val.get().getEnumType() != typeid(T)) {
         continue;
       }
 
-      if (val->getEnumAssoc<T>() == enumValue)
-        return *val;
+      if (val.get().getEnumAssoc<T>() == enumValue)
+        return val.get();
     }
 
     throw std::logic_error("No definition found for enum value." +
