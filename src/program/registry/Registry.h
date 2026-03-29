@@ -7,12 +7,13 @@
 #include <nlohmann/json.hpp>
 #include <set>
 #include <unordered_map>
+#include <vector>
 
 template <typename K, typename V> class Registry : public JSONSerializable {
 public:
   Registry() = default;
   Registry(Registry &&) = default;
-  virtual Registry &operator=(Registry &&) = default;
+  Registry &operator=(Registry &&) = default;
 
   virtual ~Registry(void) = default;
 
@@ -31,36 +32,21 @@ public:
   }
   virtual bool empty() const { return registry.empty(); }
 
-  virtual V *get(const K &key) {
+  virtual V &get(const K &key) {
     auto it = registry.find(key);
-
-    if (it != registry.end()) {
-      return it->second.get();
-    } else {
-
-      LOG_DEBUG("No key of type ", typeid(K).name(), " found in the registry.");
-
-      if constexpr (std::is_same_v<K, int>) {
-        LOG_DEBUG("Integer key not found: ", key);
-      } else if constexpr (std::is_same_v<K, std::string>) {
-        LOG_DEBUG("String key not found: ", key);
-      } else {
-        LOG_DEBUG("Unknown key type: ", typeid(K).name());
-      }
-
-      return nullptr;
-    }
+    if (it != registry.end())
+      return *(it->second);
+    LOG_DEBUG("No key of type ", typeid(K).name(), " found in the registry.");
+    throw std::runtime_error("Key not found in the registry.");
   }
 
-  virtual const V *get(const K &key) const {
+  virtual const V &get(const K &key) const {
     auto it = registry.find(key);
-
     if (it != registry.end()) {
-      return it->second.get();
+      return *(it->second);
     } else {
-      LOG_DEBUG("There was no key ", std::string(typeid(key).name()),
-                "in the registry.");
-      return nullptr;
+      LOG_DEBUG("No key of type ", typeid(K).name(), " found in the registry.");
+      throw std::runtime_error("Key not found in the registry.");
     }
   }
 
@@ -71,29 +57,23 @@ public:
     return keys;
   }
 
-  virtual std::set<V *> values() const {
-    std::set<V *> vals;
+  virtual std::vector<std::reference_wrapper<const V>> values() const {
+    std::vector<std::reference_wrapper<const V>> vals;
     for (const auto &[_, v] : registry)
-      vals.insert(v.get());
+      vals.push_back(*v);
     return vals;
   }
 
-  virtual void fromJSON(const nlohmann::json) override {};
+  virtual void fromJSON(const nlohmann::json &json) override {};
   virtual nlohmann::json toJSON() override {
     nlohmann::json json;
     // Implementation for serializing to JSON
     return json;
   };
 
-  V *operator[](const K &key) {
-    // This will insert a null unique_ptr if the key doesn't exist.
-    return registry[key].get();
-  }
+  V &operator[](const K &key) { return get(key); }
 
-  const V *operator[](const K &key) const {
-    auto it = registry.find(key);
-    return it != registry.end() ? it->second.get() : nullptr;
-  }
+  const V &operator[](const K &key) const { return get(key); }
 
 protected:
   std::unordered_map<K, std::unique_ptr<V>> registry;
