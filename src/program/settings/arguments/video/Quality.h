@@ -11,8 +11,8 @@
 class Quality : public BaseArgument<MediaFormat> {
 public:
   Quality(std::string _helpMessage, std::string _flag, std::string _longFlag,
-          MediaFormat data)
-      : BaseArgument(_helpMessage, _flag, _longFlag, data) {}
+          std::string _typeDescriptor, MediaFormat data)
+      : BaseArgument(_helpMessage, _flag, _longFlag, _typeDescriptor, data) {}
 
   ~Quality(void) {}
 

@@ -9,10 +9,12 @@
 
 template <typename T> class BaseArgument : public GenericArgument {
 public:
+  // using value_type = T;
+
   BaseArgument(std::string _helpMessage, std::string _flag,
-               std::string _longFlag, T data)
+               std::string _longFlag, std::string _typeDescriptor, T data)
       : GenericArgument(), helpMessage(_helpMessage), flag(_flag),
-        longFlag(_longFlag), value(data) {
+        longFlag(_longFlag), typeDescriptor(_typeDescriptor), value(data) {
     LOG_DEBUG("Creating BaseArgument with flag: " + _flag +
               ", longFlag: " + _longFlag + ", helpMessage: " + _helpMessage);
     assert(_flag[0] == '-');
@@ -21,12 +23,17 @@ public:
 
   ~BaseArgument(void) {}
 
-  virtual T get(void) { return value; };
+  virtual T get(void) const { return value; };
   virtual void set(const T &provided) { value = provided; };
 
-  virtual std::string getHelpMessage(void) override { return helpMessage; };
-  virtual std::string getLongFlag(void) override { return longFlag; };
-  virtual std::string getFlag(void) override { return flag; };
+  virtual std::string getHelpMessage(void) const override {
+    return helpMessage;
+  };
+  virtual std::string getLongFlag(void) const override { return longFlag; };
+  virtual std::string getFlag(void) const override { return flag; };
+  virtual std::string getTypeDescriptor(void) const override {
+    return typeDescriptor;
+  }
 
   virtual operator T(void) const { return value; };
 
@@ -35,6 +42,7 @@ protected:
   std::string helpMessage;
   std::string flag;
   std::string longFlag;
+  std::string typeDescriptor;
   /// @brief Value of provided argument.
   T value;
 };

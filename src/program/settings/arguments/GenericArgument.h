@@ -4,22 +4,24 @@
 #include <string>
 
 class GenericArgument {
- public:
+public:
   GenericArgument() : errored(false) {}
   virtual ~GenericArgument() = default;
   virtual void parse(std::string argument) = 0;
-  virtual std::string getHelpMessage(void) = 0;
-  virtual std::string getLongFlag(void) = 0;
-  virtual std::string getFlag(void) = 0;
+  virtual std::string getHelpMessage(void) const = 0;
+  virtual std::string getLongFlag(void) const = 0;
+  virtual std::string getFlag(void) const = 0;
+  virtual std::string getTypeDescriptor(void) const = 0;
 
   virtual const std::string toString(void) const = 0;
   virtual const bool hasData(void) const = 0;
+  virtual const bool isFlag(void) const { return false; }
 
   void setErrored(bool provided) { this->errored = provided; }
   const bool isErrored(void) { return this->errored; }
 
- private:
+private:
   bool errored;
 };
 
-#endif  // !GENERIC_ARGUMENT_H
+#endif // !GENERIC_ARGUMENT_H

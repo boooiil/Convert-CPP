@@ -14,8 +14,9 @@ template <typename T>
 class EnumArgument : public BaseArgument<T> {
 public:
   EnumArgument(std::string _helpMessage, std::string _flag,
-               std::string _longFlag, T data)
-      : BaseArgument<T>(_helpMessage, _flag, _longFlag, data) {};
+               std::string _longFlag, std::string _typeDescriptor, T data)
+      : BaseArgument<T>(_helpMessage, _flag, _longFlag, _typeDescriptor, data) {
+        };
 
   ~EnumArgument(void) {};
 

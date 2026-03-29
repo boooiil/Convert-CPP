@@ -10,8 +10,9 @@
 class IntegerArgument : public BaseArgument<int> {
 public:
   IntegerArgument(std::string _helpMessage, std::string _flag,
-                  std::string _longFlag, int data)
-      : BaseArgument(_helpMessage, _flag, _longFlag, data) {}
+                  std::string _longFlag, std::string _typeDescriptor, int data)
+      : BaseArgument<int>(_helpMessage, _flag, _longFlag, _typeDescriptor,
+                          data) {}
 
   ~IntegerArgument() {}
 

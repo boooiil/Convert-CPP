@@ -4,7 +4,6 @@
 #include <exception>
 #include <string>
 #include <type_traits>
-#include <typeinfo>
 #include <vector>
 
 #include "../../../utils/ListUtils.h"
@@ -13,10 +12,12 @@
 
 template <typename T>
 class VectorArgument : public BaseArgument<std::vector<T>> {
- public:
+public:
   VectorArgument(std::string _helpMessage, std::string _flag,
-                 std::string _longFlag, std::vector<T> data)
-      : BaseArgument<std::vector<T>>(_helpMessage, _flag, _longFlag, data) {};
+                 std::string _longFlag, std::string _typeDescriptor,
+                 std::vector<T> data)
+      : BaseArgument<std::vector<T>>(_helpMessage, _flag, _longFlag,
+                                     _typeDescriptor, data) {};
 
   ~VectorArgument(void) {};
 
@@ -36,7 +37,7 @@ class VectorArgument : public BaseArgument<std::vector<T>> {
           this->value.push_back(index);
         }
       }
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
       LOG_DEBUG("Failed to parse vector argument: ", argument, "\n", "of type",
                 typeid(T).name(), e.what());
       this->setErrored(true);
@@ -47,7 +48,7 @@ class VectorArgument : public BaseArgument<std::vector<T>> {
   // Convert the vector to a string representation
   const std::string toString(void) const override {
     std::string result = "[";
-    for (const auto& elem : this->value) {
+    for (const auto &elem : this->value) {
       if constexpr (std::is_same<T, int>::value) {
         result += std::to_string(elem);
       } else if constexpr (std::is_same<T, std::string>::value) {
@@ -56,8 +57,8 @@ class VectorArgument : public BaseArgument<std::vector<T>> {
       result += ", ";
     }
     if (!this->value.empty()) {
-      result.pop_back();  // Remove last space
-      result.pop_back();  // Remove last comma
+      result.pop_back(); // Remove last space
+      result.pop_back(); // Remove last comma
     }
     result += "]";
     return result;
@@ -65,4 +66,4 @@ class VectorArgument : public BaseArgument<std::vector<T>> {
 
   const bool hasData(void) const override { return !this->value.empty(); }
 };
-#endif  // VECTOR_ARGUMENT_H
+#endif // VECTOR_ARGUMENT_H

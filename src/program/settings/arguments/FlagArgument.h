@@ -11,10 +11,11 @@
  *
  */
 class FlagArgument : public BaseArgument<bool> {
- public:
+public:
   FlagArgument(std::string _helpMessage, std::string _flag,
-               std::string _longFlag, bool data)
-      : BaseArgument(_helpMessage, _flag, _longFlag, data) {}
+               std::string _longFlag, std::string _typeDescriptor, bool data)
+      : BaseArgument<bool>(_helpMessage, _flag, _longFlag, _typeDescriptor,
+                           data) {}
 
   ~FlagArgument() {}
 
@@ -31,11 +32,12 @@ class FlagArgument : public BaseArgument<bool> {
   }
 
   virtual const bool hasData(void) const override { return value; }
+  virtual const bool isFlag(void) const override { return true; }
 
-  explicit operator bool(void) const {
+  explicit operator bool(void) const override {
     std::cout << "operator bool() called, value: " << value << std::endl;
     return value;
   }
 };
 
-#endif  // FLAG_ARGUMENT_H
+#endif // FLAG_ARGUMENT_H

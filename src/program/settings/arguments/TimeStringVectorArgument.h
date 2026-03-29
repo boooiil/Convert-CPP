@@ -10,10 +10,12 @@
 #include "VectorArgument.h"
 
 class TimeStringVectorArgument : public VectorArgument<std::string> {
- public:
+public:
   TimeStringVectorArgument(std::string _helpMessage, std::string _flag,
-                           std::string _longFlag, std::vector<std::string> data)
-      : VectorArgument(_helpMessage, _flag, _longFlag, data) {}
+                           std::string _longFlag, std::string _typeDescriptor,
+                           std::vector<std::string> data)
+      : VectorArgument<std::string>(_helpMessage, _flag, _longFlag,
+                                    _typeDescriptor, data) {}
 
   void parse(std::string argument) override {
     std::vector<std::string> timestamps = ListUtils::splitv(argument, ",");
@@ -38,4 +40,4 @@ class TimeStringVectorArgument : public VectorArgument<std::string> {
   }
 };
 
-#endif  // TIME_STRING_VECTOR_ARGUMENT_H
+#endif // TIME_STRING_VECTOR_ARGUMENT_H
