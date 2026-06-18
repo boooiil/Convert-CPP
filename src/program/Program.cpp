@@ -16,7 +16,7 @@
 #include "ticker/NTicker.h"
 
 // Log* Program::log = nullptr;
-bool Program::stopFlag = false;
+std::atomic<bool> Program::stopFlag = false;
 
 Program::Program(void) : endable(true) {
   this->runtimeEnv = RuntimeEnvironment::detect();
@@ -123,13 +123,13 @@ void Program::end(void) {
   // add ticker
 }
 
-void Program::setEndable(bool flag) {
-  LOG_DEBUG(Logger::Priority::INFO, "Program has been set as endable:",
-            Program::stopFlag ? "True" : "False");
+void Program::setStopping(bool flag) {
+  LOG_DEBUG(Logger::Priority::INFO,
+            "Program has been set as endable:", flag ? "True" : "False");
   Program::stopFlag = flag;
 }
 
-bool Program::isEndable() { return Program::stopFlag; }
+bool Program::isStopping() { return Program::stopFlag; }
 
 void Program::fromJSON(const nlohmann::json &json) { (void)json; }
 

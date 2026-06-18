@@ -1,6 +1,7 @@
 #ifndef PROGRAM_H
 #define PROGRAM_H
 
+#include <atomic>
 #include <nlohmann/json.hpp>
 #include <string>
 #include <vector>
@@ -13,7 +14,7 @@
 class Program : public JSONSerializable {
 public:
   // static Log* log;
-  static bool stopFlag;
+  static std::atomic<bool> stopFlag;
 
   Program(void);
   ~Program(void);
@@ -23,8 +24,8 @@ public:
   void run(void);
   void end(void);
 
-  void setEndable(bool);
-  bool isEndable(void);
+  void setStopping(bool);
+  bool isStopping(void);
 
   Arguments &getArguments() { return *this->arguments; }
 
