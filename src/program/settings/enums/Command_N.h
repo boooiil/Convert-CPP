@@ -25,7 +25,9 @@ public:
     AUDIOCHANNELS,   // IntegerArgument
     AUDIOCODEC,      // VectorArgument<std::string>
     AUDIOSTREAMS,    // VectorArgument<int>
+    AUDIOBITDEPTH,   // VectorArgument<std::string>
     AUDIOBITRATE,    // VectorArgument<int>
+    AUDIOSAMPLERATE, // VectorArgument<int>
     BITRATE,         // IntegerArgument
     CROP,            // FlagArgument
     CONSTRAIN,       // FlagArgument
@@ -60,8 +62,12 @@ public:
       return DefinitionRegistry::get("command_audiocodec");
     case AUDIOSTREAMS:
       return DefinitionRegistry::get("command_audiostreams");
+    case AUDIOBITDEPTH:
+      return DefinitionRegistry::get("command_audiobitdepth");
     case AUDIOBITRATE:
       return DefinitionRegistry::get("command_audiobitrate");
+    case AUDIOSAMPLERATE:
+      return DefinitionRegistry::get("command_audiosamplerate");
     case BITRATE:
       return DefinitionRegistry::get("command_bitrate");
     case CROP:
@@ -133,6 +139,14 @@ template <> struct CommandValueType<Command_N::AUDIOSTREAMS> {
 };
 
 template <> struct CommandValueType<Command_N::AUDIOBITRATE> {
+  using type = VectorArgument<int>;
+};
+
+template <> struct CommandValueType<Command_N::AUDIOBITDEPTH> {
+  using type = VectorArgument<std::string>;
+};
+
+template <> struct CommandValueType<Command_N::AUDIOSAMPLERATE> {
   using type = VectorArgument<int>;
 };
 

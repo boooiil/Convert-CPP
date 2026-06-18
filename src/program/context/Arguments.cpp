@@ -30,6 +30,18 @@ Arguments::Arguments(RuntimeEnvironment &run_env,
                Command_N::definition(Command_N::AUDIOSTREAMS)
                    .getLongDescription(),
                "-as", "--audiostreams", "[int,int,...]", std::vector<int>()))
+      .add(Command_N::AUDIOBITDEPTH,
+           std::make_unique<VectorArgument<std::string>>(
+               Command_N::definition(Command_N::AUDIOBITDEPTH)
+                   .getLongDescription(),
+               "-abd", "--audiobitdepth", "[str,str,...]",
+               std::vector<std::string>()))
+      .add(Command_N::AUDIOSAMPLERATE,
+           std::make_unique<VectorArgument<int>>(
+               Command_N::definition(Command_N::AUDIOSAMPLERATE)
+                   .getLongDescription(),
+               "-asr", "--audiosamplerate", "[int,int,...]",
+               std::vector<int>()))
       .add(Command_N::AUDIOBITRATE,
            std::make_unique<VectorArgument<int>>(
                Command_N::definition(Command_N::AUDIOBITRATE)
@@ -173,9 +185,10 @@ void Arguments::validate() {
     break;
   }
 
-  LOG_DEBUG("Running Encoder:", Encoders_N::definition(this->running_encoder));
+  LOG_DEBUG(Logger::Priority::INFO,
+            "Running Encoder:", Encoders_N::definition(this->running_encoder));
 
-  LOG_DEBUG("Running HWAccel:",
+  LOG_DEBUG(Logger::Priority::INFO, "Running HWAccel:",
             HWAccelerators_N::definition(this->running_hw_accel));
 
   // hevc does not support film tune
@@ -186,7 +199,7 @@ void Arguments::validate() {
     case Encoders_N::HEVC_AMF:
     case Encoders_N::HEVC_NVENC:
     case Encoders_N::HEVC_QSV:
-      LOG_DEBUG("HEVC does not support film tune.");
+      LOG_DEBUG(Logger::Priority::INFO, "HEVC does not support film tune.");
       enumArgTunes->set(Tunes_N::DEFAULT);
       break;
     default:
@@ -194,7 +207,7 @@ void Arguments::validate() {
     }
   }
 
-  LOG_DEBUG("Running Tune:",
+  LOG_DEBUG(Logger::Priority::INFO, "Running Tune:",
             DefinitionRegistry::defFromEnum(enumArgTunes->get()));
 }
 
