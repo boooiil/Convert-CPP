@@ -20,9 +20,9 @@ public:
     // search if the provided string is a valid quality format
     if (MediaDefinedFormat::formats.contains(argument)) {
       this->value = MediaDefinedFormat::formats.at(argument);
-    } else if (RegexUtils::isMatch(argument, "[0-9]+p")) {
+    } else if (RegexUtils::isMatch(argument, "[0-9]+p.?")) {
 
-      std::string numberPart = argument.substr(0, argument.size() - 1);
+      std::string numberPart = RegexUtils::getFirstMatch(argument, "[0-9]+");
 
       // Check if all characters in numberPart are digits
       for (char c : numberPart) {
@@ -34,6 +34,11 @@ public:
 
       MediaFormat custom = MediaFormat(argument, 24, 1.0f, 0.8f, 1.2f, 0, 0,
                                        std::string(""), std::string(""));
+
+      LOG_DEBUG(Logger::Priority::INFO,
+                "Creating custom quality format with name:", argument,
+                "and number part:", numberPart);
+
       custom.fromCustom(std::stoi(numberPart));
       this->value = custom;
     } else {

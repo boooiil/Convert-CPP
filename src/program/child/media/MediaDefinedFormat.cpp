@@ -7,6 +7,8 @@
 
 #include "MediaFormat.h"
 
+// TODO: rework all of this for
+
 std::unordered_map<std::string, MediaFormat> MediaDefinedFormat::formats = {
 
     {"2160p", MediaFormat("2160p", 24, 30.0f, 30.0f, 40.0f, 3840, 2160,
@@ -27,7 +29,7 @@ std::unordered_map<std::string, MediaFormat> MediaDefinedFormat::formats = {
                           "1280:720")},
     {"480p",
      MediaFormat("480p", 24, 0.6f, 0.4f, 0.8f, 854, 480, "854:356", "854:480")},
-    {"480pc", MediaFormat("480pc", 24, 0.6f, 0.4f, 0.8f, 1138, 640, "854:720",
-                          "1138:640")}
+    {"480pc",
+     MediaFormat("480pc", 24, 0.6f, 0.4f, 0.8f, 854, 480, "640:480", "854:480")}
 
 };

@@ -14,12 +14,13 @@
 #include <nlohmann/json_fwd.hpp>
 #include <string>
 
-#include "../../generics/JSONSerializable.h"
-#include "../../settings/enums/Activity_N.h"
-#include "../ffmpeg/FFmpegArgumentBuilder.h"
-#include "../ffmpeg/probe/ProbeResult.h"
 #include "src/program/child/media/file/FileContainer.h"
 #include "src/program/context/Arguments.h"
+#include "src/program/ffmpeg/FFmpegArgumentBuilder.h"
+#include "src/program/ffmpeg/probe/ProbeResult.h"
+#include "src/program/generics/JSONSerializable.h"
+#include "src/program/settings/enums/Activity_N.h"
+
 
 /**
  * @brief Media class.
