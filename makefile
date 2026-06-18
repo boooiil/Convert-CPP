@@ -4,7 +4,7 @@ MAKEFILE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 
 # file builds to builddir/
 COPY_DEST := $(MAKEFILE_DIR)
-COMPILE_TYPE := debug
+TYPE := debug
 
 ifeq ($(OS),Windows_NT)
     PLATFORM := windows
@@ -17,8 +17,8 @@ endif
 RUN_DEST := ./$(OUTPUT_NAME)
 
 compile: generate
-	@meson compile -C build-$(COMPILE_TYPE)
-	@$(MAKE) -s copy_build COMPILE_TYPE=$(COMPILE_TYPE)
+	@meson compile -C build-$(TYPE)
+	@$(MAKE) -s copy_build TYPE=$(TYPE)
 
 linux_validate_meson:
 	@if ! command -v meson >/dev/null 2>&1; then \
@@ -84,10 +84,10 @@ generate:
 
 copy_build:
 	@echo Copying build files to $(COPY_DEST)
-	@python -c "import shutil, os; shutil.copyfile('build-$(COMPILE_TYPE)/$(OUTPUT_NAME)', os.path.join('$(COPY_DEST)', '$(OUTPUT_NAME)'))"
+	@python -c "import shutil, os; shutil.copyfile('build-$(TYPE)/$(OUTPUT_NAME)', os.path.join('$(COPY_DEST)', '$(OUTPUT_NAME)'))"
 
 clean:
-	meson compile -C build-$(COMPILE_TYPE) --clean
+	python scripts/clean_workspace.py ./
 
 valgrind: compile
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes $(RUN_DEST) $(DEBUG_ARGS)
