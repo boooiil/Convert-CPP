@@ -15,8 +15,9 @@ public:
                std::string _longFlag, std::string _typeDescriptor, T data)
       : GenericArgument(), helpMessage(_helpMessage), flag(_flag),
         longFlag(_longFlag), typeDescriptor(_typeDescriptor), value(data) {
-    LOG_DEBUG("Creating BaseArgument with flag: " + _flag +
-              ", longFlag: " + _longFlag + ", helpMessage: " + _helpMessage);
+    LOG_DEBUG(Logger::Priority::INFO, "Creating BaseArgument with flag: " +
+                                          _flag + ", longFlag: " + _longFlag +
+                                          ", helpMessage: " + _helpMessage);
     assert(_flag[0] == '-');
     assert(_longFlag[0] == '-');
   }

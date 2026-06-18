@@ -24,18 +24,19 @@ void ParentDisplay::printInformationTyped(NTicker *ticker, Parent *parent) {
   assert(ticker != nullptr);
   assert(parent != nullptr);
 
-  LOG_DEBUG("Printing Information");
+  LOG_DEBUG(Logger::Priority::INFO, "Printing Information");
 
-  LOG("Parent size:", parent->pending.size());
+  LOG(Logger::Priority::INFO, "Parent size:", parent->pending.size());
 
-  LOG(LogColor::fgBlack("Black"), LogColor::fgRed("Red"),
-      LogColor::fgGreen("Green"), LogColor::fgGray("Gray"),
-      LogColor::fgYellow("Yellow"), LogColor::fgBlue("Blue"),
-      LogColor::fgOrange("Orange"), LogColor::fgMagenta("Magenta"),
-      LogColor::fgCyan("Cyan"), LogColor::fgWhite("White"));
+  LOG(Logger::Priority::INFO, LogColor::fgBlack("Black"),
+      LogColor::fgRed("Red"), LogColor::fgGreen("Green"),
+      LogColor::fgGray("Gray"), LogColor::fgYellow("Yellow"),
+      LogColor::fgBlue("Blue"), LogColor::fgOrange("Orange"),
+      LogColor::fgMagenta("Magenta"), LogColor::fgCyan("Cyan"),
+      LogColor::fgWhite("White"));
 
   if (parent->pending.empty()) {
-    LOG(LogColor::fgRed("No media files found."));
+    LOG(Logger::Priority::WARNING, LogColor::fgRed("No media files found."));
     return;
   }
 
@@ -48,7 +49,7 @@ void ParentDisplay::printInformationTyped(NTicker *ticker, Parent *parent) {
     parent->pending.pop();
 
     if (child->pending.empty()) {
-      LOG_DEBUG("Child has no pending media files.");
+      LOG_DEBUG(Logger::Priority::INFO, "Child has no pending media files.");
       continue;
     }
 

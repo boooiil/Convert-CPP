@@ -10,24 +10,27 @@
 
 void ArgumentRegistry::parse(const std::vector<std::string> &args) {
   if (args.size() < 2) {
-    LOG_DEBUG("No arguments supplied to the program options.");
+    LOG_DEBUG(Logger::Priority::INFO,
+              "No arguments supplied to the program options.");
     return;
   }
 
-  LOG_DEBUG("Parsing supplied arguments: " + ListUtils::join(args, ", "));
+  LOG_DEBUG(Logger::Priority::INFO,
+            "Parsing supplied arguments: " + ListUtils::join(args, ", "));
 
   Registry<std::string, Command_N::Command> &flagMap = getFlagMap();
 
   // skip the first argument (the program name)
   for (int i = 1; i < args.size(); i++) {
-    LOG_DEBUG("Parsing argument:", args[i]);
+    LOG_DEBUG(Logger::Priority::INFO, "Parsing argument:", args[i]);
 
     // get the lowercase version of the argument
     std::string option = StringUtils::toLowerCase(args[i]);
 
     if (!flagMap.has(option)) {
-      LOG_DEBUG("Tried to parse an argument that was not registered: " +
-                option);
+      LOG_DEBUG(Logger::Priority::INFO,
+                "Tried to parse an argument that was not registered: " +
+                    option);
       continue;
     }
 
@@ -48,14 +51,14 @@ void ArgumentRegistry::parse(const std::vector<std::string> &args) {
       invalidArgument(std::string(args[i - 1]) +
                       " was provided invalid parameter " +
                       std::string(args[i]));
-      LOG(argument.getHelpMessage());
+      LOG(Logger::Priority::INFO, argument.getHelpMessage());
       continue;
     }
   }
 }
 
 void ArgumentRegistry::invalidArgument(const std::string &arg) {
-  LOG_DEBUG("Invalid argument:", arg);
+  LOG_DEBUG(Logger::Priority::INFO, "Invalid argument:", arg);
 }
 
 void ArgumentRegistry::fromJSON(const nlohmann::json &json) {

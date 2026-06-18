@@ -22,7 +22,7 @@ MediaProcessConversion::~MediaProcessConversion() {
 }
 
 void MediaProcessConversion::parse(std::string data) {
-  LOG_VERBOSE("PARSING LINE:", data);
+  LOG_VERBOSE(Logger::Priority::INFO, "PARSING LINE:", data);
 
   Arguments &arguments = this->object->getArguments();
   // ArgumentRegistry& argumentRegistry = *childOptions.argumentRegistry;
@@ -45,8 +45,9 @@ void MediaProcessConversion::parse(std::string data) {
                           std::regex::icase)) {
     // if the user wants to use hardware encoding (nvenc, amf, qsv)
     LOG_DEBUG(
+        Logger::Priority::WARNING,
         "User selected hardware encoding but no compatible device was found.");
-    LOG_DEBUG("Wanted encoder:",
+    LOG_DEBUG(Logger::Priority::WARNING, "Wanted encoder:",
               Encoders_N::definition(arguments.running_encoder));
 
     // this does not make sense to keep
@@ -61,23 +62,13 @@ void MediaProcessConversion::parse(std::string data) {
     //   return;
     // }
 
-    switch (arguments.running_encoder) {
-    case Encoders_N::AV1_AMF:
-    case Encoders_N::AV1_NVENC:
-    case Encoders_N::AV1_QSV:
-    case Encoders_N::H264_AMF:
-    case Encoders_N::H264_NVENC:
-    case Encoders_N::H264_QSV:
-    case Encoders_N::HEVC_AMF:
-    case Encoders_N::HEVC_NVENC:
-    case Encoders_N::HEVC_QSV:
+    if (Encoders_N::isHardwareEncoder(arguments.running_encoder)) {
       this->object->setActivity(Activity_N::FAILED_HARDWARE);
-      break;
-    default:
+    } else {
       throw std::runtime_error(
-          "Out of memory even though hardware encoding is disabled. This "
-          "should not happen.");
-    };
+          "Out of memory error occurred but hardware encoding is not enabled. "
+          "This should not happen.");
+    }
   }
 
   // If the file is already encoded, set the process status to validating
@@ -104,7 +95,7 @@ void MediaProcessConversion::parse(std::string data) {
   }
 
   else if (RegexUtils::isMatch(data, "frame=\\s*(\\d+)")) {
-    LOG_DEBUG("Line matched for progress parsing.");
+    LOG_DEBUG(Logger::Priority::INFO, "Line matched for progress parsing.");
 
     std::string quality =
         RegexUtils::getFirstMatch(data, "q=(\\d+\\.\\d+|-\\d+\\.\\d+)");
@@ -139,11 +130,11 @@ void MediaProcessConversion::parse(std::string data) {
         std::stoll(completedFrames);
     this->object->getFile().processing_info.fps = std::stof(fps);
 
-    LOG_DEBUG("QUALITY:", quality);
-    LOG_DEBUG("BITRATE:", bitrate);
-    LOG_DEBUG("COMPLETED FRAMES:", completedFrames);
-    LOG_DEBUG("FPS:", fps);
+    LOG_DEBUG(Logger::Priority::INFO, "QUALITY:", quality);
+    LOG_DEBUG(Logger::Priority::INFO, "BITRATE:", bitrate);
+    LOG_DEBUG(Logger::Priority::INFO, "COMPLETED FRAMES:", completedFrames);
+    LOG_DEBUG(Logger::Priority::INFO, "FPS:", fps);
   }
 
-  LOG_DEBUG("PARSING END");
+  LOG_VERBOSE(Logger::Priority::INFO, "PARSING END");
 }

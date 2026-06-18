@@ -22,11 +22,11 @@ public:
 
   void parse(std::string argument) override {
     if (argument.empty()) {
-      LOG_DEBUG("argument was empty");
+      LOG_DEBUG(Logger::Priority::INFO, "argument was empty");
       this->setErrored(true);
       return;
     }
-    LOG_DEBUG("Trying to get enum name: " + argument);
+    LOG_DEBUG(Logger::Priority::INFO, "Trying to get enum name: " + argument);
     this->value = DefinitionRegistry::enumFromDefName<T>(argument);
   }
 

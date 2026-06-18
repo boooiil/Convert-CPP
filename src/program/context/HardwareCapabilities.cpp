@@ -19,7 +19,7 @@ const HardwareCapabilities HardwareCapabilities::detect() {
   std::string result;
 
 #ifdef _WIN32
-  LOG_DEBUG("Running GPU detect for platform WIN32.");
+  LOG_DEBUG(Logger::Priority::INFO, "Running GPU detect for platform WIN32.");
   std::array<char, 128> buffer;
 
   // Open pipe to file
@@ -38,10 +38,10 @@ const HardwareCapabilities HardwareCapabilities::detect() {
     result += buffer.data();
   }
 
-  LOG_DEBUG("GPU Provider Raw:", result);
+  LOG_DEBUG(Logger::Priority::INFO, "GPU Provider Raw:", result);
 
 #elif __linux__
-  LOG_DEBUG("Running GPU detect for platform LINUX.");
+  LOG_DEBUG(Logger::Priority::INFO, "Running GPU detect for platform LINUX.");
   std::array<char, 128> buffer;
 
   // Open pipe to file
@@ -56,11 +56,11 @@ const HardwareCapabilities HardwareCapabilities::detect() {
     result += buffer.data();
   }
 
-  LOG_DEBUG("GPU Provider Raw:", result);
+  LOG_DEBUG(Logger::Priority::INFO, "GPU Provider Raw:", result);
 
 #else
   // try to get details
-  LOG_DEBUG("Running GPU detect for platform UNKNOWN.");
+  LOG_DEBUG(Logger::Priority::INFO, "Running GPU detect for platform UNKNOWN.");
 #endif
 
   // nvidia
@@ -90,7 +90,7 @@ const HardwareCapabilities HardwareCapabilities::detect() {
     hw_cap.preferredGPUProvider = GPUProviders_N::INVALID;
   }
 
-  LOG_DEBUG("Preferred GPU Provider:",
+  LOG_DEBUG(Logger::Priority::INFO, "Preferred GPU Provider:",
             GPUProviders_N::definition(hw_cap.preferredGPUProvider));
 
   if (ListUtils::contains(hw_cap.GPU_Providers, GPUProviders_N::NVIDIA)) {
@@ -132,15 +132,17 @@ const HardwareCapabilities HardwareCapabilities::detect() {
   hw_cap.supportedEncoders.push_back(Encoders_N::HEVC);
 
   for (Encoders_N::Encoders encoder : hw_cap.supportedEncoders) {
-    LOG_DEBUG("Supported Encoder:", Encoders_N::definition(encoder));
+    LOG_DEBUG(Logger::Priority::INFO,
+              "Supported Encoder:", Encoders_N::definition(encoder));
   }
 
   for (HWAccelerators_N::HWAccelerators hwAccel : hw_cap.supportedHWAccel) {
-    LOG_DEBUG("Supported HW Accel:", HWAccelerators_N::definition(hwAccel));
+    LOG_DEBUG(Logger::Priority::INFO,
+              "Supported HW Accel:", HWAccelerators_N::definition(hwAccel));
   }
 
   // for (Decoders::Codec decoder : supportedDecoders) {
-  //   LOG_DEBUG("Supported Decoder:",
+  //   LOG_DEBUG(Logger::Priority::INFO,"Supported Decoder:",
   //       Decoders::getValue(decoder));
   // }
 

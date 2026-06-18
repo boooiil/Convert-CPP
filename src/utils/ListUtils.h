@@ -20,7 +20,7 @@
  * @brief Handle various functions that involve list-like data structures.
  */
 class ListUtils {
- public:
+public:
   /**
    * @brief Join a list of strings.
    *
@@ -31,8 +31,8 @@ class ListUtils {
   static std::string join(std::vector<std::string> list,
                           std::string delim = "");
 
-  static std::vector<std::string> toStrVector(char* arr[]);
-  static std::vector<char*> toCharVector(char* arr[]);
+  static std::vector<std::string> toStrVector(char *arr[]);
+  static std::vector<char *> toCharVector(char *arr[]);
   static std::vector<char> toCharVector(char arr[]);
 
   /**
@@ -43,7 +43,7 @@ class ListUtils {
    * @param[in] list - The list of strings.
    * @return char** - The char array.
    */
-  static char** toCharArray(std::vector<std::string> list);
+  static char **toCharArray(std::vector<std::string> list);
 
   /**
    * @brief Split a string into a vector of strings.
@@ -63,23 +63,21 @@ class ListUtils {
    */
   static std::vector<std::string> splitv(std::string str, std::regex delim);
 
-  template <typename T>
-  static bool contains(std::vector<T> list, T item) {
+  template <typename T> static bool contains(std::vector<T> list, T item) {
     for (T listItem : list) {
       try {
         if (listItem == item) {
           return true;
         }
       } catch (std::exception e) {
-        LOG_DEBUG("Error: ", e.what());
+        LOG_DEBUG(Logger::Priority::INFO, "Error: ", e.what());
         continue;
       }
     }
     return false;
   }
 
-  template <typename T>
-  static std::vector<T> toVector(T* array, int size) {
+  template <typename T> static std::vector<T> toVector(T *array, int size) {
     std::vector<T> result;
     for (int i = 0; i < size; i++) {
       result.push_back(array[i]);

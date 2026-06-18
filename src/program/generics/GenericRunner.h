@@ -17,7 +17,8 @@ public:
 
   virtual bool isCompleted(void) const { return completed; };
   virtual void setCompleted(bool flag) {
-    LOG_DEBUG("runner marked as completed :", flag ? "True" : "False");
+    LOG_DEBUG(Logger::Priority::INFO,
+              "runner marked as completed :", flag ? "True" : "False");
     completed = flag;
   };
 

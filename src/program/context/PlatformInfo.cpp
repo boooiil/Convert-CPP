@@ -5,16 +5,20 @@ const PlatformInfo PlatformInfo::detect() {
   bool is_x64 = sizeof(void *) == 8 ? true : false;
   std::string arch_str = is_x64 ? "64-bit" : "32-bit";
 #ifdef _WIN32
-  LOG_DEBUG("Detected platform Windows (", arch_str, ").");
+  LOG_DEBUG(Logger::Priority::INFO, "Detected platform Windows (", arch_str,
+            ").");
   return {.platform = Platform_N::WINDOWS, .x64_supported = is_x64};
 #elif __APPLE__
-  LOG_DEBUG("Detected platform MacOS (", arch_str, ").");
+  LOG_DEBUG(Logger::Priority::INFO, "Detected platform MacOS (", arch_str,
+            ").");
   return {.platform = Platform_N::MACOS, .x64_supported = is_x64};
 #elif __linux__
-  LOG_DEBUG("Detected platform Linux (", arch_str, ").");
+  LOG_DEBUG(Logger::Priority::INFO, "Detected platform Linux (", arch_str,
+            ").");
   return {.platform = Platform_N::_LINUX, .x64_supported = is_x64};
 #else
-  LOG_DEBUG("Unknown platform detected. (", arch_str, ").");
+  LOG_DEBUG(Logger::Priority::INFO, "Unknown platform detected. (", arch_str,
+            ").");
   return {.platform = Platform_N::INVALID, .x64_supported = is_x64};
 #endif
 }

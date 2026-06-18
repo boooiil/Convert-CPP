@@ -24,7 +24,8 @@ void FileNaming::rename() {
 
   if (RegexUtils::isMatch(this->original_name_ext, mediaPattern,
                           std::regex::icase)) {
-    LOG_DEBUG("Matched media name: ", this->original_name_ext);
+    LOG_DEBUG(Logger::Priority::INFO,
+              "Matched media name: ", this->original_name_ext);
     std::vector<std::string> media_matches = RegexUtils::getAllMatches(
         this->original_name_ext, mediaPattern, std::regex::icase);
     std::string quality_match = RegexUtils::getFirstMatch(
@@ -38,7 +39,8 @@ void FileNaming::rename() {
     }
 
     if (quality_match == "") {
-      LOG_DEBUG("Could not find quality for file: ", this->original_name_ext);
+      LOG_DEBUG(Logger::Priority::INFO,
+                "Could not find quality for file: ", this->original_name_ext);
     } else {
       this->resolution_height =
           std::stoi(StringUtils::replaceAll(quality_match, "p", ""));
@@ -64,19 +66,23 @@ void FileNaming::rename() {
     this->conversion_full_path =
         this->conversion_folder_path / this->conversion_name_ext;
   } else {
-    LOG_DEBUG("Could not match media name: ", this->original_full_path);
-    this->conversion_name = this->original_name;
-    this->conversion_name_ext = this->original_name + wanted_extension;
+    LOG_DEBUG(Logger::Priority::INFO,
+              "Could not match media name: ", this->original_full_path);
+    this->conversion_name = this->original_name_ext.substr(
+        0, this->original_name_ext.find_last_of('.'));
+    this->conversion_name_ext = this->conversion_name + "." + wanted_extension;
     this->conversion_folder_path = this->folder_path / "converted";
     this->conversion_full_path =
         this->conversion_folder_path / this->conversion_name_ext;
   }
 
-  LOG_VERBOSE("Original file:", this->original_name);
-  LOG_DEBUG("Original path:", this->original_full_path);
-  LOG_VERBOSE("Renamed file:", this->conversion_name);
-  LOG_DEBUG("Renamed file path:", this->conversion_full_path);
-  LOG_VERBOSE("Renamed folder path:", this->conversion_folder_path);
+  LOG_VERBOSE(Logger::Priority::INFO, "Original file:", this->original_name);
+  LOG_DEBUG(Logger::Priority::INFO, "Original path:", this->original_full_path);
+  LOG_VERBOSE(Logger::Priority::INFO, "Renamed file:", this->conversion_name);
+  LOG_DEBUG(Logger::Priority::INFO,
+            "Renamed file path:", this->conversion_full_path);
+  LOG_VERBOSE(Logger::Priority::INFO,
+              "Renamed folder path:", this->conversion_folder_path);
 }
 
 void FileNaming::fromJSON(const nlohmann::json &json) {

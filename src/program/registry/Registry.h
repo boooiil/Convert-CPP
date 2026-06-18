@@ -36,7 +36,8 @@ public:
     auto it = registry.find(key);
     if (it != registry.end())
       return *(it->second);
-    LOG_DEBUG("No key of type ", typeid(K).name(), " found in the registry.");
+    LOG_DEBUG(Logger::Priority::WARNING, "No key of type ", typeid(K).name(),
+              " found in the registry.");
     throw std::runtime_error("Key not found in the registry.");
   }
 
@@ -45,7 +46,8 @@ public:
     if (it != registry.end()) {
       return *(it->second);
     } else {
-      LOG_DEBUG("No key of type ", typeid(K).name(), " found in the registry.");
+      LOG_DEBUG(Logger::Priority::WARNING, "No key of type ", typeid(K).name(),
+                " found in the registry.");
       throw std::runtime_error("Key not found in the registry.");
     }
   }

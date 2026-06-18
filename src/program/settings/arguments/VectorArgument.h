@@ -23,7 +23,7 @@ public:
 
   void parse(std::string argument) override {
     if (argument.empty()) {
-      LOG_DEBUG("argument was empty");
+      LOG_DEBUG(Logger::Priority::INFO, "argument was empty");
       this->setErrored(true);
       return;
     }
@@ -38,7 +38,8 @@ public:
         }
       }
     } catch (const std::exception &e) {
-      LOG_DEBUG("Failed to parse vector argument: ", argument, "\n", "of type",
+      LOG_DEBUG(Logger::Priority::INFO,
+                "Failed to parse vector argument: ", argument, "\n", "of type",
                 typeid(T).name(), e.what());
       this->setErrored(true);
       return;

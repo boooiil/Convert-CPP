@@ -20,7 +20,7 @@ public:
     try {
       value = std::stoi(argument);
     } catch (std::invalid_argument &e) {
-      LOG_DEBUG(e.what());
+      LOG_DEBUG(Logger::Priority::INFO, e.what());
       this->setErrored(true);
     }
   }

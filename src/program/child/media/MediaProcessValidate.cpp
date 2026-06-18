@@ -35,8 +35,8 @@ void MediaProcessValidate::parse(std::string data) {
         std::stoll(completedFrames);
     this->object->getFile().processing_info.fps = std::stof(fps);
 
-    LOG_DEBUG("QUALITY:", quality);
-    LOG_DEBUG("COMPLETED FRAMES:", completedFrames);
-    LOG_DEBUG("FPS:", fps);
+    LOG_DEBUG(Logger::Priority::INFO, "QUALITY:", quality);
+    LOG_DEBUG(Logger::Priority::INFO, "COMPLETED FRAMES:", completedFrames);
+    LOG_DEBUG(Logger::Priority::INFO, "FPS:", fps);
   }
 }

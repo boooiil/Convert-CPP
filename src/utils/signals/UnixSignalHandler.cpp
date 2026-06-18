@@ -13,12 +13,12 @@ UnixSignalHandler::UnixSignalHandler() {}
 UnixSignalHandler::~UnixSignalHandler() {}
 
 void UnixSignalHandler::registerHandler() {
-  LOG("Registering signal handler.");
+  LOG(Logger::Priority::INFO, "Registering signal handler.");
   signal(SIGKILL, handleSignal);
   signal(SIGTERM, handleSignal);
   signal(SIGINT, handleSignal);
   signal(SIGQUIT, handleSignal);
-  LOG("Signal handler registered.");
+  LOG(Logger::Priority::INFO, "Signal handler registered.");
 }
 
 void UnixSignalHandler::handleSignal(int signal) {

@@ -76,18 +76,20 @@ void Program::run() {
 }
 
 void Program::end(void) {
-  LOG_DEBUG("Ending program.");
-  LOG_DEBUG("Expected to delete { log, ticker, settings, enum registry }.");
+  LOG_DEBUG(Logger::Priority::INFO, "Ending program.");
+  LOG_DEBUG(Logger::Priority::INFO,
+            "Expected to delete { log, ticker, settings, enum registry }.");
 
   Program::stopFlag = true;
 
   if (Logger::debug_flag) {
-    LOG_DEBUG("Saving debug file.");
+    LOG_DEBUG(Logger::Priority::INFO, "Saving debug file.");
 
     std::ofstream oFile("container_debug.json");
 
     if (!oFile.is_open()) {
-      LOG(LogColor::fgRed("Failed to open debug file->"));
+      LOG(Logger::Priority::INFO,
+          LogColor::fgRed("Failed to open debug file->"));
       return;
     }
 
@@ -96,24 +98,24 @@ void Program::end(void) {
   }
 
   if (this->ticker != nullptr) {
-    LOG_DEBUG("Deleting ticker.");
+    LOG_DEBUG(Logger::Priority::INFO, "Deconstructing ticker.");
     this->ticker->end();
     delete this->ticker;
   }
 
   /*if (Program::log != nullptr) {
     Program::log->end();
-    LOG_DEBUG("Deleting log.");
+    LOG_DEBUG(Logger::Priority::INFO,"Deconstructing log.");
     delete Program::log;
   }*/
 
   // if (this->options != nullptr) {
-  //   LOG_DEBUG("Deleting ProgramOptions.");
+  //   LOG_DEBUG(Logger::Priority::INFO,"Deconstructing ProgramOptions.");
   //   delete this->options;
   // }
 
   if (this->runtimeEnv != nullptr) {
-    LOG_DEBUG("Deleting RuntimeEnvironment.");
+    LOG_DEBUG(Logger::Priority::INFO, "Deconstructing RuntimeEnvironment.");
     delete this->runtimeEnv;
   }
 
@@ -122,7 +124,7 @@ void Program::end(void) {
 }
 
 void Program::setEndable(bool flag) {
-  LOG_DEBUG("Program has been set as endable:",
+  LOG_DEBUG(Logger::Priority::INFO, "Program has been set as endable:",
             Program::stopFlag ? "True" : "False");
   Program::stopFlag = flag;
 }

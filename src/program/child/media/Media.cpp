@@ -11,23 +11,23 @@
 #include <nlohmann/json.hpp>
 #include <string>
 
-#include "../../../utils/ListUtils.h"
-#include "../../../utils/logging/Logger.h"
-#include "../../settings/enums/Activity_N.h"
-#include "../ffmpeg/FFmpegArgumentBuilder.h"
 #include "MediaProcessConversion.h"
 #include "MediaProcessStatistics.h"
 #include "MediaProcessValidate.h"
 #include "src/program/Program.h"
 #include "src/program/child/media/file/FileContainer.h"
 #include "src/program/definitions/DefinitionRegistry.h"
+#include "src/program/ffmpeg/FFmpegArgumentBuilder.h"
 #include "src/program/settings/enums/Activity_N.h"
 #include "src/program/settings/enums/Command_N.h"
 #include "src/program/settings/enums/Encoders_N.h"
 #include "src/program/settings/enums/HWAccelerators_N.h"
+#include "src/utils/ListUtils.h"
 #include "src/utils/NumberUtils.h"
 #include "src/utils/StringUtils.h"
 #include "src/utils/TimeUtils.h"
+#include "src/utils/logging/LogColor.h"
+#include "src/utils/logging/Logger.h"
 
 Media::Media(Arguments &arguments, uuids::uuid id, std::string name,
              std::filesystem::path path)
@@ -41,12 +41,12 @@ Media::Media(Arguments &arguments, uuids::uuid id, std::string name,
       arguments(arguments) {}
 
 Media::~Media() {
-  LOG_DEBUG("Deconstructing media: ", this->id);
+  LOG_DEBUG(Logger::Priority::INFO, "Deconstructing media: ", this->id);
 
   if (probeResult != nullptr)
     delete probeResult;
 
-  LOG_DEBUG("Deleting ffmpegArguments: {}",
+  LOG_DEBUG(Logger::Priority::INFO, "Deconstructing ffmpegArguments: {}",
             static_cast<void *>(ffmpegArguments));
   if (ffmpegArguments != nullptr)
     delete ffmpegArguments;
@@ -87,14 +87,15 @@ void Media::setActivity(Activity_N::Activity provided_activity) {
 
 void Media::doStatistics() {
   if (Program::stopFlag == true) {
-    LOG_DEBUG("Stopping statistics due to stop flag.");
+    LOG_DEBUG(Logger::Priority::INFO, "Stopping statistics due to stop flag.");
     this->setActivity(Activity_N::FINISHED);
     return;
   }
 
   this->setActivity(Activity_N::STATISTICS);
 
-  LOG_DEBUG("Starting statistics for: ", this->file.naming.original_name_ext);
+  LOG_DEBUG(Logger::Priority::INFO,
+            "Starting statistics for: ", this->file.naming.original_name_ext);
 
   MediaProcessStatistics statistics(this);
   statistics.start("ffprobe -v quiet -print_format json -show_format "
@@ -109,14 +110,15 @@ void Media::doStatistics() {
 }
 void Media::doConversion() {
   if (Program::stopFlag == true) {
-    LOG_DEBUG("Stopping conversion due to stop flag.");
+    LOG_DEBUG(Logger::Priority::INFO, "Stopping conversion due to stop flag.");
     this->setActivity(Activity_N::FAILED_SYSTEM);
     return;
   }
 
   this->setActivity(Activity_N::CONVERT);
 
-  LOG_DEBUG("Starting conversion for: ", this->file.naming.original_name_ext);
+  LOG_DEBUG(Logger::Priority::INFO,
+            "Starting conversion for: ", this->file.naming.original_name_ext);
 
   MediaProcessConversion conversion(this);
 
@@ -128,8 +130,9 @@ void Media::doConversion() {
   }
 
   if (!std::filesystem::exists(this->file.naming.conversion_full_path)) {
-    LOG_DEBUG("Converted file does not exist: ",
-              this->file.naming.conversion_full_path);
+    LOG_DEBUG(Logger::Priority::ERROR,
+              "Converted file does not exist: " +
+                  this->file.naming.conversion_full_path.string());
     this->setActivity(Activity_N::FAILED_FILE_MISSING);
     return;
   } else {
@@ -141,14 +144,15 @@ void Media::doConversion() {
 }
 void Media::doValidation() {
   if (Program::stopFlag == true) {
-    LOG_DEBUG("Stopping validation due to stop flag.");
+    LOG_DEBUG(Logger::Priority::INFO, "Stopping validation due to stop flag.");
     this->setActivity(Activity_N::FAILED_SYSTEM);
     return;
   }
 
   this->setActivity(Activity_N::VALIDATE);
 
-  LOG_DEBUG("Starting validation for: ", this->file.naming.original_name_ext);
+  LOG_DEBUG(Logger::Priority::INFO,
+            "Starting validation for: ", this->file.naming.original_name_ext);
 
   MediaProcessValidate validate(this);
   validate.start("ffmpeg -v quiet -stats -i \"" +
@@ -279,7 +283,7 @@ std::string Media::pendingLine() const {
 
 void Media::fromJSON(const nlohmann::json &json) {
   if (json.empty()) {
-    LOG_DEBUG("JSON is empty.");
+    LOG_DEBUG(Logger::Priority::INFO, "JSON is empty.");
     return;
   }
 
@@ -337,7 +341,7 @@ nlohmann::json Media::toJSON(void) {
   json["file"] = this->file.toJSON();
 
   if (this->ffmpegArguments == nullptr) {
-    LOG_DEBUG("Media ffmpegArguments is null:",
+    LOG_DEBUG(Logger::Priority::WARNING, "Media ffmpegArguments is null:",
               this->file.naming.original_name_ext);
   } else {
     // this might not work

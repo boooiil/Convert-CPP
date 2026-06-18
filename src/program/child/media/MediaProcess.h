@@ -35,7 +35,7 @@ public:
   MediaProcess(T *_object)
       : object(_object), status(MediaProcess::Status::WAIT), stop_req(false) {}
 
-  ~MediaProcess() { LOG_DEBUG("DESTRUCTOR CALLED"); }
+  ~MediaProcess() { LOG_DEBUG(Logger::Priority::INFO, "DESTRUCTOR CALLED"); }
 
   /**
    * @brief Status of the process.
@@ -49,7 +49,7 @@ public:
    */
   virtual void start(std::string command) {
     command += " 2>&1";
-    LOG_DEBUG("SENDING COMMAND:", command);
+    LOG_DEBUG(Logger::Priority::INFO, "SENDING COMMAND:", command);
 
     this->status = MediaProcess::Status::RUNNING;
 
@@ -64,7 +64,8 @@ public:
     }
 
     if (stop_req) {
-      LOG_DEBUG("Stop request received before starting the loop");
+      LOG_DEBUG(Logger::Priority::INFO,
+                "Stop request received before starting the loop");
       return;
     }
 
@@ -80,7 +81,8 @@ public:
       }
 
       if (stop_req) {
-        LOG_DEBUG("Stop request received during the loop");
+        LOG_DEBUG(Logger::Priority::INFO,
+                  "Stop request received during the loop");
         break;
       }
     }
@@ -92,7 +94,7 @@ public:
    * @param[in] data - Data to be parsed.
    */
   virtual void parse(std::string data) {
-    LOG_DEBUG("WARNING, USING DEFAULT PARSER", data);
+    LOG_DEBUG(Logger::Priority::INFO, "WARNING, USING DEFAULT PARSER", data);
   }
 
   /**

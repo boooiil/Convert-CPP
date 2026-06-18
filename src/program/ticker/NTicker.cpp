@@ -49,12 +49,12 @@ void NTicker::determineNextAction(std::vector<std::string> &args) {
 // void NTicker::prepare(ArgumentParser* arguments) {
 //   // use parent display
 //   if (arguments->argumentRegistry.get<FlagArgument>("-parent")->get()) {
-//     LOG_DEBUG("Running as parent.");
+//     LOG_DEBUG(Logger::Priority::INFO,"Running as parent.");
 //     this->display = new ParentDisplay();
 //     this->runner = new Parent();
 //   }
 //   else {
-//     LOG_DEBUG("Running as child.");
+//     LOG_DEBUG(Logger::Priority::INFO,"Running as child.");
 //     this->display = new ChildDisplay();
 //     this->runner = new Child();
 //   }
@@ -67,11 +67,11 @@ void NTicker::prepare(std::vector<std::string> &args) {
   ArgumentRegistry &argumentRegistry = this->arguments->argumentRegistry;
 
   if (argumentRegistry.get<Command_N::PARENT>()) {
-    LOG_DEBUG("Running as parent.");
+    LOG_DEBUG(Logger::Priority::INFO, "Running as parent.");
     this->display = new ParentDisplay();
     this->runner = new Parent(run_env, *arguments);
   } else {
-    LOG_DEBUG("Running as child.");
+    LOG_DEBUG(Logger::Priority::INFO, "Running as child.");
     this->display = new ChildDisplay();
     this->runner = new Child(run_env, arguments);
   }
@@ -129,17 +129,17 @@ void NTicker::run() {
 }
 
 void NTicker::end() {
-  LOG_DEBUG("Ending ticker.");
-  LOG_DEBUG("Expected to delete { display, runner }.");
+  LOG_DEBUG(Logger::Priority::INFO, "Ending ticker.");
+  LOG_DEBUG(Logger::Priority::INFO, "Expected to delete { display, runner }.");
 
   if (this->display != nullptr) {
-    LOG_DEBUG("Deleting display.");
+    LOG_DEBUG(Logger::Priority::INFO, "Deconstructing display.");
     delete this->display;
   }
 
   if (this->runner != nullptr) {
     // while (!this->runner->isEndable()) {
-    //   LOG_DEBUG("Waiting for runner to end.");
+    //   LOG_DEBUG(Logger::Priority::INFO,"Waiting for runner to end.");
 
     //  std::this_thread::sleep_for(std::chrono::milliseconds(500));
     // while (!Program::ticker->runner->isEndable()
@@ -147,7 +147,7 @@ void NTicker::end() {
     //}
     this->runner->end();
 
-    LOG_DEBUG("Deleting runner.");
+    LOG_DEBUG(Logger::Priority::INFO, "Deconstructing runner.");
     delete this->runner;
   }
 }

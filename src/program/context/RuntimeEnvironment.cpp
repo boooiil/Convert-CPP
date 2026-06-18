@@ -4,7 +4,7 @@
 
 RuntimeEnvironment *RuntimeEnvironment::detect() {
 
-  LOG_DEBUG("Gathering system details...");
+  LOG_DEBUG(Logger::Priority::INFO, "Gathering system details...");
   return new RuntimeEnvironment{.hw_cap = HardwareCapabilities::detect(),
                                 .platform_info = PlatformInfo::detect()};
 }

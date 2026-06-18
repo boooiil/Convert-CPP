@@ -32,16 +32,17 @@
 
 Parent::Parent(RuntimeEnvironment &run_env, Arguments &arguments)
     : run_env(run_env), arguments(arguments) {
-  LOG_DEBUG("Constructing parent.");
+  LOG_DEBUG(Logger::Priority::INFO, "Constructing parent.");
 }
 
 Parent::~Parent(void) {
-  LOG_DEBUG("Deconstructing parent.");
+  LOG_DEBUG(Logger::Priority::INFO, "Deconstructing parent.");
   while (!this->pending.empty()) {
     Child *child = this->pending.front();
     this->pending.pop();
 
-    LOG_DEBUG("Deleting child process in:", child->getArguments().CWD,
+    LOG_DEBUG(Logger::Priority::INFO,
+              "Deconstructing child process in:", child->getArguments().CWD,
               "with uuid:", child->id);
 
     child->end();
@@ -51,14 +52,15 @@ Parent::~Parent(void) {
     Child *child = this->converting.front();
     this->converting.pop();
 
-    LOG_DEBUG("Deleting child process in:", child->getArguments().CWD,
+    LOG_DEBUG(Logger::Priority::INFO,
+              "Deconstructing child process in:", child->getArguments().CWD,
               "with uuid:", child->id);
 
     child->end();
     delete child;
   }
   // if (this->options != nullptr) {
-  //   LOG_DEBUG("Deleting ParentOptions.");
+  //   LOG_DEBUG(Logger::Priority::INFO,"Deconstructing ParentOptions.");
   //   delete this->options;
   // }
 }
@@ -119,11 +121,11 @@ void Parent::prepare(std::vector<std::string> &args) {
   };
 }
 
-void Parent::run(void) { LOG("PARENT RUN"); }
+void Parent::run(void) { LOG(Logger::Priority::INFO, "PARENT RUN"); }
 
 void Parent::end(void) {
-  LOG_DEBUG("Ending runner.");
-  LOG_DEBUG("Expected to delete { }.");
+  LOG_DEBUG(Logger::Priority::INFO, "Ending runner.");
+  LOG_DEBUG(Logger::Priority::INFO, "Expected to delete { }.");
 }
 
 std::vector<std::string>
@@ -153,7 +155,8 @@ nlohmann::json Parent::toJSON(void) {
     Child *child = this->pending.front();
     this->pending.pop();
 
-    LOG_DEBUG("parent json: ", child->getArguments().CWD);
+    LOG_DEBUG(Logger::Priority::INFO,
+              "parent json: ", child->getArguments().CWD);
 
     converting_json.push_back(child->toJSON());
 
@@ -168,7 +171,8 @@ nlohmann::json Parent::toJSON(void) {
     Child *child = this->converting.front();
     this->converting.pop();
 
-    LOG_DEBUG("parent json: ", child->getArguments().CWD);
+    LOG_DEBUG(Logger::Priority::INFO,
+              "parent json: ", child->getArguments().CWD);
 
     pending_json.push_back(child->toJSON());
 
