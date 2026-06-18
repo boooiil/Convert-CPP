@@ -6,7 +6,7 @@
 ProbeResultStreamAttachment::ProbeResultStreamAttachment(nlohmann::json JSON)
     : ProbeResultStream(JSON) {
 
-  LOG_DEBUG("Starting ProbeResultStreamAttachment...");
+  LOG_DEBUG(Logger::Priority::INFO, "Starting ProbeResultStreamAttachment...");
 
   if (!JSON["duration_ts"].is_null()) {
     this->duration_ts = JSON["duration_ts"];

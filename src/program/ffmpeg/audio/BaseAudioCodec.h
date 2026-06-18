@@ -8,7 +8,7 @@
 class BaseAudioCodec {
 public:
   virtual ~BaseAudioCodec() = default;
-  BaseAudioCodec(int channel, int sampleRate, int bitDepth)
+  BaseAudioCodec(int channel, int sampleRate, std::string bitDepth)
       : runningChannel(channel), runningSampleRate(sampleRate),
         runningBitDepth(bitDepth), runningBitrate(-1) {};
 
@@ -35,10 +35,11 @@ public:
                     &BaseAudioCodec::fallbackSampleRate);
   }
 
-  virtual auto supportedBitDepths() const -> const std::vector<int> = 0;
-  virtual auto fallbackBitDepth() const -> const int = 0;
+  virtual auto supportedBitDepths() const -> const std::vector<std::string> = 0;
+  virtual auto fallbackBitDepth() const -> const std::string = 0;
 
-  virtual auto getBitDepth(const int &bitDepth) const -> const int {
+  virtual auto getBitDepth(const std::string &bitDepth) const
+      -> const std::string {
     return getParam(bitDepth, &BaseAudioCodec::supportedBitDepths,
                     &BaseAudioCodec::fallbackBitDepth);
   }
@@ -49,7 +50,7 @@ public:
   auto setSampleRate(const int &sampleRate) -> void {
     this->runningSampleRate = getSampleRate(sampleRate);
   };
-  auto setBitDepth(const int &bitDepth) -> void {
+  auto setBitDepth(const std::string &bitDepth) -> void {
     this->runningBitDepth = getBitDepth(bitDepth);
   };
   auto setBitrate(const int &bitrate) -> void {
@@ -62,7 +63,7 @@ public:
   auto getRunningSampleRate() const -> const int {
     return this->runningSampleRate;
   };
-  auto getRunningBitDepth() const -> const int {
+  auto getRunningBitDepth() const -> const std::string {
     return this->runningBitDepth;
   };
   auto getRunningBitrate() const -> const int { return this->runningBitrate; };
@@ -114,7 +115,7 @@ private:
   int mapIndex;
   int runningChannel;
   int runningSampleRate;
-  int runningBitDepth;
+  std::string runningBitDepth;
   int runningBitrate;
 };
 

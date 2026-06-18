@@ -2,14 +2,14 @@
 
 #include <nlohmann/json.hpp>
 
-#include "../../../../utils/logging/Logger.h"
+#include "src/utils/logging/Logger.h"
 
 /**
  * TODO: Validate ffmpeg verison to avoid missing fields
  */
 ProbeResultStreamDisposition::ProbeResultStreamDisposition(
     nlohmann::json JSON) {
-  LOG_DEBUG("Starting ProbeResultStreamDisposition...");
+  LOG_DEBUG(Logger::Priority::INFO, "Starting ProbeResultStreamDisposition...");
   ProbeResultStreamDisposition::default_ = JSON["default"];
   ProbeResultStreamDisposition::dub = JSON["dub"];
   ProbeResultStreamDisposition::original = JSON["original"];
@@ -28,5 +28,5 @@ ProbeResultStreamDisposition::ProbeResultStreamDisposition(
   // ProbeResultStreamDisposition::metadata = JSON["metadata"];
   // ProbeResultStreamDisposition::dependent = JSON["dependent"];
   // ProbeResultStreamDisposition::still_image = JSON["still_image"];
-  LOG_DEBUG("Ended ProbeResultStreamDisposition");
+  LOG_DEBUG(Logger::Priority::INFO, "Ended ProbeResultStreamDisposition");
 }

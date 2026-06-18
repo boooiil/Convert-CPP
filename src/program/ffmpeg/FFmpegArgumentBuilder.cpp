@@ -1,31 +1,29 @@
 #include "FFmpegArgumentBuilder.h"
 
 #include <string>
-#include <vector>
 
-#include "../../../program/Program.h"
-#include "../../../utils/ListUtils.h"
-#include "../../../utils/logging/Logger.h"
-#include "../../child/media/Media.h"
-#include "../../registry/ArgumentRegistry.h"
-#include "../../settings/arguments/StringArgument.h"
-#include "../../settings/arguments/TimeStringVectorArgument.h"
-#include "../../settings/arguments/VectorArgument.h"
-#include "../media/MediaFormat.h"
-#include "attachment/BaseAttachment.h"
-#include "audio/AudioCodecFactory.h"
-#include "audio/BaseAudioCodec.h"
-#include "container/BaseContainer.h"
-#include "container/ContainerFactory.h"
-#include "probe/ProbeResultStreamAttachment.h"
-#include "src/program/child/ffmpeg/attachment/AttachmentFactory.h"
+#include "src/program/Program.h"
+#include "src/program/child/media/Media.h"
+#include "src/program/child/media/MediaFormat.h"
+#include "src/program/ffmpeg/attachment/AttachmentFactory.h"
+#include "src/program/ffmpeg/audio/AudioCodecFactory.h"
+#include "src/program/ffmpeg/audio/BaseAudioCodec.h"
+#include "src/program/ffmpeg/container/BaseContainer.h"
+#include "src/program/ffmpeg/container/ContainerFactory.h"
+#include "src/program/ffmpeg/probe/ProbeResultStreamAttachment.h"
+#include "src/program/ffmpeg/subtitle/SubtitleCodecFactory.h"
+#include "src/program/ffmpeg/video/VideoCodecFactory.h"
+#include "src/program/registry/ArgumentRegistry.h"
+#include "src/program/settings/arguments/StringArgument.h"
+#include "src/program/settings/arguments/TimeStringVectorArgument.h"
+#include "src/program/settings/arguments/VectorArgument.h"
 #include "src/program/settings/enums/Command_N.h"
 #include "src/program/settings/enums/Container_N.h"
 #include "src/program/settings/enums/Encoders_N.h"
 #include "src/program/settings/enums/HWAccelerators_N.h"
+#include "src/utils/ListUtils.h"
 #include "src/utils/logging/LogColor.h"
-#include "subtitle/SubtitleCodecFactory.h"
-#include "video/VideoCodecFactory.h"
+#include "src/utils/logging/Logger.h"
 #include <cassert>
 
 FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
@@ -46,6 +44,15 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
   const VectorArgument<int> audioBitrates =
       argumentRegistry.get<Command_N::AUDIOBITRATE>();
 
+  const VectorArgument<int> audioChannels =
+      argumentRegistry.get<Command_N::AUDIOCHANNELS>();
+
+  const VectorArgument<std::string> audioBitDepths =
+      argumentRegistry.get<Command_N::AUDIOBITDEPTH>();
+
+  const VectorArgument<int> audioSampleRates =
+      argumentRegistry.get<Command_N::AUDIOSAMPLERATE>();
+
   const VectorArgument<int> subtitleStreams =
       argumentRegistry.get<Command_N::SUBTITLESTREAMS>();
 
@@ -59,12 +66,20 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
   this->container =
       ContainerFactory::create(Container_N::definition(wanted_container));
 
-  LOG_DEBUG("Container ptr: {}", static_cast<void *>(container));
+  LOG_DEBUG(Logger::Priority::INFO, "Container ptr: {}",
+            static_cast<void *>(container));
 
   // assert audio stream mapping
   assertStreamMapping(audioStreams, media->probeResult->audioStreams);
   // assert audio bitrate stream mapping
   assertStreamMapping(audioBitrates, media->probeResult->audioStreams);
+  // assert audio channels stream mapping
+  assertStreamMapping(audioChannels, media->probeResult->audioStreams);
+  // assert audio bit depth stream mapping
+  assertStreamMapping(audioBitDepths, media->probeResult->audioStreams);
+  // assert audio sample rate stream mapping
+  assertStreamMapping(audioSampleRates, media->probeResult->audioStreams);
+
   // assert subtitle stream mapping
   assertStreamMapping(subtitleStreams, media->probeResult->subtitleStreams);
 
@@ -77,9 +92,9 @@ FFmpegArgumentBuilder::FFmpegArgumentBuilder(Media *_media)
 }
 
 FFmpegArgumentBuilder::~FFmpegArgumentBuilder() {
-  LOG_DEBUG("Deconstructing...");
+  LOG_DEBUG(Logger::Priority::INFO, "Deconstructing...");
   if (container != nullptr) {
-    LOG_DEBUG("Deleting Container.");
+    LOG_DEBUG(Logger::Priority::INFO, "Deconstructing Container.");
     delete container;
   }
 }
@@ -106,13 +121,21 @@ FFmpegArgumentBuilder::generateAudioCodecs(const VectorArgument<int> &streams,
       argumentRegistry.get<Command_N::AUDIOBITRATE>().get();
   std::vector<int> wanted_channels =
       argumentRegistry.get<Command_N::AUDIOCHANNELS>().get();
+  std::vector<std::string> wanted_bit_depths =
+      argumentRegistry.get<Command_N::AUDIOBITDEPTH>().get();
+  std::vector<int> wanted_sample_rates =
+      argumentRegistry.get<Command_N::AUDIOSAMPLERATE>().get();
 
   // we are generating a new BaseAudioCodec for each audio stream
   // in the existing audio streams
   for (int i = 0; i < media->probeResult->audioStreams.size(); i++) {
     BaseAudioCodec *audioCodec = nullptr;
     int media_channels = media->probeResult->audioStreams[i].channels;
-    int media_bitrate = media->probeResult->audioStreams[i].tags.BPS;
+    int media_bitrate =
+        static_cast<int>(media->probeResult->audioStreams[i].tags.BPS / 1000);
+    std::string media_bit_depth =
+        media->probeResult->audioStreams[i].sample_fmt;
+    int media_sample_rate = media->probeResult->audioStreams[i].sample_rate;
     std::string media_audio_codec =
         media->probeResult->audioStreams[i].codec_name;
 
@@ -122,12 +145,13 @@ FFmpegArgumentBuilder::generateAudioCodecs(const VectorArgument<int> &streams,
       // and if the audio stream is not in the list
       // skip the audio stream
       if (!ListUtils::contains(streams.get(), i)) {
-        LOG_DEBUG("Skipping audio stream", i, "for not being in the list.");
+        LOG_DEBUG(Logger::Priority::INFO, "Skipping audio stream", i,
+                  "for not being in the list.");
         continue;
       }
     }
 
-    LOG_DEBUG("Audio stream", i, "is in the list.");
+    LOG_DEBUG(Logger::Priority::INFO, "Audio stream", i, "is in the list.");
 
     /***************************************************
      *                                                 *
@@ -137,24 +161,25 @@ FFmpegArgumentBuilder::generateAudioCodecs(const VectorArgument<int> &streams,
 
     // if there are more audio codecs than streams
     if (wanted_codecs.size() > i) {
-      LOG_DEBUG("Audio index [", i, "] is using codec (", wanted_codecs[i],
-                ")");
+      LOG_DEBUG(Logger::Priority::INFO, "Audio index [", i,
+                "] is using codec (", wanted_codecs[i], ")");
       audioCodec = AudioCodecFactory::create(wanted_codecs[i]);
     }
     // else use the last codec in the list
     else if (!wanted_codecs.empty()) {
-      LOG_DEBUG("Audio index [", i, "] exceeded codecs, using last codec (",
+      LOG_DEBUG(Logger::Priority::INFO, "Audio index [", i,
+                "] exceeded codecs, using last codec (",
                 wanted_codecs[wanted_codecs.size() - 1], ")");
       audioCodec =
           AudioCodecFactory::create(wanted_codecs[wanted_codecs.size() - 1]);
     }
     // else copy the codec
     else {
-      LOG_DEBUG("Audio index [", i, "] marked for copy codec.");
+      LOG_DEBUG(Logger::Priority::INFO, "Audio index [", i,
+                "] marked for copy codec.");
       audioCodec = AudioCodecFactory::create(media_audio_codec);
       // set bit depth
-      audioCodec->setBitDepth(
-          media->probeResult->audioStreams[i].bits_per_sample);
+      audioCodec->setBitDepth(media->probeResult->audioStreams[i].sample_fmt);
       // set sample rate
       audioCodec->setSampleRate(
           media->probeResult->audioStreams[i].sample_rate);
@@ -168,17 +193,19 @@ FFmpegArgumentBuilder::generateAudioCodecs(const VectorArgument<int> &streams,
 
     // if there are more audio channels than streams
     if (wanted_channels.size() > i) {
-      LOG_DEBUG("Audio index [", i, "] is using channel (", wanted_channels[i],
-                ")");
+      LOG_DEBUG(Logger::Priority::INFO, "Audio index [", i,
+                "] is using channel (", wanted_channels[i], ")");
       audioCodec->setChannel(wanted_channels[i]);
     } else if (!wanted_channels.empty()) {
-      LOG_DEBUG("Audio index [", i, "] exceeded channels, using last channel (",
+      LOG_DEBUG(Logger::Priority::INFO, "Audio index [", i,
+                "] exceeded channels, using last channel (",
                 wanted_channels[wanted_channels.size() - 1], ")");
       audioCodec->setChannel(wanted_channels[wanted_channels.size() - 1]);
     }
     // copy channels
     else {
-      LOG_DEBUG("Audio index [", i, "] marked for copy channels.");
+      LOG_DEBUG(Logger::Priority::INFO, "Audio index [", i,
+                "] marked for copy channels.");
       audioCodec->setChannel(media_channels);
     }
 
@@ -189,18 +216,67 @@ FFmpegArgumentBuilder::generateAudioCodecs(const VectorArgument<int> &streams,
      ***************************************************/
 
     if (wanted_bitrates.size() > i) {
-      LOG_DEBUG("Audio index [", i, "] is using bitrate (", wanted_bitrates[i],
-                ")");
+      LOG_DEBUG(Logger::Priority::INFO, "Audio index [", i,
+                "] is using bitrate (", wanted_bitrates[i], ")");
       audioCodec->setBitrate(wanted_bitrates[i]);
     } else if (!wanted_bitrates.empty()) {
-      LOG_DEBUG("Audio index [", i, "] exceeded bitrates, using last bitrate (",
+      LOG_DEBUG(Logger::Priority::INFO, "Audio index [", i,
+                "] exceeded bitrates, using last bitrate (",
                 wanted_bitrates[wanted_bitrates.size() - 1], ")");
       audioCodec->setBitrate(wanted_bitrates[wanted_bitrates.size() - 1]);
     }
     // copy bitrate
     else {
-      LOG_DEBUG("Audio index [", i, "] marked for copy bitrate.");
+      LOG_DEBUG(Logger::Priority::INFO, "Audio index [", i,
+                "] marked for copy bitrate.");
       audioCodec->setBitrate(media_bitrate);
+    }
+
+    /***************************************************
+     *                                                 *
+     *            AUDIO BIT DEPTH SETTINGS             *
+     *                                                 *
+     ***************************************************/
+
+    if (wanted_bit_depths.size() > i) {
+      LOG_DEBUG(Logger::Priority::INFO, "Audio index [", i,
+                "] is using bit depth (", wanted_bit_depths[i], ")");
+      audioCodec->setBitDepth(wanted_bit_depths[i]);
+    } else if (!wanted_bit_depths.empty()) {
+      LOG_DEBUG(Logger::Priority::INFO, "Audio index [", i,
+                "] exceeded bit depths, using last bit depth (",
+                wanted_bit_depths[wanted_bit_depths.size() - 1], ")");
+      audioCodec->setBitDepth(wanted_bit_depths[wanted_bit_depths.size() - 1]);
+    }
+    // copy bit depth
+    else {
+      LOG_DEBUG(Logger::Priority::INFO, "Audio index [", i,
+                "] marked for copy bit depth.");
+      audioCodec->setBitDepth(media_bit_depth);
+    }
+
+    /***************************************************
+     *                                                 *
+     *            AUDIO SAMPLE RATE SETTINGS           *
+     *                                                 *
+     ***************************************************/
+
+    if (wanted_sample_rates.size() > i) {
+      LOG_DEBUG(Logger::Priority::INFO, "Audio index [", i,
+                "] is using sample rate (", wanted_sample_rates[i], ")");
+      audioCodec->setSampleRate(wanted_sample_rates[i]);
+    } else if (!wanted_sample_rates.empty()) {
+      LOG_DEBUG(Logger::Priority::INFO, "Audio index [", i,
+                "] exceeded sample rates, using last sample rate (",
+                wanted_sample_rates[wanted_sample_rates.size() - 1], ")");
+      audioCodec->setSampleRate(
+          wanted_sample_rates[wanted_sample_rates.size() - 1]);
+    }
+    // copy sample rate
+    else {
+      LOG_DEBUG(Logger::Priority::INFO, "Audio index [", i,
+                "] marked for copy sample rate.");
+      audioCodec->setSampleRate(media_sample_rate);
     }
 
     // set index
@@ -232,12 +308,13 @@ std::vector<BaseSubtitleCodec *> FFmpegArgumentBuilder::generateSubtitleCodecs(
     if (!streams.get().empty()) {
       // and if the subtitle stream is not in the list
       if (!ListUtils::contains(streams.get(), i)) {
-        LOG_DEBUG("Skipping subtitle stream", i, "for not being in the list.");
+        LOG_DEBUG(Logger::Priority::INFO, "Skipping subtitle stream", i,
+                  "for not being in the list.");
         continue;
       }
     }
 
-    LOG_DEBUG("Subtitle stream", i, "is in the list.");
+    LOG_DEBUG(Logger::Priority::INFO, "Subtitle stream", i, "is in the list.");
 
     // existing codec
     auto ec = SubtitleCodecFactory::create(
@@ -245,16 +322,18 @@ std::vector<BaseSubtitleCodec *> FFmpegArgumentBuilder::generateSubtitleCodecs(
 
     // if there are more subtitle codecs than streams
     if (wanted_codecs.size() > i) {
-      LOG_DEBUG("Subtitle index [", i, "] is using codec (", wanted_codecs[i],
-                ")");
+      LOG_DEBUG(Logger::Priority::INFO, "Subtitle index [", i,
+                "] is using codec (", wanted_codecs[i], ")");
 
       auto wc = SubtitleCodecFactory::create(wanted_codecs[i]);
 
       if ((!ec->isImage() && wc->isImage()) ||
           (ec->isImage() && !wc->isImage())) {
-        LOG(LogColor::fgRed("Cannot convert subtitle (" + ec->getName() +
+        LOG(Logger::Priority::INFO,
+            LogColor::fgRed("Cannot convert subtitle (" + ec->getName() +
                             ") to (" + wc->getName() + ")."));
-        LOG(LogColor::fgRed(ec->getName() + " was a " +
+        LOG(Logger::Priority::INFO,
+            LogColor::fgRed(ec->getName() + " was a " +
                             (ec->isImage() ? "image" : "text") +
                             " format but " + wc->getName() + " is a " +
                             (wc->isImage() ? "image" : "text") + " format."));
@@ -269,16 +348,19 @@ std::vector<BaseSubtitleCodec *> FFmpegArgumentBuilder::generateSubtitleCodecs(
     }
     // else use the last codec in the list
     else if (!wanted_codecs.empty()) {
-      LOG_DEBUG("Subtitle index [", i, "] exceeded codecs, using last codec (",
+      LOG_DEBUG(Logger::Priority::INFO, "Subtitle index [", i,
+                "] exceeded codecs, using last codec (",
                 wanted_codecs[wanted_codecs.size() - 1], ")");
 
       auto wc = subtitleCodecs[subtitleCodecs.size() - 1];
 
       if ((!ec->isImage() && wc->isImage()) ||
           (ec->isImage() && !wc->isImage())) {
-        LOG(LogColor::fgRed("Cannot convert subtitle (" + ec->getName() +
+        LOG(Logger::Priority::INFO,
+            LogColor::fgRed("Cannot convert subtitle (" + ec->getName() +
                             ") to (" + wc->getName() + ")."));
-        LOG(LogColor::fgRed(ec->getName() + " was a " +
+        LOG(Logger::Priority::INFO,
+            LogColor::fgRed(ec->getName() + " was a " +
                             (ec->isImage() ? "image" : "text") +
                             " format but " + wc->getName() + " is a " +
                             (wc->isImage() ? "image" : "text") + " format."));
@@ -293,7 +375,8 @@ std::vector<BaseSubtitleCodec *> FFmpegArgumentBuilder::generateSubtitleCodecs(
     }
     // else copy the codec
     else {
-      LOG_DEBUG("Subtitle index [", i, "] marked for copy codec.");
+      LOG_DEBUG(Logger::Priority::INFO, "Subtitle index [", i,
+                "] marked for copy codec.");
       subtitleCodec = SubtitleCodecFactory::create(media_subtitle_codec);
     }
 
@@ -320,7 +403,7 @@ std::vector<BaseAttachment *> FFmpegArgumentBuilder::generateAttachments() {
 
 void FFmpegArgumentBuilder::validate() { return; }
 void FFmpegArgumentBuilder::term() {
-  LOG_DEBUG("Terminating program.");
+  LOG_DEBUG(Logger::Priority::INFO, "Terminating program.");
   Program::stopFlag = true;
 }
 
@@ -362,19 +445,20 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
     int as_map_index = codec->getMapIndex();
     int channels = codec->getRunningChannel();
     int sample_rate = codec->getRunningSampleRate();
-    int bit_depth = codec->getRunningBitDepth();
+    std::string bit_depth = codec->getRunningBitDepth();
 
-    LOG_DEBUG("Audio index [", as_index, "] mapped at [", as_map_index,
-              "] using codec (", codec_name, ") with channels (", channels,
-              ") and sample rate (", sample_rate, ") and bit depth (",
-              bit_depth, ")", " and bitrate (", codec->getRunningBitrate(),
-              ")");
+    LOG_DEBUG(Logger::Priority::INFO, "Audio index [", as_index,
+              "] mapped at [", as_map_index, "] using codec (", codec_name,
+              ") with channels (", channels, ") and sample rate (", sample_rate,
+              ") and bit depth (", bit_depth, ")", " and bitrate (",
+              codec->getRunningBitrate(), ")");
 
-    LOG_DEBUG("Formatted title for index [", as_index,
+    LOG_DEBUG(Logger::Priority::INFO, "Formatted title for index [", as_index,
               "] is:", codec_display_name, channel_layout);
 
     result.push_back("-map 0:a:" + std::to_string(as_map_index));
-
+    result.push_back("-sample_fmt:a:" + std::to_string(as_index) + " " +
+                     bit_depth);
     result.push_back("-c:a:" + std::to_string(as_index) + " " + codec_name);
     result.push_back("-ac:a:" + std::to_string(as_index) + " " +
                      std::to_string(channels));
@@ -392,8 +476,9 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
     int ss_index = codec->getIndex();
     int ss_map_index = codec->getMapIndex();
 
-    LOG_DEBUG("Subtitle index [", ss_index, "] mapped at [", ss_map_index,
-              "] using codec (", codec->getName(), ")");
+    LOG_DEBUG(Logger::Priority::INFO, "Subtitle index [", ss_index,
+              "] mapped at [", ss_map_index, "] using codec (",
+              codec->getName(), ")");
 
     result.push_back("-map 0:s:" + std::to_string(ss_map_index));
 
@@ -405,8 +490,9 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
     int att_index = attachment->getIndex();
     int att_map_index = attachment->getMapIndex();
 
-    LOG_DEBUG("Attachment index [", att_index, "] mapped at [", att_map_index,
-              "] using attachment (", attachment->getName(), ")");
+    LOG_DEBUG(Logger::Priority::INFO, "Attachment index [", att_index,
+              "] mapped at [", att_map_index, "] using attachment (",
+              attachment->getName(), ")");
 
     result.push_back("-map 0:t:" + std::to_string(att_map_index));
     result.push_back("-c:t:" + std::to_string(att_index) + " copy");
@@ -485,7 +571,8 @@ std::vector<std::string> FFmpegArgumentBuilder::build() {
     result.push_back("-n");
   }
 
-  LOG_DEBUG("FFMPEG ARGUMENTS: ", ListUtils::join(result, " "));
+  LOG_DEBUG(Logger::Priority::INFO,
+            "FFMPEG ARGUMENTS: ", ListUtils::join(result, " "));
 
   return result;
 }

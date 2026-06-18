@@ -4,8 +4,8 @@
 #include <set>
 #include <vector>
 
-#include "../../../settings/enums/Encoders_N.h"
-#include "../../../settings/enums/Tunes_N.h"
+#include "src/program/settings/enums/Encoders_N.h"
+#include "src/program/settings/enums/Tunes_N.h"
 
 class BaseVideoCodec {
 public:

@@ -30,25 +30,30 @@ public:
     // int e_index_total = 0;
 
     // for (int i = 0; i < streams.get().size(); i++) {
-    //   LOG_DEBUG("WANTED STREAM INDEX: ", streams.get()[i]);
-    //   w_index_total += streams.get()[i];
+    //   LOG_DEBUG(Logger::Priority::INFO,"WANTED STREAM INDEX: ",
+    //   streams.get()[i]); w_index_total += streams.get()[i];
     // }
 
     // for (int i = 0; i < existingStreamMap.size(); i++) {
-    //   LOG_DEBUG("EXISTING STREAM INDEX: ", i);
+    //   LOG_DEBUG(Logger::Priority::INFO,"EXISTING STREAM INDEX: ", i);
     //   e_index_total += i;
     // }
 
-    // LOG_DEBUG("W:", w_index_total, "E:", e_index_total);
+    // LOG_DEBUG(Logger::Priority::INFO,"W:", w_index_total, "E:",
+    // e_index_total);
 
     // need to assert that the audio codecs
     //
 
     if (streams.get().size() > existingStreamMap.size()) {
-      LOG_DEBUG("WANTED INDEX TOTAL IS GREATER THAN EXISTING INDEX TOTAL");
-      LOG_DEBUG("WANTED INDEX TOTAL: ", streams.get().size());
-      LOG_DEBUG("EXISTING INDEX TOTAL: ", existingStreamMap.size());
-      LOG(LogColor::fgRed("Wanted indexes exceed existing streams for: " +
+      LOG_DEBUG(Logger::Priority::INFO,
+                "WANTED INDEX TOTAL IS GREATER THAN EXISTING INDEX TOTAL");
+      LOG_DEBUG(Logger::Priority::INFO,
+                "WANTED INDEX TOTAL: ", streams.get().size());
+      LOG_DEBUG(Logger::Priority::INFO,
+                "EXISTING INDEX TOTAL: ", existingStreamMap.size());
+      LOG(Logger::Priority::INFO,
+          LogColor::fgRed("Wanted indexes exceed existing streams for: " +
                           std::string(typeid(T).name()) + " and " +
                           std::string(typeid(U).name())));
       term();
