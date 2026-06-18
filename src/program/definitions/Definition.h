@@ -28,7 +28,7 @@ public:
              const std::type_info &enum_type)
       : name(name), aliases(aliases), short_description(short_description),
         long_description(long_description), enum_assoc(enum_assoc),
-        enum_type(enum_type) {}
+        enum_type(&enum_type) {}
 
   virtual ~Definition() = default;
 
@@ -36,8 +36,8 @@ public:
   const std::unordered_set<std::string> &getAliases() const { return aliases; }
   const std::string &getShortDescription() const { return short_description; }
   const std::string &getLongDescription() const { return long_description; }
-  const int getEnumAssoc() const { return enum_assoc; }
-  const std::type_info &getEnumType() const { return enum_type; }
+  const int getRawEnumAssoc() const { return enum_assoc; }
+  const std::type_info &getEnumType() const { return *enum_type; }
 
   operator std::string() const { return name; }
   operator const char *() const { return name.c_str(); }
@@ -54,7 +54,7 @@ private:
   const std::string short_description;
   const std::string long_description;
   const int enum_assoc = -1;
-  const std::type_info &enum_type = typeid(void);
+  const std::type_info *enum_type = &typeid(void);
 };
 
 inline std::string operator+(const char *lhs, const Definition &rhs) {
