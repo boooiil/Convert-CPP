@@ -6,7 +6,8 @@
             "application/x-truetype-font",
             "x-font-ttf",
             "truetype_font",
-            "ttf"
+            "ttf",
+            "font/ttf"
         ]
     },
     "x_opentype_font": {
@@ -16,7 +17,8 @@
             "application/vnd.ms-opentype",
             "x-font-otf",
             "opentype_font",
-            "otf"
+            "otf",
+            "font/otf"
         ]
     },
     "x_font_woff": {
