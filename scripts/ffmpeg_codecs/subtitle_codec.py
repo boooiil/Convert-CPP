@@ -36,7 +36,7 @@ def generate(source: str, destination: str):
         body: str = f"""#ifndef SUBTITLE_CODEC_{class_name}_GENERATED_H
 #define SUBTITLE_CODEC_{class_name}_GENERATED_H
 
-#include "BaseSubtitleCodec.h"
+#include "src/program/ffmpeg/subtitle/BaseSubtitleCodec.h"
 #include <set>
 #include <string>
 

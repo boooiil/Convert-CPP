@@ -44,7 +44,7 @@ def generate(source: str, destination: str):
         body: str = f"""#ifndef VIDEO_CODEC_{class_name}_GENERATED_H
 #define VIDEO_CODEC_{class_name}_GENERATED_H
 
-#include "BaseVideoCodec.h"
+#include "src/program/ffmpeg/video/BaseVideoCodec.h"
 #include <set>
 #include <string>
 #include <vector>

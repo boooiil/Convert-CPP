@@ -37,7 +37,7 @@ def generate(source: str, destination: str) :
         body: str = f"""#ifndef ATTACHMENT_{class_name}_GENERATED_H
 #define ATTACHMENT_{class_name}_GENERATED_H
 
-#include "BaseAttachment.h"
+#include "src/program/ffmpeg/attachment/BaseAttachment.h"
 #include <set>
 #include <string>
 #include <vector>

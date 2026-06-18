@@ -46,7 +46,7 @@ def generate(source: str, destination: str):
         body: str = f"""#ifndef CONTAINER_{class_name}_GENERATED_H
 #define CONTAINER_{class_name}_GENERATED_H
 
-#include "BaseContainer.h"
+#include "src/program/ffmpeg/container/BaseContainer.h"
 #include <vector>
 #include <string>
 

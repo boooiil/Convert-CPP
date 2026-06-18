@@ -42,12 +42,12 @@ def generate(source: str, destination: str) :
         aliases = j.join([f'"{alias}"' for alias in value['aliases']])
         supportedChannels = j.join([str(n) for n in value['supportedChannels']])
         supportedSampleRates = j.join([str(n) for n in value['supportedSampleRates']])
-        supportedBitDepths = j.join([str(n) for n in value['supportedBitDepths']])
+        supportedBitDepths = j.join([f'"{n}"' for n in value['supportedBitDepths']])
 
         body: str = f"""#ifndef AUDIO_CODEC_{class_name}_GENERATED_H
 #define AUDIO_CODEC_{class_name}_GENERATED_H
 
-#include "BaseAudioCodec.h"
+#include "src/program/ffmpeg/audio/BaseAudioCodec.h"
 #include <set>
 #include <string>
 #include <vector>
@@ -56,7 +56,7 @@ class AudioCodec_{class_name}_Generated : public BaseAudioCodec {{
  public:
   AudioCodec_{class_name}_Generated(int channel = {defaults['channel']},
                  int sampleRate = {defaults['sampleRate']},
-                 int bitDepth = {defaults['bitDepth']}):
+                 std::string bitDepth = "{defaults['bitDepth']}"):
                  BaseAudioCodec(channel, sampleRate, bitDepth) {{}};
 
   auto getName() const -> const std::string override {{ return "{value['name']}"; }};
@@ -65,11 +65,11 @@ class AudioCodec_{class_name}_Generated : public BaseAudioCodec {{
 
   auto supportedChannels() const -> const std::vector<int> override {{ return {{{supportedChannels}}}; }};
   auto supportedSampleRates() const -> const std::vector<int> override {{ return {{{supportedSampleRates}}}; }};
-  auto supportedBitDepths() const -> const std::vector<int> override {{ return {{{supportedBitDepths}}}; }};
+  auto supportedBitDepths() const -> const std::vector<std::string> override {{ return {{{supportedBitDepths}}}; }};
 
   auto fallbackChannel() const -> const int override {{ return {defaults['channel']}; }};
   auto fallbackSampleRate() const -> const int override {{ return {defaults['sampleRate']}; }};
-  auto fallbackBitDepth() const -> const int override {{ return {defaults['bitDepth']}; }};
+  auto fallbackBitDepth() const -> const std::string override {{ return "{defaults['bitDepth']}"; }};
 
 }};
 

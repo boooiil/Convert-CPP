@@ -7,7 +7,7 @@ if (len(sys.argv) != 2):
     sys.exit()
 
 root: str = sys.argv[1]
-ffmpeg_path = os.path.join(root, "src", "program", "child", "ffmpeg")
+ffmpeg_path = os.path.join(root, "src", "program", "ffmpeg")
 data_path = os.path.join(root, "scripts", "data", "ffmpeg_codecs")
 
 # Generate Audio Codecs
