@@ -12,8 +12,8 @@ public:
   virtual void run(void) = 0;
   virtual void end(void) = 0;
 
-  virtual bool isEndable(void) const { return endable; };
-  virtual void setEndable(bool flag) { endable = flag; };
+  virtual bool isStopping(void) const { return endable; };
+  virtual void setStopping(bool flag) { endable = flag; };
 
   virtual bool isCompleted(void) const { return completed; };
   virtual void setCompleted(bool flag) {

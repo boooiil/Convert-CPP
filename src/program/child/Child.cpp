@@ -100,7 +100,7 @@ void Child::prepare(std::vector<std::string> &args) {
 
 void Child::run(void) {
   // once every second
-  this->setEndable(false);
+  this->setStopping(false);
   int currentAmount = static_cast<int>(this->converting.size());
 
   IntegerArgument setAmount =
@@ -122,7 +122,7 @@ void Child::run(void) {
                 media->getFile().naming.original_name_ext,
                 Activity_N::definition(media->getActivity()));
       if (currentAmount == 0) {
-        this->setEndable(true);
+        this->setStopping(true);
         this->setCompleted(true);
         // Program::stopFlag = true;
       }
@@ -138,7 +138,7 @@ void Child::run(void) {
       this->pending.pop();
     }
 
-    this->setEndable(true);
+    this->setStopping(true);
   }
 
   // error if there are more converting than allowed
@@ -162,7 +162,7 @@ void Child::run(void) {
       this->converting.pop();
     }
 
-    this->setEndable(true);
+    this->setStopping(true);
   }
 
   // temp queue for conversion iteration
