@@ -3,7 +3,7 @@
         "defaults": {
             "channel": 2,
             "sampleRate": 48000,
-            "bitDepth": 16
+            "bitDepth": "fltp"
         },
         "name": "aac",
         "displayName": "AAC",
@@ -35,15 +35,14 @@
             96000
         ],
         "supportedBitDepths": [
-            16,
-            24
+            "fltp"
         ]
     },
     "ac3": {
         "defaults": {
             "channel": 2,
             "sampleRate": 48000,
-            "bitDepth": 16
+            "bitDepth": "fltp"
         },
         "name": "ac3",
         "displayName": "Dolby Digital",
@@ -73,14 +72,14 @@
             48000
         ],
         "supportedBitDepths": [
-            16
+            "fltp"
         ]
     },
     "eac3": {
         "defaults": {
             "channel": 2,
             "sampleRate": 48000,
-            "bitDepth": 16
+            "bitDepth": "fltp"
         },
         "name": "eac3",
         "displayName": "Dolby Digital Plus",
@@ -107,15 +106,14 @@
             128000
         ],
         "supportedBitDepths": [
-            16,
-            24
+            "fltp"
         ]
     },
     "flac": {
         "defaults": {
             "channel": 2,
             "sampleRate": 96000,
-            "bitDepth": 24
+            "bitDepth": "s32"
         },
         "name": "flac",
         "displayName": "FLAC",
@@ -152,17 +150,15 @@
             384000
         ],
         "supportedBitDepths": [
-            8,
-            16,
-            24,
-            32
+            "s16",
+            "s32"
         ]
     },
     "mp3": {
         "defaults": {
             "channel": 2,
             "sampleRate": 48000,
-            "bitDepth": 16
+            "bitDepth": "s16"
         },
         "name": "mp3",
         "displayName": "MP3",
@@ -185,14 +181,16 @@
             48000
         ],
         "supportedBitDepths": [
-            16
+            "s32p",
+            "fltp",
+            "s16"
         ]
     },
     "libopus": {
         "defaults": {
             "channel": 2,
             "sampleRate": 48000,
-            "bitDepth": 16
+            "bitDepth": "s16"
         },
         "name": "libopus",
         "displayName": "Opus",
@@ -218,14 +216,15 @@
             48000
         ],
         "supportedBitDepths": [
-            16
+            "s16",
+            "flt"
         ]
     },
     "truehd": {
         "defaults": {
             "channel": 2,
             "sampleRate": 48000,
-            "bitDepth": 16
+            "bitDepth": "s16"
         },
         "name": "truehd",
         "displayName": "Dolby TrueHD",
@@ -254,15 +253,15 @@
             384000
         ],
         "supportedBitDepths": [
-            16,
-            24
+            "s16p",
+            "s32p"
         ]
     },
     "libvorbis": {
         "defaults": {
             "channel": 2,
             "sampleRate": 48000,
-            "bitDepth": 16
+            "bitDepth": "fltp"
         },
         "name": "libvorbis",
         "displayName": "Vorbis",
@@ -295,7 +294,7 @@
             96000
         ],
         "supportedBitDepths": [
-            16
+            "fltp"
         ]
     }
 }
