@@ -3,11 +3,12 @@
 #include <cstring>
 #include <regex>
 #include <string>
+#include <sys/types.h>
 #include <vector>
 
 std::string ListUtils::join(std::vector<std::string> list, std::string delim) {
   std::string result = "";
-  for (int i = 0; i < list.size(); i++) {
+  for (u_long i = 0; i < list.size(); i++) {
     result += list[i];
     if (i < list.size() - 1) {
       result += delim;
@@ -16,7 +17,7 @@ std::string ListUtils::join(std::vector<std::string> list, std::string delim) {
   return result;
 }
 
-std::vector<std::string> ListUtils::toStrVector(char* arr[]) {
+std::vector<std::string> ListUtils::toStrVector(char *arr[]) {
   std::vector<std::string> result;
   for (int i = 0; arr[i] != nullptr; i++) {
     result.push_back(arr[i]);
@@ -24,8 +25,8 @@ std::vector<std::string> ListUtils::toStrVector(char* arr[]) {
   return result;
 }
 
-std::vector<char*> ListUtils::toCharVector(char* arr[]) {
-  std::vector<char*> result;
+std::vector<char *> ListUtils::toCharVector(char *arr[]) {
+  std::vector<char *> result;
   for (int i = 0; arr[i] != nullptr; i++) {
     result.push_back(arr[i]);
   }
@@ -40,9 +41,9 @@ std::vector<char> ListUtils::toCharVector(char arr[]) {
   return result;
 }
 
-char** ListUtils::toCharArray(std::vector<std::string> list) {
-  char** result = new char* [list.size() + 1];
-  for (int i = 0; i < list.size(); i++) {
+char **ListUtils::toCharArray(std::vector<std::string> list) {
+  char **result = new char *[list.size() + 1];
+  for (u_long i = 0; i < list.size(); i++) {
     result[i] = new char[list[i].size() + 1];
     strcpy(result[i], list[i].c_str());
   }
@@ -75,8 +76,7 @@ std::vector<std::string> ListUtils::splitv(std::string str, std::regex delim) {
       result.push_back(built);
       built = "";
       continue;
-    }
-    else {
+    } else {
       built += c;
     }
   }

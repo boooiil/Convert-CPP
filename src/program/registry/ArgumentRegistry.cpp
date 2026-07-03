@@ -21,7 +21,7 @@ void ArgumentRegistry::parse(const std::vector<std::string> &args) {
   Registry<std::string, Command_N::Command> &flagMap = getFlagMap();
 
   // skip the first argument (the program name)
-  for (int i = 1; i < args.size(); i++) {
+  for (u_long i = 1; i < args.size(); i++) {
     LOG_DEBUG(Logger::Priority::INFO, "Parsing argument:", args[i]);
 
     // get the lowercase version of the argument

@@ -29,12 +29,12 @@ public:
     // // exist index total
     // int e_index_total = 0;
 
-    // for (int i = 0; i < streams.get().size(); i++) {
+    // for (u_long i = 0; i < streams.get().size(); i++) {
     //   LOG_DEBUG(Logger::Priority::INFO,"WANTED STREAM INDEX: ",
     //   streams.get()[i]); w_index_total += streams.get()[i];
     // }
 
-    // for (int i = 0; i < existingStreamMap.size(); i++) {
+    // for (u_long i = 0; i < existingStreamMap.size(); i++) {
     //   LOG_DEBUG(Logger::Priority::INFO,"EXISTING STREAM INDEX: ", i);
     //   e_index_total += i;
     // }

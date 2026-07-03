@@ -102,7 +102,7 @@ RegexUtils::getAllMatches(std::string str, std::string pattern,
   std::vector<std::string> matches;
 
   while (std::regex_search(str, match, regex)) {
-    for (int i = 1; i < match.size(); i++) {
+    for (u_long i = 1; i < match.size(); i++) {
       matches.push_back(match[i]);
     }
 

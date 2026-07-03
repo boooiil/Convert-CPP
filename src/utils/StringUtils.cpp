@@ -5,9 +5,9 @@
 #include <sstream>
 #include <string>
 
-auto StringUtils::truncateString(std::string str, int length = 25)
+auto StringUtils::truncateString(std::string str, u_long length = 25)
     -> std::string {
-  const int MAX_LENGTH = length;
+  u_long MAX_LENGTH = length;
   if (str.length() <= MAX_LENGTH) {
     return str;
   }

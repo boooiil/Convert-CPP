@@ -4,6 +4,7 @@
 #include <set>
 #include <stdexcept>
 #include <string>
+#include <sys/types.h>
 #include <vector>
 
 #include "src/program/ffmpeg/attachment/BaseAttachment.h"
@@ -192,7 +193,7 @@ public:
     std::vector<BaseAttachment *> valid_att = {};
     int running = 0;
 
-    for (int i = 0; i < _attachments.size(); i++) {
+    for (u_long i = 0; i < _attachments.size(); i++) {
       BaseAttachment *att = _attachments[i];
 
       if (att == nullptr) {

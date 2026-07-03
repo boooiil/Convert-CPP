@@ -25,7 +25,7 @@ public:
    * @param[in] length  - The length to truncate to.
    * @return The truncated string.
    */
-  static std::string truncateString(std::string str, int length);
+  static std::string truncateString(std::string str, u_long length);
 
   /**
    * @brief Replace all occurances of a sequence of characters with a provided
