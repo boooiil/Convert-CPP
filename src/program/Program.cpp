@@ -31,7 +31,7 @@ void Program::prepare(std::vector<std::string> &args) {
 
   this->arguments = Arguments::parse(*this->runtimeEnv, args);
 
-  switch (this->arguments->argumentRegistry.get<Command_N::LOGGINGOPTIONS>()
+  switch (this->arguments->argumentRegistry.get_p<Command_N::LOGGINGOPTIONS>()
               .get()) {
   case LogFormat_N::DEBUG:
   case LogFormat_N::JSON_DEBUG:

@@ -22,7 +22,7 @@ std::vector<std::thread> workerThreads;
 
 // template <typename T>
 // typename ArgumentRegistry::getTFn<T> get =
-// Child::settings->argumentRegistry.get<T>;
+// Child::settings->argumentRegistry.get_p<T>;
 
 Child::Child(RuntimeEnvironment &run_env, std::shared_ptr<Arguments> arguments)
     : endable(false), run_env(run_env), arguments(arguments) {}
@@ -49,7 +49,7 @@ void Child::prepare(std::vector<std::string> &args) {
 
     bool fs_exists =
         std::filesystem::exists(media->getFile().naming.conversion_folder_path);
-    bool is_info = arguments->argumentRegistry.get<Command_N::INFO>().get();
+    bool is_info = arguments->argumentRegistry.get_p<Command_N::INFO>().get();
 
     LOG_DEBUG(Logger::Priority::INFO, "fs exists?",
               fs_exists ? "true" : "false", "is info?",
@@ -88,7 +88,7 @@ void Child::prepare(std::vector<std::string> &args) {
 //     media->file->rename(this->processSettings);
 //
 //     if (!std::filesystem::exists(media->file->conversionFolderPath) &&
-//       !this->processSettings->argumentParser->argumentRegistry.get<FlagArgument>("-i")->get())
+//       !this->processSettings->argumentParser->argumentRegistry.get_p<FlagArgument>("-i")->get())
 //       { LOG_DEBUG(Logger::Priority::INFO,"Creating directory: ",
 //       media->file->conversionFolderPath);
 //       std::filesystem::create_directory(media->file->conversionFolderPath);
@@ -104,7 +104,7 @@ void Child::run(void) {
   int currentAmount = static_cast<int>(this->converting.size());
 
   IntegerArgument setAmount =
-      arguments->argumentRegistry.get<Command_N::AMOUNT>();
+      arguments->argumentRegistry.get_p<Command_N::AMOUNT>();
 
   LOG_DEBUG(Logger::Priority::INFO, "C:" + std::to_string(currentAmount),
             "W:" + setAmount.toString(),

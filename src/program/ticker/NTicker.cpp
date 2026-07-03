@@ -26,10 +26,10 @@ NTicker::NTicker(RuntimeEnvironment &run_env,
 void NTicker::determineNextAction(std::vector<std::string> &args) {
   ArgumentRegistry &argumentRegistry = this->arguments->argumentRegistry;
 
-  if (argumentRegistry.get<Command_N::HELP>()) {
+  if (argumentRegistry.get_p<Command_N::HELP>()) {
     Help::print(*arguments);
     Program::stopFlag = true;
-  } else if (argumentRegistry.get<Command_N::INFO>()) {
+  } else if (argumentRegistry.get_p<Command_N::INFO>()) {
     // print information
     this->runner->prepare(args);
     this->display->printInformation(this, this->runner);
@@ -48,7 +48,7 @@ void NTicker::determineNextAction(std::vector<std::string> &args) {
 
 // void NTicker::prepare(ArgumentParser* arguments) {
 //   // use parent display
-//   if (arguments->argumentRegistry.get<FlagArgument>("-parent")->get()) {
+//   if (arguments->argumentRegistry.get_p<FlagArgument>("-parent")->get()) {
 //     LOG_DEBUG(Logger::Priority::INFO,"Running as parent.");
 //     this->display = new ParentDisplay();
 //     this->runner = new Parent();
@@ -66,7 +66,7 @@ void NTicker::prepare(std::vector<std::string> &args) {
   // use parent display
   ArgumentRegistry &argumentRegistry = this->arguments->argumentRegistry;
 
-  if (argumentRegistry.get<Command_N::PARENT>()) {
+  if (argumentRegistry.get_p<Command_N::PARENT>()) {
     LOG_DEBUG(Logger::Priority::INFO, "Running as parent.");
     this->display = new ParentDisplay();
     this->runner = new Parent(run_env, *arguments);
@@ -82,7 +82,7 @@ void NTicker::prepare(std::vector<std::string> &args) {
 void NTicker::run() {
   ArgumentRegistry &argumentRegistry = this->arguments->argumentRegistry;
 
-  if (argumentRegistry.get<Command_N::INFO>()) {
+  if (argumentRegistry.get_p<Command_N::INFO>()) {
     this->display->printInformation(this, this->runner);
     return;
   }
@@ -97,7 +97,7 @@ void NTicker::run() {
     }
 
     LogFormat_N::LogFormat log_option =
-        argumentRegistry.get<Command_N::LOGGINGOPTIONS>().get();
+        argumentRegistry.get_p<Command_N::LOGGINGOPTIONS>().get();
 
     switch (log_option) {
     case LogFormat_N::DEBUG:
@@ -117,7 +117,7 @@ void NTicker::run() {
     }
 
     std::this_thread::sleep_for(std::chrono::milliseconds(
-        (int)argumentRegistry.get<Command_N::DISPLAYREFRESH>().get()));
+        (int)argumentRegistry.get_p<Command_N::DISPLAYREFRESH>().get()));
   }
   // if (Program::settings->argumentParser->isParent) {
   //   // parent display

@@ -13,7 +13,7 @@ public:
   //   return dynamic_cast<T &>(Registry::get(flag));
   // }
 
-  template <Command_N::Command C> auto &get() {
+  template <Command_N::Command C> auto &get_p() {
     using T = typename CommandValueType<C>::type;
     return dynamic_cast<T &>(Registry::get(C));
   }

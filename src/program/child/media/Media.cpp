@@ -26,7 +26,6 @@
 #include "src/utils/NumberUtils.h"
 #include "src/utils/StringUtils.h"
 #include "src/utils/TimeUtils.h"
-#include "src/utils/logging/LogColor.h"
 #include "src/utils/logging/Logger.h"
 
 Media::Media(Arguments &arguments, uuids::uuid id, std::string name,
@@ -35,9 +34,9 @@ Media::Media(Arguments &arguments, uuids::uuid id, std::string name,
       ffmpegArguments(nullptr), activity(Activity_N::WAITING),
       file(FileContainer(
           name, path,
-          arguments.argumentRegistry.get<Command_N::QUALITY>().get().name,
+          arguments.argumentRegistry.get_p<Command_N::QUALITY>().get().name,
           Container_N::definition(
-              arguments.argumentRegistry.get<Command_N::CONTAINER>()))),
+              arguments.argumentRegistry.get_p<Command_N::CONTAINER>()))),
       arguments(arguments) {}
 
 Media::~Media() {

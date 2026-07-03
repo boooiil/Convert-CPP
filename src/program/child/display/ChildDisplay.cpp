@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <queue>
 #include <string>
+#include <sys/types.h>
 
 #include "src/program/child/Child.h"
 #include "src/program/child/media/Media.h"
@@ -49,21 +50,21 @@ void ChildDisplay::print(JSONSerializableRunner &ticker) {
 
   std::string encoder = StringUtils::bracket(
       "TARGET ENC", DefinitionRegistry::defFromEnum(
-                        argumentRegistry.get<Command_N::ENCODER>().get()));
+                        argumentRegistry.get_p<Command_N::ENCODER>().get()));
 
   std::string resolution = StringUtils::bracket(
-      "RES", argumentRegistry.get<Command_N::QUALITY>().get().name);
+      "RES", argumentRegistry.get_p<Command_N::QUALITY>().get().name);
 
   std::string tune = StringUtils::bracket(
-      "TUNE", Tunes_N::definition(argumentRegistry.get<Command_N::TUNE>()));
+      "TUNE", Tunes_N::definition(argumentRegistry.get_p<Command_N::TUNE>()));
 
   std::string amount = StringUtils::bracket(
-      "AMOUNT", argumentRegistry.get<Command_N::AMOUNT>().toString());
+      "AMOUNT", argumentRegistry.get_p<Command_N::AMOUNT>().toString());
   std::string container = StringUtils::bracket(
       "CONTAINER",
-      Container_N::definition(argumentRegistry.get<Command_N::CONTAINER>()));
+      Container_N::definition(argumentRegistry.get_p<Command_N::CONTAINER>()));
 
-  // std::string a = ArgumentRegistry::get<IntegerArgument>("-a");
+  // std::string a = ArgumentRegistry::get_p<IntegerArgument>("-a");
 
   std::string constrain =
       StringUtils::bracket("CONSTRAIN", "", LogColor::fgGray, LogColor::fgRed);
@@ -75,11 +76,11 @@ void ChildDisplay::print(JSONSerializableRunner &ticker) {
   std::string header = time + " " + encoder + " " + " " + resolution + " " +
                        tune + " " + amount + " " + container;
 
-  if (argumentRegistry.get<Command_N::CONSTRAIN>()) {
+  if (argumentRegistry.get_p<Command_N::CONSTRAIN>()) {
     header += " " + constrain;
   }
 
-  if (argumentRegistry.get<Command_N::CROP>()) {
+  if (argumentRegistry.get_p<Command_N::CROP>()) {
     header += " " + crop;
   }
 
@@ -225,7 +226,7 @@ void ChildDisplay::printInformationTyped(NTicker *ticker, Child *child) {
         tab(2) + ob + LogColor::fgWhite("Video Streams") + cb);
 
     // iterate video streams
-    for (int i = 0; i < media->probeResult->videoStreams.size(); i++) {
+    for (u_long i = 0; i < media->probeResult->videoStreams.size(); i++) {
       ProbeResultStreamVideo prsv = media->probeResult->videoStreams[i];
 
       // codec bloc
@@ -254,7 +255,7 @@ void ChildDisplay::printInformationTyped(NTicker *ticker, Child *child) {
         tab(2) + ob + LogColor::fgWhite("Audio Streams") + cb);
 
     // iterate audio streams
-    for (int i = 0; i < media->probeResult->audioStreams.size(); i++) {
+    for (u_long i = 0; i < media->probeResult->audioStreams.size(); i++) {
       ProbeResultStreamAudio prsa = media->probeResult->audioStreams[i];
 
       // audio lang bloc
@@ -292,7 +293,7 @@ void ChildDisplay::printInformationTyped(NTicker *ticker, Child *child) {
         tab(2) + ob + LogColor::fgWhite("Subtitle Streams") + cb);
 
     // iterate subtitle streams
-    for (int i = 0; i < media->probeResult->subtitleStreams.size(); i++) {
+    for (u_long i = 0; i < media->probeResult->subtitleStreams.size(); i++) {
       ProbeResultStreamSubtitle prss = media->probeResult->subtitleStreams[i];
 
       // subtitle lang bloc
@@ -314,7 +315,7 @@ void ChildDisplay::printInformationTyped(NTicker *ticker, Child *child) {
         tab(2) + ob + LogColor::fgWhite("Attachment Streams") + cb);
 
     // iterate subtitle streams
-    for (int i = 0; i < media->probeResult->attachmentStreams.size(); i++) {
+    for (u_long i = 0; i < media->probeResult->attachmentStreams.size(); i++) {
       ProbeResultStreamAttachment prsa =
           media->probeResult->attachmentStreams[i];
 

@@ -156,8 +156,8 @@ std::shared_ptr<Arguments> Arguments::parse(RuntimeEnvironment &run_env,
 
 void Arguments::validate() {
   GenericArgument &encoderArg =
-      this->argumentRegistry.get<Command_N::ENCODER>();
-  GenericArgument &tunesArg = this->argumentRegistry.get<Command_N::TUNE>();
+      this->argumentRegistry.get_p<Command_N::ENCODER>();
+  GenericArgument &tunesArg = this->argumentRegistry.get_p<Command_N::TUNE>();
 
   EnumArgument<Encoders_N::Encoders> *enumArgEncoder =
       dynamic_cast<EnumArgument<Encoders_N::Encoders> *>(&encoderArg);
