@@ -9,6 +9,7 @@
 #ifndef MEDIA_PROCESS
 #define MEDIA_PROCESS
 
+#include "src/program/Program.h"
 #include <stdio.h>
 
 #include <memory>
@@ -33,7 +34,7 @@ public:
    * @brief Construct a new Media Process object.
    */
   MediaProcess(T *_object)
-      : object(_object), status(MediaProcess::Status::WAIT), stop_req(false) {}
+      : object(_object), status(MediaProcess::Status::WAIT) {}
 
   ~MediaProcess() { LOG_DEBUG(Logger::Priority::INFO, "DESTRUCTOR CALLED"); }
 
@@ -57,20 +58,22 @@ public:
     int ch;
 
     // Open pipe to file
-    std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.c_str(), "r"),
-                                                  pclose);
+    auto pipe_deleter = [](FILE *f) { pclose(f); };
+    std::unique_ptr<FILE, decltype(pipe_deleter)> pipe(
+        popen(command.c_str(), "r"), pipe_deleter);
+
     if (!pipe) {
       throw std::runtime_error("popen() failed!");
     }
 
-    if (stop_req) {
+    if (Program::stopFlag) {
       LOG_DEBUG(Logger::Priority::INFO,
-                "Stop request received before starting the loop");
+                "Stop request received before starting media process loop");
       return;
     }
 
     // Read from pipe
-    while ((ch = fgetc(pipe.get())) != EOF && !stop_req) {
+    while ((ch = fgetc(pipe.get())) != EOF && !Program::stopFlag) {
       result += static_cast<char>(ch);
 
       // If the last character is a newline, parse the result
@@ -80,7 +83,7 @@ public:
         result.clear(); // Clear the result for the next line
       }
 
-      if (stop_req) {
+      if (Program::stopFlag) {
         LOG_DEBUG(Logger::Priority::INFO,
                   "Stop request received during the loop");
         break;
@@ -105,12 +108,6 @@ public:
   void setStatus(MediaProcess::Status provided_status) {
     this->status = provided_status;
   }
-
-  /**
-   * @brief Stop the process.
-   *
-   */
-  void stop(void) { stop_req = true; }
 
   /**
    * @brief Check if the process is waiting.
@@ -162,7 +159,6 @@ protected:
   Status status; /// @brief Status of the process.
 
 private:
-  bool stop_req; /// @brief Stop request.
 };
 
 #endif // !MEDIA_PROCESS

@@ -47,8 +47,10 @@ void MediaProcessStatistics::start(std::string command) {
   std::string result;
 
   // Open pipe to file
-  std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(command.c_str(), "r"),
-                                                pclose);
+  auto pipe_deleter = [](FILE *f) { pclose(f); };
+  std::unique_ptr<FILE, decltype(pipe_deleter)> pipe(
+      popen(command.c_str(), "r"), pipe_deleter);
+
   if (!pipe) {
     throw std::runtime_error("popen() failed!");
   }
@@ -135,7 +137,7 @@ void MediaProcessStatistics::parse(std::string data) {
 
     Arguments &arguments = this->object->getArguments();
     ArgumentRegistry &argumentRegistry = arguments.argumentRegistry;
-    MediaFormat format = argumentRegistry.get<Command_N::QUALITY>().get();
+    MediaFormat format = argumentRegistry.get_p<Command_N::QUALITY>().get();
 
     this->object->getFile().video_info.convertedWidth =
         std::to_string(format.width);

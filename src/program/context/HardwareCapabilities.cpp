@@ -23,11 +23,13 @@ const HardwareCapabilities HardwareCapabilities::detect() {
   std::array<char, 128> buffer;
 
   // Open pipe to file
-  std::unique_ptr<FILE, decltype(&pclose)> pipe(
+  auto pipe_deleter = [](FILE *f) { pclose(f); };
+  std::unique_ptr<FILE, decltype(pipe_deleter)> pipe(
       popen("powershell -command \"Get - CimInstance Win32_VideoController | "
             "Select - Object Name\"",
             "r"),
-      pclose);
+      pipe_deleter);
+
   if (!pipe) {
     throw std::runtime_error("popen() failed!");
   }
@@ -45,8 +47,10 @@ const HardwareCapabilities HardwareCapabilities::detect() {
   std::array<char, 128> buffer;
 
   // Open pipe to file
-  std::unique_ptr<FILE, decltype(&pclose)> pipe(popen("lspci | grep VGA", "r"),
-                                                pclose);
+  auto pipe_deleter = [](FILE *f) { pclose(f); };
+  std::unique_ptr<FILE, decltype(pipe_deleter)> pipe(
+      popen("lspci | grep VGA", "r"), pipe_deleter);
+
   if (!pipe) {
     throw std::runtime_error("popen() failed!");
   }
