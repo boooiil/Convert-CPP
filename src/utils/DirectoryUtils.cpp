@@ -119,7 +119,7 @@ bool DirectoryUtils::createDir(std::string path) {
   try {
     std::filesystem::create_directory(path);
     return true;
-  } catch (std::exception err) {
+  } catch (const std::exception &err) {
     LOG_DEBUG(Logger::Priority::INFO, err.what());
     return false;
   }

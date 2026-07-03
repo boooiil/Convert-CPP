@@ -69,7 +69,7 @@ public:
         if (listItem == item) {
           return true;
         }
-      } catch (std::exception e) {
+      } catch (const std::exception &e) {
         LOG_DEBUG(Logger::Priority::INFO, "Error: ", e.what());
         continue;
       }
